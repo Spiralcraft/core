@@ -60,6 +60,7 @@ public class BufferType<T extends Buffer>
         ("Cannot buffer primitive type "+archetype.getURI());
     }
     this.archetype=archetype;
+    super.combineArchetypeParams();
     if (archetype.getBaseType()!=null)
     { this.baseType=(Type<T>) getBufferType(archetype.getBaseType());
     }
@@ -94,7 +95,7 @@ public class BufferType<T extends Buffer>
     }
     this.scheme.setArchetypeScheme(this.archetype.getScheme());
     
-
+    // log.fine(getURI()+" linking scheme from "+this.archetype.getURI()+" : "+this.archetype.getScheme());
     Key<?> primaryKey=this.archetype.getPrimaryKey();
     
     if (this.archetype.getScheme()!=null && !isAggregate()) 

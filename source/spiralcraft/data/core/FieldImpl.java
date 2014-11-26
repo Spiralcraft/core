@@ -69,7 +69,7 @@ public class FieldImpl<T>
   private String name;
   private String title;
   private String description;
-  private Type<T> type;
+  protected Type<T> type;
   private Field archetypeField;
   private URI uri;
   private boolean isScheme;
@@ -94,6 +94,9 @@ public class FieldImpl<T>
   
   protected FieldSet fieldSet;
   protected DeclarationInfo declarationInfo;
+  
+  protected Expression<Type<T>> typeX;
+  protected boolean template;
 
 //  protected boolean debugData;
   
@@ -106,17 +109,7 @@ public class FieldImpl<T>
     assertUnlocked();
     isScheme=true;
     this.fieldSet=scheme;
-//    if (scheme.getType()!=null)
-//    { 
-//      this.uri
-//        =URIPool.create(scheme.getType().getURI().toString()+"#"+getName());
-//    }
-//    else
-//    {
-//      this.uri
-//        =URIPool.create("untyped#"+getName());
-//      
-//    }
+
   }
   
   void setFieldSet(FieldSet fieldSet)
@@ -126,9 +119,7 @@ public class FieldImpl<T>
     { setScheme((SchemeImpl) fieldSet);
     }
     else
-    { 
-      this.fieldSet=fieldSet;
-//      this.uri=URIPool.create("untyped#"+getName());
+    { this.fieldSet=fieldSet;
     }
     
   }
@@ -141,6 +132,16 @@ public class FieldImpl<T>
     { log.log(Level.WARNING,"Content reflector is null for "+getURI());
     }
     return contentReflector;
+  }
+  
+  /**
+   * This field is a template, and might not have a resolved type when used
+   *   within a parameterized type with unassigned arguments.
+   * 
+   * @param template
+   */
+  public void setTemplate(boolean template)
+  { this.template=template;
   }
   
   public Field getArchetypeField()
@@ -167,11 +168,13 @@ public class FieldImpl<T>
     archetypeField=field;
     this.index=archetypeField.getIndex();
     
-    if (archetypeField.getType()==null)
+    if (archetypeField.getType()==null && !archetypeField.isTemplate())
     { throw new DataException(archetypeField.getURI()+" has no type");
     }
     
-    if (!archetypeField.getType().isAssignableFrom(this.getType()))
+    if (archetypeField.getType()!=null
+         && !archetypeField.getType().isAssignableFrom(this.getType())
+       )
     { 
       generateURI();
       throw new TypeMismatchException
@@ -190,6 +193,36 @@ public class FieldImpl<T>
   @Override
   public FieldSet getFieldSet()
   { return fieldSet;
+  }
+  
+  @Override
+  public boolean isGeneric()
+  { return typeX!=null;
+  }
+  
+  @Override
+  public boolean isTemplate()
+  { return template;
+  }
+  
+  @Override
+  public FieldImpl<? extends T> extend()
+  {
+    FieldImpl copy=new FieldImpl();
+    constructExtension(copy);
+    return copy;
+  }
+  
+  protected void constructExtension(FieldImpl copy)
+  {
+    copy.name=name;
+    if (typeX!=null)
+    { copy.typeX=typeX;
+    }
+    else
+    { copy.type=type;
+    }
+    copy.description=description;
   }
   
   /**
@@ -433,6 +466,12 @@ public class FieldImpl<T>
     updateType(type);
   }
   
+  public void setTypeX(Expression<Type<T>> typeX)
+  {
+    assertUnlocked();
+    this.typeX=typeX;
+  }
+  
   protected boolean typeIsNull()
   { return type==null;
   }
@@ -453,6 +492,9 @@ public class FieldImpl<T>
             updateType(resolveType());
             if (type==null)
             { 
+              if (template)
+              { return null;
+              }
               throw new RuntimeDataException
                 ("Could not resolve type for field "+getURI(),null);
             }  
@@ -486,7 +528,11 @@ public class FieldImpl<T>
   protected void updateType(Type type) 
   {
     if (type==null)
-    { throw new IllegalArgumentException("Type is null for field "+getURI());
+    { 
+      if (template)
+      { return;
+      }
+      throw new IllegalArgumentException("Type is null for field "+getURI());
     }
     this.type=type;
     try
@@ -504,7 +550,21 @@ public class FieldImpl<T>
    */
   protected Type resolveType()
     throws DataException
-  { return null;
+  { 
+    try
+    {
+      if (typeX!=null)
+      { 
+//        log.fine("Evaluating type expression for "+getURI()+" "+typeX.getText());
+        Type myType= getScheme().getType().getSelfFocus().bind(typeX).get();
+//        log.fine(typeX.getText()+" returned "+myType);
+        return myType;
+      }
+    }
+    catch (BindException x)
+    { throw new DataException("Error resolving type for field "+getURI(),x);
+    }
+    return null;
   }
   
   protected final Tuple widenTuple(Tuple t)
@@ -656,6 +716,9 @@ public class FieldImpl<T>
     if (getType()==null)
     { 
       generateURI();
+      if (template)
+      { return;
+      }
       throw new DataException("Field must have a type: "+uri);
     }
     generateURI();

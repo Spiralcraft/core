@@ -293,6 +293,9 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       //   getResultType().getProjection
       //       (lhsExpressions.toArray(new Expression[0]))
       
+      if (getResultType().getScheme()==null)
+      { throw new DataException("Type has no scheme: "+getResultType());
+      }
       projection
         =(Projection<T>) getResultType().getScheme().getProjection
           (lhsExpressions.toArray(new Expression<?>[0]));

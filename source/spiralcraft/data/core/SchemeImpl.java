@@ -207,7 +207,8 @@ public class SchemeImpl
       }
       fieldList.append
         (field.getClass().getSimpleName()+":"
-         +field.getName()+"("+field.getType().getURI()+")"
+         +(field.getName()!=null?field.getName():"null")
+         +"("+(field.getType()!=null?field.getType().getURI():"nulltype")+")"
         );
     }
     fieldList.append("]");
@@ -246,6 +247,15 @@ public class SchemeImpl
       { 
         fields.add(field);
         fieldMap.put(field.getName(),field);
+
+        // Extend generic archetype fields so they can be specialized for
+        //   this type's context
+        if (field.isGeneric() && !localFieldMap.containsKey(field.getName()))
+        { 
+          FieldImpl<?> newField=(FieldImpl<?>) field.extend();
+          localFields.add(newField);
+          localFieldMap.put(newField.getName(),newField);
+        }
       }
     }
     

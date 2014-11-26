@@ -27,6 +27,8 @@ import spiralcraft.common.attributes.Attribute;
 import spiralcraft.common.attributes.AttributeSet;
 import spiralcraft.data.core.DeltaType;
 import spiralcraft.data.core.MetaType;
+import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.Buffer;
@@ -35,6 +37,18 @@ import spiralcraft.data.spi.ArrayTuple;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.ChannelFactory;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.GenericReflector;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -49,13 +63,12 @@ import spiralcraft.vfs.Resource;
 
 
 /**
- * Describes the data type of a data element.<BR>
+ * Describes the data type of a data element.
  */
 public abstract class Type<T>
 {  
   private static final ClassLog log=ClassLog.getInstance(Type.class);
   private static final Level LOG_LEVEL
-//    =ClassLog.getInitialDebugLevel(Type.class,Level.FINE);
     =ClassLog.getInitialDebugLevel(Type.class,null);
   
   public static <X> Type<X> resolve(String uriString)
@@ -84,8 +97,9 @@ public abstract class Type<T>
   { 
     try
     { 
-      return type.getTypeResolver().<List<X>>resolve
+      Type<List<X>> agg=type.getTypeResolver().<List<X>>resolve
         (URIPool.create(type.getURI().toString()+".list"));
+      return agg;
     }
     catch (DataException x)
     { throw new RuntimeException(x);
@@ -226,6 +240,7 @@ public abstract class Type<T>
   protected boolean debug;
   protected Translator<?,T> externalizer;
   protected AttributeSet attributes;
+  protected Focus<Type<T>> selfFocus;
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -680,6 +695,26 @@ public abstract class Type<T>
     return null;
   }
   
+  public void setParameters(TypeParameter<?>[] parameters)
+  { 
+    throw new UnsupportedOperationException
+      ("Parameterization not supported in "+toString());
+  }
+  
+  public TypeParameter<?>[] getParameters()
+  { return null;
+  }
+  
+  /**
+   * Get the argument value associated with a type parameter
+   * 
+   * @param name
+   * @return
+   */
+  public <Targ> Targ getArgument(String name)
+  { return null;
+  }
+  
   @SuppressWarnings("unchecked")
   public T fromXmlResource(Resource resource)
     throws DataException
@@ -743,4 +778,110 @@ public abstract class Type<T>
     { throw new RuntimeException(x);
     }
   }
+  
+  /**
+   * Obtain a Focus for binding expressions against this type.
+   * 
+   * @return
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public Focus<Type<T>> getSelfFocus()
+    throws BindException,DataException
+  {
+    if (selfFocus==null)
+    {
+      Reflector<Type<T>> baseReflector
+        =BeanReflector.<Type<T>>getInstance(getClass());
+      GenericReflector<Type<T>> genericReflector
+        =new GenericReflector<Type<T>>(baseReflector);
+      if (getParameters()!=null)
+      {
+        for (TypeParameter<?> parameter: getParameters())
+        { 
+          Type paramType=parameter.getType();
+            
+          if (paramType==null)
+          {
+            Object argVal=getArgument(parameter.getName());
+            if (argVal!=null)
+            { paramType=ReflectionType.canonicalType(argVal.getClass());
+            }
+          }
+          
+          if (paramType==null)
+          { paramType=ReflectionType.canonicalType(Type.class);
+          }
+          
+          
+          genericReflector
+            .enhance
+              (parameter.getName()
+              ,null
+              ,new ParameterAccessor(this,paramType,parameter)
+              );
+          // log.fine("Added type parameter binding for "+parameter.getName()+"("+paramType.getURI()+") to "+getURI());
+        }
+      }
+      else
+      { // log.fine(getURI()+" has no type parameters");
+      }
+      selfFocus=new SimpleFocus(new SimpleChannel(genericReflector,this,true));
+    }
+    return selfFocus;
+  }
+}
+
+class ParameterAccessor<T,Ttype>
+  extends AbstractChannel<T>
+  implements ChannelFactory<T,Ttype>
+{
+  private final Type<?> type;
+  private final TypeParameter<T> param;
+  
+  public ParameterAccessor(Type<?> type,Type<T> paramType,TypeParameter<T> parameter)
+    throws BindException
+  { 
+    super
+      (DataReflector.<T>getInstance(paramType));
+    this.type=type;
+    this.param=parameter;
+  }
+
+  @Override
+  public Channel<T> bindChannel(
+    Channel<Ttype> source,
+    Focus<?> focus,
+    Expression<?>[] arguments)
+    throws BindException
+  { return this;
+  }
+
+  @Override
+  protected T retrieve()
+  { 
+    T val=type.getArgument(param.getName());
+    if (val==null)
+    { val=param.getDefault();
+    }
+    return val;
+  }
+
+  @Override
+  protected boolean store(
+    T val)
+    throws AccessException
+  { return false;
+  }
+  
+  @Override
+  public boolean isConstant()
+  { return true;
+  }
+  
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
+  
+  
 }

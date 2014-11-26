@@ -23,6 +23,7 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.TypeParameter;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.lang.ToDataTranslator;
@@ -77,7 +78,10 @@ public class TypeImpl<T>
   
   private HashMap<String,Field<?>> linkedFieldMap;
   
-  private boolean linked;  
+  protected boolean linked;  
+  protected TypeParameter<?>[] parameters;
+  protected HashMap<String,Object> typeArguments;
+  
   
   public TypeImpl(TypeResolver resolver,URI uri)
   { 
@@ -105,6 +109,29 @@ public class TypeImpl<T>
     ruleSet.addRules(rules);
   }
   
+  protected void setArgument(String name,Object value)
+  {
+    if (typeArguments==null)
+    { typeArguments=new HashMap<>();
+    }
+    typeArguments.put(name,value);
+  }
+  
+  @Override
+  public <Targ> Targ getArgument(String name)
+  { 
+    @SuppressWarnings("unchecked")
+    Targ ret
+      =typeArguments!=null
+        ?(Targ) typeArguments.get(name)
+        :null;
+    if (ret==null && archetype!=null)
+    { ret=archetype.getArgument(name);
+    }
+ //   log.fine(getURI()+".getArgument("+name+") returned "+ret);
+    return ret;
+  }
+  
   @SuppressWarnings("unchecked")
   public void setRules(Rule<Type<T>,T> ... rules)
   { 
@@ -112,6 +139,18 @@ public class TypeImpl<T>
     { throw new IllegalStateException("Type already linked: "+getURI());
     }
     explicitRules=rules;
+  }
+  
+  @Override
+  public void setParameters(TypeParameter<?>[] parameters)
+  { 
+    this.parameters=parameters;
+//    log.fine(getClass().getName()+"@"+System.identityHashCode(this)+" got parameters:"+getURI());
+  }
+  
+  @Override
+  public TypeParameter<?>[] getParameters()
+  { return parameters;
   }
   
   private void createRuleSet()
@@ -174,6 +213,23 @@ public class TypeImpl<T>
     { throw new IllegalStateException("Type "+getURI()+" already linked: "+this);
     }
     this.archetype=archetype;
+    combineArchetypeParams();
+  }
+
+  protected void combineArchetypeParams()
+  {
+    parameters
+      =ArrayUtil.concat
+        (TypeParameter[].class,archetype.getParameters(),parameters);
+    if (parameters.length==0)
+    { parameters=null;
+    }
+//    else
+//    {
+//      if (archetype.getParameters()!=null && archetype.getParameters().length>0)
+//      { log.fine("Copied parameters from "+archetype.getURI()+" to "+getURI());
+//      }
+//    }
   }
    
   public void setDebug(boolean debug)
@@ -363,7 +419,11 @@ public class TypeImpl<T>
       }
       
       if (archetype!=null)
-      { archetype.link();
+      { 
+//        log.fine("Linking archetype "+archetype.getURI()
+//          +" in "+getURI()+" "+getClass().getName()+"@"+System.identityHashCode(this)
+//          );
+        archetype.link();
       }
       
     

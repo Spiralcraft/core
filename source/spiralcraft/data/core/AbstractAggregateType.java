@@ -18,18 +18,20 @@ import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
-
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.TypeParameter;
 import spiralcraft.data.lang.ToDataTranslator;
 import spiralcraft.data.lang.ToStringTranslator;
-
 import spiralcraft.lang.spi.Translator;
+import spiralcraft.log.ClassLog;
 import spiralcraft.rules.RuleSet;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
 import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * Implementation base class for common aggregate type functionality
@@ -37,6 +39,9 @@ import java.util.Comparator;
 public abstract class AbstractAggregateType<T,Tcontent>
   extends Type<T>
 {
+  protected static final ClassLog log
+    =ClassLog.getInstance(AbstractAggregateType.class);
+  
   protected final URI uri;
   
   protected Type<Tcontent> contentType;
@@ -47,6 +52,8 @@ public abstract class AbstractAggregateType<T,Tcontent>
   protected RuleSet<Type<T>,T> ruleSet;  
   protected String description;
   protected Translator<?,T> externalizer;
+  protected TypeParameter<?>[] parameters;
+  protected HashMap<String,Object> typeArguments;
 
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
@@ -127,6 +134,21 @@ public abstract class AbstractAggregateType<T,Tcontent>
     catch (DataException x)
     { throw new RuntimeException(x);
     }
+  }
+  
+  @Override
+  public <Targ> Targ getArgument(String name)
+  { 
+    @SuppressWarnings("unchecked")
+    Targ ret
+      =typeArguments!=null
+        ?(Targ) typeArguments.get(name)
+        :null;
+    if (ret==null && contentType!=null)
+    { ret=contentType.getArgument(name);
+    }
+    //log.fine(getURI()+".getArgument("+name+") returned "+ret);
+    return ret;
   }
   
   @Override
@@ -236,6 +258,36 @@ public abstract class AbstractAggregateType<T,Tcontent>
     }
     return ret;
   }
+
+  @Override
+  public void setParameters(TypeParameter<?>[] parameters)
+  { 
+    this.parameters=parameters;
+    // log.fine(getClass().getName()+"@"+System.identityHashCode(this)+" got parameters:"+getURI());
+  }
+  
+  @Override
+  public TypeParameter<?>[] getParameters()
+  { return parameters;
+  }
+  
+
+  
+  protected void combineContentTypeParams()
+  {
+    parameters
+      =ArrayUtil.concat
+        (TypeParameter[].class,contentType.getParameters(),parameters);
+    if (parameters.length==0)
+    { parameters=null;
+    }
+    else
+    {
+//      if (contentType.getParameters()!=null && contentType.getParameters().length>0)
+//      { log.fine("Copied parameters from "+contentType.getURI()+" to "+getURI());
+//      }
+    }
+  }  
   
   @Override
   public void link()
@@ -246,7 +298,7 @@ public abstract class AbstractAggregateType<T,Tcontent>
     linked=true;
     
     contentType.link();
-    
+    combineContentTypeParams();
     try
     {
       Type<?> contentArchetype=contentType.getArchetype();

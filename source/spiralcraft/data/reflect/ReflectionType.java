@@ -465,9 +465,10 @@ public class ReflectionType<T>
       }
     
       ReflectionScheme scheme=new ReflectionScheme(resolver,this,reflectedClass);
-      scheme.addFields();
+
       this.scheme=scheme;
-    
+      scheme.addFields();
+      addFields();
       addMethods();
     
       super.link();
@@ -483,6 +484,14 @@ public class ReflectionType<T>
     finally
     { popLink();
     }
+  }
+  
+  /** 
+   * Overide in subclass to add additional fields to the Scheme 
+   */
+  protected void addFields()
+    throws DataException
+  {
   }
   
   private void addMethods()

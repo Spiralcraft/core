@@ -234,6 +234,17 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   { return contentType;
   }
   
+  /**
+   * Return the Reflector that reflects the type of data contained in the
+   *   aggregate.
+   *   
+   * @return
+   * @throws BindException
+   */
+  public Reflector<I> getComponentType() 
+    throws BindException
+  { return DataReflector.getInstance(type.getContentType());
+  }
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Reflective subscript type
   private Channel<?> subscript

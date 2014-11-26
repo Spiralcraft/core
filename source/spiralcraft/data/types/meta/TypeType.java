@@ -18,13 +18,10 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
-
+import spiralcraft.data.core.DataDefinedType;
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.core.MetaType;
 import spiralcraft.data.core.SchemeImpl;
-import spiralcraft.data.core.TypeImpl;
-
-
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.util.refpool.URIPool;
@@ -44,7 +41,7 @@ public class TypeType
   
   { 
     ReflectionType.registerCanonicalType
-      (TypeImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Type"));
+      (DataDefinedType.class,URIPool.create("class:/spiralcraft/data/types/meta/Type"));
     ReflectionType.registerCanonicalType
       (FieldImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Field"));
     ReflectionType.registerCanonicalType
@@ -63,7 +60,7 @@ public class TypeType
    */
   @SuppressWarnings("unchecked")
   public TypeType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,(Class) TypeImpl.class,(Class) TypeImpl.class);
+  { super(resolver,uri,(Class) DataDefinedType.class,(Class) DataDefinedType.class);
   }
 
   @Override

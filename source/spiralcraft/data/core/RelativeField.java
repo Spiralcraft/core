@@ -22,11 +22,9 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.util.string.StringUtil;
-
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -35,14 +33,12 @@ import spiralcraft.data.Field;
 import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-
 import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
-
 import spiralcraft.data.lang.DataReflector;
 
 /**
@@ -155,7 +151,21 @@ public class RelativeField<T extends DataComposite>
   { return referencedKeyName;
   }
   
+  @Override
+  public RelativeField<? extends T> extend()
+  {
+    RelativeField<T> copy=new RelativeField<T>();
+    constructExtension(copy);
+//    log.fine("Returning field copy of "+getURI()+" : "+copy+" type="+copy.type+" typeX="+copy.typeX);
+    return copy;
+  }
   
+  protected void contructExtension(RelativeField<? extends T> copy)
+  { 
+    super.constructExtension(copy);
+    copy.fieldNames=fieldNames;
+    copy.referencedFieldNames=referencedFieldNames;
+  }
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
   @Override
@@ -168,11 +178,27 @@ public class RelativeField<T extends DataComposite>
     resolved=true;
     
     
+    
     if (!generated)
     { 
-     
+      
+      if (getType()==null || typeX!=null)
+      { 
+        Type newType=resolveType();
+        if (newType!=null)
+        { setType(resolveType());
+        }
+      }
       if (getType()==null)
-      { throw new DataException("Field type cannot be null: "+getURI());
+      { 
+        if (template)
+        { 
+          // Ok to leave field partially resolved if no type and it's a
+          //  a template
+          super.resolve();
+          return;
+        }
+        throw new DataException("Field type cannot be null: "+getURI());
       }
       // Generate the key
       if (key==null)
@@ -225,6 +251,7 @@ public class RelativeField<T extends DataComposite>
             
             if (foreignKey.getFieldCount()>primaryKey.getFieldCount())
             { 
+//              log.fine("Foreign key="+foreignKey+", primaryKey="+primaryKey);
               throw new DataException
                 ("Relative Field "+getURI()+" containing non unique value "
                 +" requires that the primary key defined in the referenced"
@@ -262,13 +289,19 @@ public class RelativeField<T extends DataComposite>
       }
     }
 
-    if (key.getForeignQuery()!=null)
-    { key.getForeignQuery().resolve();
+    try
+    {
+      if (key.getForeignQuery()!=null)
+      { key.getForeignQuery().resolve();
+      }
+      else
+      { 
+        throw new DataException
+          ("Foreign query is null from "+key);
+      }
     }
-    else
-    { 
-      throw new DataException
-        ("Error resolving "+getURI()+": foreign query is null from "+key);
+    catch (DataException x)
+    { throw new DataException("Error resolving "+getURI(),x);
     }
     super.resolve();
   }
@@ -365,7 +398,7 @@ public class RelativeField<T extends DataComposite>
         }
       }
       catch (DataException x)
-      { throw new BindException(x.toString(),x);
+      { throw new BindException("Error binding "+getURI()+"("+getType().getURI()+")",x);
       }
     }
     else

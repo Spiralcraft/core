@@ -55,7 +55,7 @@ public class XmlTypeFactory
   private final Level debugLevel
     =ClassLog.getInitialDebugLevel(XmlTypeFactory.class,Level.INFO);
   
-  private boolean debug;
+  private boolean debug=false;
   
   private ThreadLocal<CycleDetector<URI>> cycleDetectorRef
     =new ThreadLocal<CycleDetector<URI>>()
@@ -178,7 +178,8 @@ public class XmlTypeFactory
                 { 
                   // Need to do this explicitly, because MetaType thinks
                   //   that empty data is simply a type reference, and at
-                  //   this point we don't know if data is empty
+                  //   this point we don't know if data is empty because it
+                  //   hasn't been read yet
                   instance=((MetaType) type).newSubtype(composite,uri);
                   if (debug)
                   { 

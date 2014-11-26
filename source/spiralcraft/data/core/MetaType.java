@@ -18,14 +18,15 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.TypeParameter;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Tuple;
-
 import spiralcraft.data.reflect.ReflectionType;
-
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.data.util.StaticInstanceResolver;
+import spiralcraft.log.ClassLog;
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
@@ -37,11 +38,16 @@ import java.net.URI;
 public class MetaType
   extends ReflectionType<Type>
 {
-  private static boolean debug;
+  private static final ClassLog log
+    =ClassLog.getInstance(MetaType.class);
+  
+  private static boolean debug=false;
   
   private Type<?> referencedType;
   private int anonRefId=1;
 
+  private TypeParameter[] addParameters;
+  
   
   /**
    * <p>Construct a TypeType that reflects the implementation of the referenced
@@ -65,10 +71,12 @@ public class MetaType
           , referencedTypeImplClass
           , referencedTypeImplClass
           );
-//    System.err.println
-//      ("New MetaType: "+uri+" of "+referencedTypeURI+"="+super.toString());
+    if (debug)
+    { log.fine("Created metaType "+System.identityHashCode(this)+" "+uri+" of "+referencedTypeURI);
+    }
     
     referencedType=resolver.resolve(referencedTypeURI,false);
+    this.addParameters=referencedType.getParameters();
   }
   
   /**
@@ -86,6 +94,9 @@ public class MetaType
       ,(Class) referencedType.getClass()
       ,(Class) referencedType.getClass()
       );
+    if (debug)
+    { log.fine("Created metaType "+System.identityHashCode(this)+" "+uri+" of "+referencedType);
+    }
     this.referencedType=referencedType;
     link();
   }  
@@ -121,8 +132,28 @@ public class MetaType
         (TypeResolver.getTypeResolver()
         ,uri
         );
+    if (debug)
+    { log.fine("Creating new auto-subtype of "+getURI()+"@"+System.identityHashCode(this)+": "+uri);
+    }
     return super.fromData(composite,instanceResolver);
     
+  }
+  
+  @Override
+  /**
+   * Called by the ReflectionType to add any extra fields not part of the
+   *   bean- a.k.a. type parameters so that they can be set when overriding
+   *   the type definition.
+   */
+  protected void addFields()
+    throws DataException
+  { 
+    if (addParameters!=null)
+    {
+      for (TypeParameter param : addParameters)
+      { scheme.addField(new TypeParameterField(param));
+      }
+    }
   }
   
   @Override
@@ -193,8 +224,14 @@ public class MetaType
         
         // Create an anonymous subtype
         // TODO: clean up and consolidate with newSubtype()
-        final URI uri=URIPool.create(getURI().toString().concat("-"+(anonRefId++)));
+//        final URI uri
+//          =URIPool.create(getURI().toString().concat("-"+(anonRefId++)));
         
+        final URI uri
+          =URIUtil.addPathSuffix
+              (URIUtil.removePathSuffix(getURI(),".type")
+              ,"-"+(anonRefId++)
+              );
         
         instanceResolver
           =new ConstructorInstanceResolver
@@ -206,7 +243,26 @@ public class MetaType
         { log.fine("Using MetaType to create new anonymous extended type "+uri);
         }
         
+        // Resolve the generic type to make sure it has been linked
+        Type genericType=TypeResolver.getTypeResolver().resolve
+          (URIUtil.removePathSuffix(getURI(),".type"));
+//        log.fine("Generic type is "+genericType);
+        
+        // Write any type arguments to the derived type
         Type type=super.fromData(composite,instanceResolver);
+        for (Field field:scheme.fieldIterable())
+        { 
+          if (field instanceof TypeParameterField)
+          { ((TypeParameterField) field).fromData((TypeImpl) type,(Tuple) composite);
+          }
+        }
+        
+        if (type instanceof DataDefinedType)
+        { ((DataDefinedType) type).setArchetype(genericType);
+        }
+        
+        // Register the type (but don't link)
+        TypeResolver.getTypeResolver().register(uri,type);
         // type.link();
         return type;
       }

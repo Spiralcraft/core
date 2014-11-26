@@ -46,6 +46,7 @@ public class DeltaType
     super(resolver,typeURI);
     // log.fine("DeltaType for "+archetype,new Exception());
     this.archetype=archetype;
+    super.combineArchetypeParams();
     if (archetype.getBaseType()!=null)
     { this.baseType=getDeltaType(archetype.getBaseType());
     }

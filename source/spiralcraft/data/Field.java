@@ -141,6 +141,29 @@ public interface Field<T>
   boolean isDerived();
   
   /**
+   * Indicates that the field has dependencies on type parameters that may
+   *   vary across subtypes of the containing type.
+   * 
+   * @return
+   */
+  boolean isGeneric();
+  
+  /**
+   * Indicates that the field is a template and may be incompletely specified
+   *   without arguments supplied for type parameters.
+   * 
+   * @return
+   */
+  boolean isTemplate();
+  
+  /**
+   * Create a copy of this field for use in a subtype
+   * 
+   * @return
+   */
+  Field<? extends T> extend();
+  
+  /**
    * 
    * @return The spiralcraft.lang.Reflector that provides type metadata for 
    *   the field value.
