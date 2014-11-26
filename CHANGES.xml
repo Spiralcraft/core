@@ -14,6 +14,131 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev104
+        </revision>
+      
+        <notes>
+          <scm:Note>A GenericReflector can now be used to add additional
+            members to underlying types.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/GenericReflector.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev104
+        </revision>
+      
+        <notes>
+          <scm:Note>A function definition can now have an empty formal
+            argument list
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/FunctionNode.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev104
+        </revision>
+      
+        <notes>
+          <scm:Note>The Edit task now accepts a Reflector as a constructor
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Edit.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev104
+        </revision>
+      
+        <notes>
+          <scm:Note>Infrastructure for generics / data type parameterization
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Field.java
+          </URI>
+          <URI>Type.java
+          </URI>
+          <URI>TypeParameter.java
+          </URI>
+          <URI>core/AbstractAggregateType.java
+          </URI>
+          <URI>core/DataDefinedType.java
+          </URI>
+          <URI>core/DataDefinedType.java
+          </URI>
+          <URI>core/DeltaType.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>core/MetaType.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+          <URI>core/SchemeImpl.java
+          </URI>
+          <URI>core/TypeImpl.java
+          </URI>
+          <URI>core/TypeParameterField.java
+          </URI>
+          <URI>core/TypeParameterField.java
+          </URI>
+          <URI>lang/AggregateReflector.java
+          </URI>
+          <URI>reflect/ReflectionType.java
+          </URI>
+          <URI>session/BufferType.java
+          </URI>
+          <URI>spi/AbstractAggregateQueryable.java
+          </URI>
+          <URI>types/meta/TypeParameterType.java
+          </URI>
+          <URI>types/meta/TypeType.java
+          </URI>
+          <URI>xml/XmlTypeFactory.java
+          </URI>
+          
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev104
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where the session instance of the Flow model
+            was not in scope when accessed from components inside the Flow,
+            resulting in a different instance being created on every access.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/app/components/Flow.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev103
         </revision>
       
