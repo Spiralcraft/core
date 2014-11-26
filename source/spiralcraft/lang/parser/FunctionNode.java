@@ -62,7 +62,9 @@ public class FunctionNode
     try
     {
       Scenario functor
-        =new Eval(Expression.create(context),Expression.create(body));
+        =context!=null
+          ?new Eval(Expression.create(context),Expression.create(body))
+          :new Eval(Expression.create(body));
       Focus<?> functorFocus=functor.bind(focus);
       Channel<?> ret=new ConstantChannel(functor.reflect(),functor);
       ret.setContext(functorFocus);
