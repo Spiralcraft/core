@@ -81,11 +81,19 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   }
   
   @SuppressWarnings("unchecked")
+  public Edit(DataReflector<Titem> reflector)
+  { this(reflector.getType());
+  }
+
+  @SuppressWarnings("unchecked")
   public Edit(Type<Titem> type)
   { 
     this.type=type;
     if (!type.isAggregate())
     { editor=(EditorBase<Tbuffer>) new TupleEditor();
+    }
+    else
+    { editor=(EditorBase<Tbuffer>) new AggregateEditor();
     }
     editor.setAutoCreate(true);
   }
