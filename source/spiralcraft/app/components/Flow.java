@@ -83,7 +83,6 @@ public class Flow<T>
   public FlowState<T> createState()
   { 
     FlowState<T> state=new FlowState<T>(getChildCount(),null);
-    state.currentState=fsm.getInitialState();
     return state;
   }
   
@@ -138,32 +137,48 @@ public class Flow<T>
     
     return chain;
   }
-
-  private void onInit()
-  { 
-    if (model!=null)
-    {
-      getState().setValue(model.get());
-      if (logLevel.isFine())
-      { log.fine("Initialized model "+getState().getValue());
-      }
-    }
-  }
   
   
   class ModelInitHandler
     extends AbstractMessageHandler
   {
-    { type=InitializeMessage.TYPE;
+    { 
+      type=InitializeMessage.TYPE;
+      contextual=true;
     }
-  
+
+    
     @Override
     protected void doHandler(
       Dispatcher dispatcher,
       Message message,
       MessageHandlerChain next)
     {
-      onInit();
+      
+      FlowState<T> state=getState();
+      if (model!=null)
+      {
+        state.setValue(model.get());
+        if (logLevel.isFine())
+        { log.fine("Initialized model "+state.getValue());
+        }
+      }
+      if (state.currentState==null)
+      { 
+        if (modelChannel!=null)
+        { modelChannel.push(getState().getValue());
+        }
+        try
+        { state.currentState=fsm.getInitialState();
+        }
+        finally
+        { 
+          if (modelChannel!=null)
+          { modelChannel.pop();
+          }
+        }
+        
+      }
       next.handleMessage(dispatcher,message);
     }
   }
@@ -182,9 +197,14 @@ public class Flow<T>
     {
       if (modelChannel!=null)
       {
+        
         modelChannel.push(getState().getValue());
-        next.handleMessage(dispatcher,message);
-        modelChannel.pop();
+        try
+        { next.handleMessage(dispatcher,message);
+        }
+        finally
+        { modelChannel.pop();
+        }
       }
       else
       { next.handleMessage(dispatcher,message);
