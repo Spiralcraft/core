@@ -12,7 +12,23 @@
     
 
     <detail> 
-    
+      <scm:Change>
+        <revision>-dev105
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where the session instance of the Flow model
+            was not in scope when accessed from the initializer, resulting
+            in a ThreadLocalNotInitialized runtime exception.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/app/components/Flow.java
+        </path>
+
+      </scm:Change>
+      
       <scm:Change>
         <revision>-dev104
         </revision>
