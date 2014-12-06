@@ -13,6 +13,21 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev106
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when State has no transitions
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/fsm/State.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev105
         </revision>
       
