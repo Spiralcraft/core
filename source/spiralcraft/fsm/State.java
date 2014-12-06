@@ -185,8 +185,11 @@ public class State
     if (onExit!=null)
     { onExit.bind(focusChain);
     }
-    for (Transition t: transitions)
-    { t.bind(focusChain);
+    if (transitions!=null)
+    {
+      for (Transition t: transitions)
+      { t.bind(focusChain);
+      }
     }
     
     return focusChain;
