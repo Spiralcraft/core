@@ -13,6 +13,29 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev107
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when a Transition's next state is set to an
+            invalid name.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/fsm
+        </path>
+        
+        <resources>
+          <URI>StateMachine.java
+          </URI>
+          <URI>Transition.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev106
         </revision>
       
