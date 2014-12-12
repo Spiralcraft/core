@@ -151,7 +151,10 @@ public class StateMachine
   }
 
   void completeTransition(State nextState)
-  { changeState(nextState);
+  { 
+    if (nextState!=null)
+    { changeState(nextState);
+    }
   }
 
   private void changeState(State newState)

@@ -15,6 +15,9 @@
 package spiralcraft.fsm;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
@@ -37,7 +40,7 @@ import spiralcraft.lang.util.LangUtil;
  *
  */
 public class Transition
-  implements Contextual
+  implements Contextual,Declarable
 {
 
   private String name;
@@ -48,6 +51,7 @@ public class Transition
   private Binding<?> onComplete;
   private Binding<Boolean> when;
   private Focus<Transition> self;
+  private DeclarationInfo declarationInfo;
   
   public void setName(String name)
   { this.name=name;
@@ -56,6 +60,7 @@ public class Transition
   public String getName()
   { return name;
   }
+
   
   /**
    * A condition that must evaluate to true in order for the Transition to
@@ -96,6 +101,16 @@ public class Transition
   public void setNext(String nextStateName)
   { this.nextStateName=nextStateName;
   }
+
+  @Override
+  public void setDeclarationInfo(DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+  
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
@@ -108,6 +123,14 @@ public class Transition
     fsm=LangUtil.findInstance(StateMachine.class,focusChain);
     State thisState=LangUtil.findInstance(State.class,focusChain);
     nextState=(nextStateName!=null?fsm.getState(nextStateName):thisState);
+    if (nextState==null)
+    { 
+      throw new BindException
+        ("Unknown state '"+nextStateName+"' in transition '"+name+"'"
+        ,getDeclarationInfo()
+        ,null
+        );
+    }
     if (when!=null)
     { 
       when.bind(focusChain);
