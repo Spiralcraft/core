@@ -169,7 +169,7 @@ public class Flow<T>
         { modelChannel.push(getState().getValue());
         }
         try
-        { state.currentState=fsm.getInitialState();
+        { fsm.initialize();
         }
         finally
         { 

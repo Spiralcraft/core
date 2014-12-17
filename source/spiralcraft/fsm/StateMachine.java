@@ -78,7 +78,17 @@ public class StateMachine
     changeState(state);
   }
   
-  public State getInitialState()
+  
+  public void initialize()
+  {
+    State state=getInitialState();
+    if (state==null)
+    { throw new IllegalArgumentException("No state named '"+state+"'");
+    }
+    changeState(state);    
+  }
+  
+  State getInitialState()
   { 
     State initialState=null;
     if (initialStateX!=null)
@@ -165,7 +175,9 @@ public class StateMachine
       if (beforeStateChange!=null)
       { beforeStateChange.get();
       }
-      state.onExit();
+      if (state!=null)
+      { state.onExit();
+      }
       currentState.set(newState);
       newState.onEnter();
       if (afterStateChange!=null)
