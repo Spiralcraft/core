@@ -17,6 +17,28 @@
         </revision>
       
         <notes>
+          <scm:Note>Flow delegates state initialization to StateMachine
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>fsm/StateMachine.java
+          </URI>
+          <URI>app/components/Flow.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev107
+        </revision>
+      
+        <notes>
           <scm:Note>Fix NPE when a Transition's next state is set to an
             invalid name.
           </scm:Note>
