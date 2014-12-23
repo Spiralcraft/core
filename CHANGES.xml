@@ -13,6 +13,34 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev108
+        </revision>
+      
+        <notes>
+          <scm:Note>Template SequenceFields in archetypes are now extended
+            so the subtypes don't share a sequence id.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/core
+        </path>
+        
+        <resources>
+          <URI>FieldImpl.java
+          </URI>
+          <URI>KeyImpl.java
+          </URI>
+          <URI>SchemeImpl.java
+          </URI>
+          <URI>SequenceField.java
+          </URI>
+        </resources>
+
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev107
         </revision>
       

@@ -14,14 +14,17 @@
   
   <fields>
 
-    <meta:Field>
+    <meta:SequenceField>
       <name>id
       </name>
       
       <type><LSID.type/>
       </type>
+      
+      <template>true
+      </template>
     
-    </meta:Field>
+    </meta:SequenceField>
         
     <meta:RelativeField>
 
