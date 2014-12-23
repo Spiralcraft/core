@@ -266,7 +266,7 @@ public class XmlQueryable
       { originalQuery=backingQueryable.query(primaryKey.getQuery(), localFocus);
       }
       catch (DataException x)
-      { throw new BindException("Error resolving identity query",x);
+      { throw new BindException("Error resolving identity query for "+getResultType().getURI(),x);
       }
     }
     else

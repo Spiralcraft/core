@@ -296,7 +296,7 @@ public class TupleEditor
       if (buffer==null)
       {
         log.warning
-          ("No buffer exists to save- no data read- try Editor.autoCreate");
+          (getType().getURI()+": No buffer exists to save- no data read- try Editor.autoCreate");
       }
       else
       {
