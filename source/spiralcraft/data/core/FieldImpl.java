@@ -220,7 +220,7 @@ public class FieldImpl<T>
     { copy.typeX=typeX;
     }
     else
-    { copy.type=type;
+    { copy.updateType(type);
     }
     copy.description=description;
   }

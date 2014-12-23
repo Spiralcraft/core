@@ -16,7 +16,7 @@ package spiralcraft.data.core;
 
 
 import spiralcraft.data.DataException;
-import spiralcraft.data.Type;
+
 import spiralcraft.data.core.FieldImpl;
 
 
@@ -26,15 +26,20 @@ public class SequenceField<X>
   
   public SequenceField()
   { 
-    try
-    { setType(Type.<X>resolve("class:/spiralcraft/data/types/standard/Integer"));
-    }
-    catch (DataException x)
-    { x.printStackTrace();
-    }
+
   }
   
-  
+  @Override
+  public FieldImpl<X> extend()
+  {
+    SequenceField<X> copy=new SequenceField<>();
+    constructExtension(copy);
+    if (isTemplate())
+    { copy.template=true;
+    }
+    return copy;
+  }
+    
   @Override
   public void resolve()
     throws DataException

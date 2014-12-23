@@ -384,6 +384,10 @@ public class KeyImpl<T extends DataComposite>
            ,fieldName
           );
       }
+      if (masterField.getType()==null)
+      { throw new DataException("Field "+masterField.getURI()+" has no type");
+      }
+
       addMasterField(masterField.getName(),masterField);
       
       stringConverters[i]

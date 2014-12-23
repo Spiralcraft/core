@@ -250,11 +250,17 @@ public class SchemeImpl
 
         // Extend generic archetype fields so they can be specialized for
         //   this type's context
-        if (field.isGeneric() && !localFieldMap.containsKey(field.getName()))
+        if ( (field.isGeneric() 
+               || field.isTemplate() 
+             ) 
+             && !localFieldMap.containsKey(field.getName())
+           )
         { 
           FieldImpl<?> newField=(FieldImpl<?>) field.extend();
           localFields.add(newField);
           localFieldMap.put(newField.getName(),newField);
+//          log.fine("Extending "+field.getURI()+"("+(field.getType()!=null?field.getType().getURI().toString():"")+") to "
+//                  +getType().getURI()+"#"+newField.getName()+"("+(newField.getType()!=null?newField.getType().getURI().toString():"")+")");
         }
       }
     }
@@ -278,10 +284,14 @@ public class SchemeImpl
       
       if (archetypeField!=null)
       { 
-        if (field.isFunctionalEquivalent(archetypeField))
+        if (!(archetypeField.isGeneric() 
+              || archetypeField.isTemplate() 
+            ) 
+            && field.isFunctionalEquivalent(archetypeField))
         {
           // Field is redundant. Don't replace archetype field, which is
           //   already mapped
+//          log.fine("Skipping extension of "+archetypeField.getURI());
           continue;
         }
         
