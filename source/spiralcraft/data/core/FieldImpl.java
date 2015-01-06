@@ -76,6 +76,8 @@ public class FieldImpl<T>
   private Expression<T> defaultExpression;
   private Expression<T> fixedExpression;
   private Expression<T> newExpression;
+  protected Expression<T> initialX;
+  protected T initialValue;
   private RuleSet<FieldImpl<T>,T> ruleSet;
   private Rule<FieldImpl<T>,T>[] explicitRules;
 
@@ -91,6 +93,8 @@ public class FieldImpl<T>
   protected boolean timeReads=false;
 
   private Reflector contentReflector;
+  
+  protected boolean staticField;
   
   protected FieldSet fieldSet;
   protected DeclarationInfo declarationInfo;
@@ -211,6 +215,19 @@ public class FieldImpl<T>
     FieldImpl copy=new FieldImpl();
     constructExtension(copy);
     return copy;
+  }
+  
+  public void setStatic(boolean staticField)
+  { this.staticField=staticField;
+  }
+  
+  @Override
+  public boolean isStatic()
+  { return staticField;
+  }
+  
+  public void setInitialX(Expression<T> initialX)
+  { this.initialX=initialX;
   }
   
   protected void constructExtension(FieldImpl copy)
@@ -338,6 +355,14 @@ public class FieldImpl<T>
   { this.fixedExpression=fixedExpression;
   }
 
+  @Override
+  public Expression<T> getInitialX()
+  {
+    return (initialX==null && archetypeField!=null)
+      ?archetypeField.getInitialX()
+      :initialX;
+  }
+  
   /**
    *@return Whether this field has the same type, constraints and attributes
    *   as the specified field.
@@ -350,6 +375,7 @@ public class FieldImpl<T>
       && fixedExpression==null
       && explicitRules==null
       && tranzient==field.isTransient()
+      && staticField==field.isStatic()
       && (required?field.isRequired():true)
       && (uniqueValue?field.isUniqueValue():true)
       && (title!=null?title.equals(field.getTitle()):true)
@@ -610,6 +636,10 @@ public class FieldImpl<T>
   public final T getValue(Tuple t)
     throws DataException
   { 
+    if (staticField)
+    { return initialValue;
+    }
+    
     if (t==null)
     { 
       throw new IllegalArgumentException
@@ -654,6 +684,12 @@ public class FieldImpl<T>
   public final void setValue(EditableTuple t,T value)
     throws DataException
   { 
+    if (staticField)
+    { 
+      throw new AccessException
+        ("Static field "+getURI()+" cannot be assigned a new value");
+    }
+    
     if (t==null)
     {
       throw new IllegalArgumentException
@@ -676,6 +712,10 @@ public class FieldImpl<T>
   public final boolean isDirty(DeltaTuple dt)
     throws DataException
   {
+    if (staticField)
+    { return false;
+    }
+    
     if (dt==null)
     {
       throw new IllegalArgumentException
@@ -725,7 +765,20 @@ public class FieldImpl<T>
     
     if (explicitRules!=null)
     { addRules(explicitRules);
-    }    
+    }  
+    
+    if (initialX!=null)
+    { 
+      try
+      { 
+        initialValue
+          =getScheme().getType().getSelfFocus().bind(initialX).get();
+      }
+      catch (BindException x)
+      { throw new DataException("Error binding initialX for field "+uri);
+      }
+    }
+    
   }
   
   
@@ -826,7 +879,16 @@ public class FieldImpl<T>
     if (binding==null)
     { 
       assertType();
-      binding=new FieldChannel(source,focus);
+      if (staticField)
+      { binding
+          =new ConstantChannel
+            (DataReflector.<T>getInstance(getType())
+            ,initialValue
+            );
+      }
+      else
+      { binding=new FieldChannel(source,focus);
+      }
       source.cache(this,binding);
     }
     return binding;

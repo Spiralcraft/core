@@ -559,7 +559,7 @@ class Context
         { DataWriter.log.fine("Starting field "+field.getURI());
         }
         
-        if (!field.isTransient())
+        if (!field.isTransient() && !field.isStatic())
         {
           Object value=field.getValue(tuple);
           if (value!=null)

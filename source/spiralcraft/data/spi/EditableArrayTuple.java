@@ -99,7 +99,10 @@ public class EditableArrayTuple
        )
     { 
       for (Field<?> field: source.getFieldSet().fieldIterable())
-      { copyFieldFrom(field,source);
+      { 
+        if (!field.isStatic())
+        { copyFieldFrom(field,source);
+        }
       }
     }
 

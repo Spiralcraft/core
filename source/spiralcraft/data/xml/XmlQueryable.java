@@ -277,7 +277,7 @@ public class XmlQueryable
         ArrayList<String> fields=new ArrayList<String>();
         for (Field<?> field: getResultType().getFieldSet().fieldIterable())
         { 
-          if ( !field.isTransient() )
+          if ( !field.isTransient() && !field.isStatic() )
           { fields.add(field.getName());
           }
         }

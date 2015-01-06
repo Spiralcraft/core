@@ -103,7 +103,7 @@ public class DeltaType
           Type<?> fieldType=field.getType();
       
           
-          if (field.isTransient())
+          if (field.isTransient() || field.isStatic())
           {
             // Leave it alone
           }

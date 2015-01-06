@@ -99,6 +99,12 @@ public interface Field<T>
   Expression<T> getFixedExpression();
   
   /**
+   * 
+   * @return The value that will be assigned to this field on construction
+   */
+  Expression<T> getInitialX();
+  
+  /**
    * <p>Create a Channel that accesses the value of this Field in the Tuple
    *   provided by the source. The results of this operation may 
    *   depend on the availability of other resources mapped through the Focus.
@@ -116,6 +122,13 @@ public interface Field<T>
     ,Expression<?>[] params
     )
     throws BindException;
+  
+  /**
+   * Indicates whether the field is static. Static fields must have
+   *   initializers and have a single, constant value that is associated with 
+   *   the containing type.
+   */
+  boolean isStatic();
   
   /**
    * @return Indicates that values for this Field should not be persisted

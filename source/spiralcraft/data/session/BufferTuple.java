@@ -325,7 +325,7 @@ public class BufferTuple
     {
       for (Field field:this.type.getArchetype().getScheme().fieldIterable())
       { 
-        if (!field.isTransient())
+        if (!field.isTransient() && !field.isStatic())
         {
           Object sourceVal=field.getValue(source);
           if (sourceVal!=null)

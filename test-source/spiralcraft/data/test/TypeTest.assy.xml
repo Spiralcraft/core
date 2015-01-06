@@ -352,7 +352,14 @@
       </sequence>
     </task:Eval>
             
-           
+    <test:Assertion>
+      <name>Static field
+      </name>
+      <subjectX>[@example:Customer].@staticContactType
+      </subjectX>
+      <testX>.=="customer"
+      </testX>
+    </test:Assertion>     
   </scenarios>
   
 </task:Sequence>

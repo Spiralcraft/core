@@ -103,7 +103,21 @@
         <String.type/>
       </type>
       
-    </meta:Field>        
+    </meta:Field>     
+    
+    <meta:Field>
+      <name>staticContactType
+      </name>
+      
+      <static>true
+      </static>
+      
+      <type><String.type/>
+      </type>
+      
+      <initialX>"customer"
+      </initialX>
+    </meta:Field>   
   </fields>
       
   <keys>
