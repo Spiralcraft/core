@@ -1347,6 +1347,61 @@
       <testX>.==[{104,101,108,108,111}]
       </testX>
     </test:Assertion>
+    
+    <test:Assertion>
+      <name>less than or equal eq
+      </name>
+      <subjectX>
+        2 &lt;= 2
+      </subjectX>
+      <testX>.==true
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>less than or equal lt
+      </name>
+      <subjectX>
+        2 &lt;= 3
+      </subjectX>
+      <testX>.==true
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>less than or equal gt
+      </name>
+      <subjectX>
+        3 &lt;= 2
+      </subjectX>
+      <testX>.==false
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>less than or equal null lhs
+      </name>
+      <subjectX>
+        null &lt;= 2
+      </subjectX>
+      <testX>.==null
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>less than or equal null rhs
+      </name>
+      <subjectX>
+        2 &lt;= null
+      </subjectX>
+      <testX>.==null
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>less than or equal precedence
+      </name>
+      <subjectX>
+        2 &lt;= 1+1
+      </subjectX>
+      <testX>.==true
+      </testX>
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
