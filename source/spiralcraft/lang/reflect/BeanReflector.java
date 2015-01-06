@@ -253,7 +253,8 @@ public class BeanReflector<T>
     }
   };
   
-
+  private static final ArrayReverseIndexTranslator arrayReverseIndexTranslator
+    =new ArrayReverseIndexTranslator();
     
   
   /**
@@ -1071,6 +1072,9 @@ public class BeanReflector<T>
       translator
         =(Translator<X,T>) (name.equals("!=")?atranslator.negate:atranslator);
     }
+    else if (name.equals("indexOf") && params.length==1)
+    { translator=arrayReverseIndexTranslator;
+    }    
     
     if (translator!=null)
     { 
@@ -1082,7 +1086,8 @@ public class BeanReflector<T>
             ,translator
             ,params
             );
-        source.cache(translator,binding);
+        MethodKey cacheKey=new MethodKey(translator,params);
+        source.cache(cacheKey,binding);
       }
       return binding;
     }

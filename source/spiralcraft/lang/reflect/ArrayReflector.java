@@ -33,7 +33,6 @@ import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArrayRangeChannel;
-import spiralcraft.lang.spi.ArrayReverseIndexTranslator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
@@ -279,7 +278,8 @@ public class ArrayReflector<I>
           ,translator
           ,params
           );
-        source.cache(translator,binding);
+        MethodKey cacheKey=new MethodKey(translator,params);          
+        source.cache(cacheKey,binding);
       }
       return binding;
     }
