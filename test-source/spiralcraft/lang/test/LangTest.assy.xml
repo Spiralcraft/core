@@ -455,6 +455,19 @@
 
     <test:Assertion>
     
+      <name>array index of
+      </name>
+      
+      <subjectX>[@j:String][{"one","two","three","four","five"}].indexOf("three")
+      </subjectX>
+      
+      <testX>.==2
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
       <name>tuple projection 1
       </name>
       

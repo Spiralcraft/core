@@ -33,17 +33,15 @@ import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArrayRangeChannel;
+import spiralcraft.lang.spi.ArrayReverseIndexTranslator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
-
 import java.util.Arrays;
 import java.util.WeakHashMap;
-
 import java.lang.ref.WeakReference;
-
 import java.lang.reflect.Array;
 import java.net.URI;
 
@@ -74,6 +72,8 @@ public class ArrayReflector<I>
 
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
+  private static final ArrayReverseIndexTranslator arrayReverseIndexTranslator
+  =new ArrayReverseIndexTranslator();
 
   private static final ArrayEqualityTranslator objectArrayEqualityTranslator
     =new ArrayEqualityTranslator<Object[]>()
@@ -264,6 +264,9 @@ public class ArrayReflector<I>
          ?objectArrayEqualityTranslator.negate
          :objectArrayEqualityTranslator
          );
+    }
+    else if (name.equals("indexOf") && params.length==1)
+    { translator=arrayReverseIndexTranslator;
     }
     
     if (translator!=null)
