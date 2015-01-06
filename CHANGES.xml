@@ -17,6 +17,41 @@
         </revision>
       
         <notes>
+          <scm:Note>New feature- static data fields. For constant data
+            associated with a data Type.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Field.java
+          </URI>
+          <URI>core/DeltaType.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>sax/DataWriter.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>spi/EditableArrayTuple.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+        </resources>
+
+
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev109
+        </revision>
+      
+        <notes>
           <scm:Note>Add indexOf function to Array reflector
           </scm:Note>
 
@@ -28,12 +63,15 @@
         <resources>
           <URI>reflect/ArrayReflector.java
           </URI>
-          <URI>spi/ArrayReverseIndexTranslator.java
+          <URI>reflect/BeanReflector.java
+          </URI>
+          <URI>reflect/ArrayReverseIndexTranslator.java
           </URI>
         </resources>
 
 
       </scm:Change>
+
       <scm:Change>
         <revision>-dev108
         </revision>
