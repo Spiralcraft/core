@@ -13,6 +13,28 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev109
+        </revision>
+      
+        <notes>
+          <scm:Note>Add indexOf function to Array reflector
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>reflect/ArrayReflector.java
+          </URI>
+          <URI>spi/ArrayReverseIndexTranslator.java
+          </URI>
+        </resources>
+
+
+      </scm:Change>
+      <scm:Change>
         <revision>-dev108
         </revision>
       
