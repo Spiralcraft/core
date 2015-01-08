@@ -13,6 +13,38 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev110
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where VFS Resource based classloader choked on
+            resources containing invalid URL path characters.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/classloader/ResourceArchive.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev110
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where VFS Resource based classloader choked on
+            resources containing invalid URL path characters.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/classloader/ResourceArchive.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev109
         </revision>
       
