@@ -1648,37 +1648,3 @@ public class BeanReflector<T>
   }
 
 }
-
-class MethodKey
-{
-  private final Object instanceSig[];
-
-  public MethodKey(Translator<?,?> translator,Channel<?>[] params)
-  {
-    instanceSig=new Object[params.length+1];
-    instanceSig[0]=translator;
-    for (int i=1;i<instanceSig.length;i++)
-    { instanceSig[i]=params[i-1].getReflector();
-    }
-  }
-  
-  @Override
-  public boolean equals(Object o)
-  {
-    if (o instanceof Object[])
-    { return ArrayUtil.arrayEquals(instanceSig,(Object[]) o);
-    }
-    else
-    { return false;
-    }
-  }
-  
-  @Override
-  public int hashCode()
-  { return ArrayUtil.arrayHashCode(instanceSig);
-  }
-
-}
-
-
-
