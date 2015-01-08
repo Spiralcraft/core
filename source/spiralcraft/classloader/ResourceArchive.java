@@ -103,7 +103,7 @@ public class ResourceArchive
     {
       Resource resource
         =Resolver.getInstance().resolve
-          (rootResource.getURI().resolve(path));
+          (rootResource.getURI().resolve(URIUtil.encodeURIPath(path)));
 //      log.fine("Checked "+resource.getURI()+"="+resource.exists());
       if (resource.exists())
       { return new ResourceEntry(resource);
