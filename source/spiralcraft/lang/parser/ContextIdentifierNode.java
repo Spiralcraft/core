@@ -106,21 +106,54 @@ public class ContextIdentifierNode
       ?_source.findFocus(focus)
       :focus;
 
-    Channel<?> context=specifiedFocus.getContext();
     
     Channel<?> ret=null;
     
-    if (context!=null)
-    { ret=context.resolve(specifiedFocus,_identifier,null);
+    Focus<?> searchFocus=specifiedFocus;
+    while (ret==null && searchFocus!=null)
+    {
+      Channel<?> context=searchFocus.getContext();
+      if (context!=null)
+      { 
+        if (searchFocus!=specifiedFocus)
+        {  
+          log.fine
+            ("Experimental context search for '"
+            +_identifier+"' in "
+            +context.getReflector().getTypeURI()
+            );
+        }
+        ret=context.resolve(specifiedFocus,_identifier,null);
+      }
+      
+      // 
+      // // XXX Enable experimental code to search up the focus chain for 
+      // //   an identifier without resolving a particular context by its
+      // //   URI. Given how we can interleave contexts that don't know about
+      // //   each other, we probably need a mechanism to constrain this to
+      // //   resolve names in parent contexts that have a well defined
+      // //   relationship to the current focus (e.g. same containing file or
+      // //   type)
+      // //
+      // searchFocus=searchFocus.getParentFocus();
+      //
+      searchFocus=null;
     }
 
     if (ret==null)
     { 
+      // XXX This pathway only ends up getting used with a TeleFocus that has
+      //   no context, which looks like a legacy scenario that occurred before
+      //   the context/subject differentiation was defined more specifically.
       try
       { 
         Channel<?> subject=specifiedFocus.getSubject();
         if (subject!=null)
-        { ret=subject.resolve(specifiedFocus,_identifier,null);
+        {
+          ret=subject.resolve(specifiedFocus,_identifier,null);
+          if (ret!=null && specifiedFocus.getContext()!=null)
+          { log.fine("Found '"+_identifier+"' in subject, not context of "+specifiedFocus);
+          }
         }
       }
       catch (BindException x)
@@ -134,6 +167,8 @@ public class ContextIdentifierNode
           );
       }
     }
+    
+    
     
     if (ret==null)
     {
