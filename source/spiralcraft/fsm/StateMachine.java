@@ -61,7 +61,12 @@ public class StateMachine
   }
   
   public void restart()
-  { changeState(getInitialState());
+  { 
+    State state=currentState.get();
+    if (state!=null)
+    { exitState(state);
+    }
+    enterState(getInitialState());
   }
   
   /**
@@ -172,17 +177,27 @@ public class StateMachine
     State state=currentState.get();
     if (state!=newState)
     {
-      if (beforeStateChange!=null)
-      { beforeStateChange.get();
-      }
-      if (state!=null)
-      { state.onExit();
-      }
-      currentState.set(newState);
-      newState.onEnter();
-      if (afterStateChange!=null)
-      { afterStateChange.get();
-      }
+      exitState(state);
+      enterState(newState);
+    }
+  }
+  
+  private void exitState(State state)
+  {
+    if (beforeStateChange!=null)
+    { beforeStateChange.get();
+    }
+    if (state!=null)
+    { state.onExit();
+    }
+  }
+  
+  private void enterState(State newState)
+  {
+    currentState.set(newState);
+    newState.onEnter();
+    if (afterStateChange!=null)
+    { afterStateChange.get();
     }
   }
   
