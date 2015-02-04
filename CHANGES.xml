@@ -13,6 +13,30 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev112
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhancements to PathContext to import and export constant
+            and dynamic references to support the contextualization of plugins
+            for a given portion of the URL tree.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URL>app/PathContext.java
+          </URL>
+          <URL>lang/kit/ConstantChannel.java
+          </URL>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev111
         </revision>
       
