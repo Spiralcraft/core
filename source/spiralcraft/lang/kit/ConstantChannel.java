@@ -41,6 +41,10 @@ public class ConstantChannel<T>
       (BeanReflector.<T>getInstance(bean.getClass()),bean);
   }
   
+  public static <T> Channel<T> create(Channel<T> source)
+  { return new ConstantChannel<T>(source);
+  }
+  
   public ConstantChannel(Channel<T> source)
   { 
     super(source.getReflector());

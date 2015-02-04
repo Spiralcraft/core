@@ -21,8 +21,11 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.Binding;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
+import spiralcraft.lang.kit.BindingContext;
+import spiralcraft.lang.kit.ConstantChannel;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
@@ -48,6 +51,10 @@ public class PathContext
   protected PathContextMapping[] pathMappings;
   private Boolean publishContent;
   private Binding<Boolean> guardX;
+  private Binding<?>[] imports;
+  private Binding<?>[] exports;
+  private Binding<?>[] constantImports;
+  private Binding<?>[] constantExports;
       
   /**
    * The path from the context root
@@ -126,6 +133,49 @@ public class PathContext
   
   public void setPathMappings(PathContextMapping[] pathMappings)
   { this.pathMappings=pathMappings;
+  }
+
+  /**
+   * Bindings that will be evaluated before this PathContext is bound, with
+   *   the resulting objects published in the focus chain and made available to
+   *   code internal to this PathContext and to any referenced PlaceContext
+   * 
+   * @param imports
+   */
+  public void setConstantImports(Binding<?>[] imports)
+  { this.constantImports=imports;
+  }
+
+  /**
+   * Bindings that will be available to code internal to this PathContext
+   *   and to any referenced PlaceContext
+   * 
+   * @param imports
+   */
+  public void setImports(Binding<?>[] imports)
+  { this.imports=imports;
+  }
+
+  /**
+   * 
+   * Bindings that will be evaluated after this PathContext is bound, with
+   *   the resulting objects published in the focus chain and made available to
+   *   code running under this PathContext
+   * 
+   * 
+   * @param exports
+   */
+  public void setConstantExports(Binding<?>[] exports)
+  { this.constantExports=exports;
+  }
+
+  /**
+   * Bindings that will be available to code running under this PathContext
+   * 
+   * @param exports
+   */
+  public void setExports(Binding<?>[] exports)
+  { this.exports=exports;
   }
   
   /**
@@ -350,10 +400,33 @@ public class PathContext
   protected Focus<?> bindImports(Focus<?> chain)
     throws ContextualException
   { 
+    if (constantImports!=null || imports!=null)
+    { chain=chain.chain(chain.getSubject());
+    }
+    
+    if (constantImports!=null)
+    {
+      for (Binding<?> binding: constantImports)
+      { 
+        binding.bind(chain);
+        chain.addFacet(chain.chain(ConstantChannel.create(binding)));
+      }
+    }
+    if (imports!=null)
+    {
+      for (Binding<?> binding: imports)
+      { 
+        binding.bind(chain);
+        chain.addFacet(chain.chain(binding));
+      }
+    }
+
     if (baseContext!=null)
     { chain=baseContext.bind(chain);
     }
+    
     chain=chain.chain(LangUtil.constantChannel(this));
+    
     
     if (placeContext!=null)
     { chain(placeContext);
@@ -361,6 +434,39 @@ public class PathContext
     
     return chain;
   }
+  
+  @Override
+  protected Focus<?> bindExports(Focus<?> chain)
+    throws ContextualException
+  { 
+    chain=super.bindExports(chain);
+    if (constantExports!=null)
+    { 
+      for (Binding<?> binding:constantExports)
+      { 
+        binding.bind(chain);
+        chain.addFacet(chain.chain(ConstantChannel.create(binding)));
+      }
+    }
+    if (exports!=null)
+    { 
+      for (Binding<?> binding:exports)
+      { 
+        binding.bind(chain);
+        chain.addFacet(chain.chain(binding));
+      }
+    }
+    return chain;
+  }  
+  
+  @Override
+  public void seal(Contextual last)
+  {
+    if (exports!=null)
+    { chain(new BindingContext(exports));
+    }
+    super.seal(last);
+  }  
   
   @Override
   protected void pushLocal()
