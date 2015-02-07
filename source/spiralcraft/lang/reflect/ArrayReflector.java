@@ -34,6 +34,7 @@ import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArrayRangeChannel;
 import spiralcraft.lang.spi.ArraySelectChannel;
+import spiralcraft.lang.spi.PrimitiveArraySelectChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -350,11 +351,22 @@ public class ArrayReflector<I>
       || boolean.class.isAssignableFrom(subscriptClass)
       )
     {
-      return new ArraySelectChannel
-        (source
-         ,componentChannel
-         ,subscriptChannel
-         );
+      if (componentReflector.getContentType().isPrimitive())
+      {
+        return new PrimitiveArraySelectChannel
+          (source
+          ,componentChannel
+          ,subscriptChannel
+          );
+      }
+      else
+      {
+        return new ArraySelectChannel
+          (source
+           ,componentChannel
+           ,subscriptChannel
+           );
+      }
     }
     else if (Range.class.isAssignableFrom(subscriptClass))
     { 
