@@ -286,8 +286,8 @@ public class TupleEditor
         }
       }
       
-      if (onSave!=null)
-      { onSave.get();
+      if (afterSave!=null)
+      { afterSave.get();
       }
       
     }
@@ -402,8 +402,8 @@ public class TupleEditor
     if (onInit!=null)
     { onInit.bind(focus);
     }
-    if (onSave!=null)
-    { onSave.bind(focus);
+    if (afterSave!=null)
+    { afterSave.bind(focus);
     }
     if (preSave!=null)
     { preSave.bind(focus);

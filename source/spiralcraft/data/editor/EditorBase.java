@@ -77,7 +77,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   protected Binding<?> onCreate;
   protected Binding<?> onInit;
   protected Binding<?> preSave;
-  protected Binding<?> onSave;
+  protected Binding<?> afterSave;
 
   private Channel<Tuple> parentChannel;
   private Channel<Tuple> parentKeyChannel;
@@ -200,8 +200,8 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   { this.onInit=onInit;
   }
   
-  public void setOnSave(Binding<?> onSave)
-  { this.onSave=onSave;
+  public void setAfterSave(Binding<?> afterSave)
+  { this.afterSave=afterSave;
   }
 
   public void setPreSave(Binding<?> preSave)
