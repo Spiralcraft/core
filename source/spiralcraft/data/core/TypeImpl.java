@@ -325,7 +325,13 @@ public class TypeImpl<T>
     }
     
     if (type.isPrimitive())
-    { return getNativeClass().isAssignableFrom(type.getNativeClass());
+    { 
+      if (getNativeClass()!=null)
+      { return getNativeClass().isAssignableFrom(type.getNativeClass());
+      }
+      else
+      { return false;
+      }
     }
     else if (type.hasArchetype(this))
     { return true;
