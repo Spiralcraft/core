@@ -285,6 +285,7 @@ public class ParseXml<Tresult>
   {
     DataReader dataReader=new DataReader();
     dataReader.setFrameHandler(handler);
+    dataReader.setDebug(debug);
     
     ByteArrayOutputStream out=null;
     if (debug)

@@ -120,6 +120,10 @@ public abstract class DataHandlerBase
   { return initialFrame.getObject();
   }
   
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   /**
    * Optionally start the document
    */
@@ -183,6 +187,10 @@ public abstract class DataHandlerBase
     { traceHandler.startElement(uri,localName,qName,attributes);
     }
 
+    if (debug)
+    { log.fine("startElemenet "+qName+" / "+uri);
+    }
+    
     try
     { currentFrame.startElement(uri,localName,qName,attributes);
     }
@@ -200,6 +208,10 @@ public abstract class DataHandlerBase
     )
     throws SAXException
   { 
+    if (debug)
+    { log.fine("endElemenet "+qName+" / "+uri);
+    }
+    
     if (traceHandler!=null)
     { traceHandler.endElement(uri,localName,qName);
     }

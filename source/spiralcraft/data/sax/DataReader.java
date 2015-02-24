@@ -51,6 +51,7 @@ public class DataReader
   private ContentHandler traceHandler;
   private boolean contextAware;
   private StringPool stringPool;
+  private boolean debug;
   
   /**
    * <p>Provide a DataConsumer to receive a stream of Tuples from the outermost
@@ -69,6 +70,10 @@ public class DataReader
   
   public void setStringPool(StringPool stringPool)
   { this.stringPool=stringPool;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   /**
@@ -199,6 +204,8 @@ public class DataReader
     else
     { handler=new ForeignDataHandler(frameHandler,resourceURI);
     }
+    
+    handler.setDebug(debug);
     
     if (dataConsumer!=null)
     { handler.setDataConsumer(dataConsumer);
