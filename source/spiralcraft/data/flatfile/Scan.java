@@ -60,6 +60,8 @@ public class Scan<C,R>
   private IterationDecorator<?,Resource> resourceIter;
   private int progressInterval;
   private int skipHeaderLines=0;
+  private int limit=0;
+  private Binding<?> afterParseRecord;
 
   
   public Scan()
@@ -86,6 +88,15 @@ public class Scan<C,R>
   public void setRecordSeparator(String recordSeparator)
   { this.recordSeparator=recordSeparator;
   }
+  
+  /**
+   * An expression evaluated on the Tuple generated before it is finalized
+   * 
+   * @param afterParse
+   */
+  public void setAfterParseRecord(Binding<?> afterParseRecord)
+  { this.afterParseRecord=afterParseRecord;
+  }
 
   public class ScanTask
     extends ChainTask
@@ -106,19 +117,19 @@ public class Scan<C,R>
         if (resourceURI==null && resourceIter!=null)
         {
           Iterator<Resource> it=resourceIter.iterator();
-          while (it.hasNext())
+          while (it.hasNext() && (limit==0 || count<limit))
           { 
             Resource resource=it.next();
             if (debug)
             { log.fine("Scanning "+resource.getURI());
             }
-            count+=workOne(resource);
+            count+=workOne(resource,limit>0?limit-count:0);
           }
         }
         else if (resourceURI!=null)
         { 
           try
-          { count+=workOne(Resolver.getInstance().resolve(resourceURI));
+          { count+=workOne(Resolver.getInstance().resolve(resourceURI),limit);
           }
           catch (UnresolvableURIException x)
           {
@@ -152,7 +163,7 @@ public class Scan<C,R>
     }
     
 
-    protected int workOne(Resource resource)
+    protected int workOne(Resource resource,int limit)
       throws InterruptedException
     { 
       int count=0;
@@ -181,7 +192,7 @@ public class Scan<C,R>
           }
           boolean done=false;
 
-          while (!done)
+          while (!done && (limit==0 || count<limit))
           {
             ++count;
             try
@@ -209,9 +220,14 @@ public class Scan<C,R>
               }
             }
             
-            resultChannel.push(cursor.getTuple().snapshot());
+            Tuple tuple=cursor.getTuple();
+            resultChannel.push(tuple);
             try
             { 
+              if (afterParseRecord!=null)
+              { afterParseRecord.get();
+              }
+              resultChannel.set(tuple.snapshot());
               if (filterX==null || Boolean.TRUE.equals(filterX.get()))
               {
                 super.work();
@@ -322,6 +338,15 @@ public class Scan<C,R>
   { this.resourceURI=uri;
   }
   
+  /**
+   * Stop scanning after reading the specified number of rows
+   * 
+   * @param limit
+   */
+  public void setLimit(int limit)
+  { this.limit=limit;
+  }
+  
   @Override
   public Focus<?> bindImports(Focus<?> focusChain)
     throws ContextualException
@@ -364,6 +389,10 @@ public class Scan<C,R>
     
     if (filterX!=null)
     { filterX.bind(focusChain);
+    }
+    
+    if (afterParseRecord!=null)
+    { afterParseRecord.bind(focusChain);
     }
     
     if (computeX!=null)
