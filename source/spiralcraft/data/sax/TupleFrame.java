@@ -26,6 +26,7 @@ import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableKeyedListAggregate;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -84,6 +85,7 @@ public class TupleFrame
 {
 
   private Type<?> type;
+  private Binding<Type<?>> typeX;
   
   private Expression<EditableAggregate<Tuple>> container;
   private Expression<Tuple> assignment;
@@ -104,6 +106,10 @@ public class TupleFrame
   
   public Type<?> getType()
   { return type;
+  }
+  
+  public void setTypeX(Binding<Type<?>> typeX)
+  { this.typeX=typeX;
   }
 
   /**
@@ -162,6 +168,11 @@ public class TupleFrame
   public void bind()
     throws BindException
   {
+    if (type==null && typeX!=null)
+    { 
+      typeX.bind(getFocus());
+      type=typeX.get();
+    }
     if (type==null)
     { 
       throw new BindException
