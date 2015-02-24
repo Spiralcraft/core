@@ -67,7 +67,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   private boolean autoKey;
   private Binding<?> onCreate;
   private Binding<?> onInit;
-  private Binding<?> onSave;
+  private Binding<?> afterSave;
   private Binding<?> preSave;
   private boolean forceSave;
   private DataSessionFocus localDataSessionFocus;
@@ -126,8 +126,23 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   { this.onInit=onInit;
   }
 
+  /**
+   * Use afterSave property- this is deprecated
+   * 
+   * @param onSave
+   */
   public void setOnSave(Binding<?> onSave)
-  { this.onSave=onSave;
+  { this.afterSave=onSave;
+  }
+
+  /**
+   * An expression to evaluate after the buffer is saved, but before the
+   *   transaction is committed.
+   * 
+   * @param afterSave
+   */
+  public void setAfterSave(Binding<?> afterSave)
+  { this.afterSave=afterSave;
   }
 
   public void setPreSave(Binding<?> preSave)
@@ -246,8 +261,8 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
     if (onInit!=null)
     { editor.setOnInit(onInit);
     }
-    if (onSave!=null)
-    { editor.setOnSave(onSave);
+    if (afterSave!=null)
+    { editor.setAfterSave(afterSave);
     }
     if (preSave!=null)
     { editor.setPreSave(preSave);
