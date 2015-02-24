@@ -23,13 +23,12 @@ import java.util.Stack;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.DataException;
-
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -84,7 +83,10 @@ public abstract class AbstractFrameHandler
     throws DataException
   {
     int colonPos=value.indexOf(':');
-    if (colonPos>0)
+    if (colonPos==0)
+    { value=value.substring(1,value.length());
+    }
+    else if (colonPos>0)
     { 
       String nsPrefix=value.substring(0,colonPos);
       URI nsURI=resolver.resolvePrefix(nsPrefix);
@@ -192,6 +194,7 @@ public abstract class AbstractFrameHandler
   
   private StringPool stringPool;
   private boolean captureChildObject;
+  private Binding<?> afterClose;
 
   public void setDefaultURI(URI defaultURI)
   { 
@@ -283,6 +286,10 @@ public abstract class AbstractFrameHandler
     this.recursive=true;
   }
   
+  public void setAfterClose(Binding<?> afterClose)
+  { this.afterClose=afterClose;
+  }
+  
   @Override
   public FrameHandler findFrameHandler(String id)
   {
@@ -354,7 +361,9 @@ public abstract class AbstractFrameHandler
     bindAssignments();
     bindChildren();
     bindElementAssignments();
-    
+    if (afterClose!=null)
+    { afterClose.bind(getFocus());
+    }
   }
   
   public void setFocus(Focus<?> focus)
@@ -511,7 +520,7 @@ public abstract class AbstractFrameHandler
           String elementURI=transformNamespace(child.getElementURI(),child);
           childMap.put(stringPool.get(elementURI), child);
           if (debug)
-          { log.fine("Mapped child name "+elementURI+" to "+child);
+          { log.fine(elementURI+": Mapped child name "+elementURI+" to "+child);
           }
         }
         catch (DataException x)
@@ -644,7 +653,8 @@ public abstract class AbstractFrameHandler
     stack.push(frame);
     
     if (debug)
-    { log.fine("URI="+elementURI);
+    { 
+      log.fine("Opening Frame: URI="+elementURI+" frame="+frame);
     }
     
     openData();
@@ -722,13 +732,16 @@ public abstract class AbstractFrameHandler
     }
       
     closeData();
+    if (afterClose!=null)
+    { afterClose.get();
+    }
     
     if (parent!=null)
     { parent.closingChild(this);
     }
     
     if (debug)
-    { log.fine("URI="+elementURI);
+    { log.fine("Closing Frame: URI="+elementURI+" frame="+frame);
     }
     
     if (stack.pop()!=frame)
