@@ -32,12 +32,14 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.log.ClassLog;
 
 public class DelimitedRecordFormat
   implements RecordFormat
 {
 
-  
+  private static final ClassLog log
+    =ClassLog.getInstance(DelimitedRecordFormat.class);
   private String fieldSeparator;
   private FieldMapping<?>[] fields;
   private Channel<Tuple> channel;
@@ -46,6 +48,7 @@ public class DelimitedRecordFormat
   private FieldSet fieldSet;
   private Charset charset=Charset.forName("UTF-8");
   private boolean trim;
+  private boolean debug;
   
   public void setCharset(String charsetName)
   { this.charset=Charset.forName(charsetName);
@@ -97,6 +100,10 @@ public class DelimitedRecordFormat
    */
   public void setTrim(boolean trim)
   { this.trim=trim;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   @Override
@@ -210,6 +217,7 @@ public class DelimitedRecordFormat
     {
       mapping.getEncoder().setFieldSeparator(fieldSeparator);
       mapping.bind(focusChain);
+      mapping.setDebug(debug);
     }
     return focusChain;
   }

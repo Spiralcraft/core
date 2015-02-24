@@ -21,8 +21,8 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
-
 import spiralcraft.lang.util.DictionaryBinding;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.string.StringConverter;
 
 
@@ -35,9 +35,13 @@ import spiralcraft.util.string.StringConverter;
 public class FieldMapping<T>
   implements Contextual
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(FieldMapping.class);
+  
   private DictionaryBinding<T> channel=new DictionaryBinding<T>();
   private FieldEncoder encoder=new FieldEncoder();
   private boolean optional;
+  private boolean debug;
   
   public FieldMapping()
   {
@@ -82,9 +86,18 @@ public class FieldMapping<T>
   { channel.setConverter(converter);
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   public void parse(Reader data)
     throws IOException
-  { channel.set(encoder.parse(data));
+  { 
+    String value=encoder.parse(data);
+    if (debug)
+    { log.fine("Parsed ["+value+"]");
+    }
+    channel.set(value);
   }
   
   public void format(Appendable out)
