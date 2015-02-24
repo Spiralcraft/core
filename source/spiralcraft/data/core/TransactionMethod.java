@@ -80,13 +80,19 @@ public class TransactionMethod<T,C,R>
     
     
     Eval<C,R> eval=new Eval<C,R>(null,x);
-    eval.setDebug(true);
+    eval.setDebug(debug);
     session.setChain(eval);
     
     try
     { 
       Focus<?> sessionFocus=session.bind(context);
-      log.fine("TransactionMethod bound "+sessionFocus);
+      if (debug)
+      {
+        log.fine
+          ("TransactionMethod bound "+sessionFocus
+           +" ("+getDeclarationInfo()+")"
+          );
+      }
       return (Focus) 
         LangUtil.findFocus(Session.class,sessionFocus);
     }
