@@ -13,6 +13,129 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>New XmlFrame frame handler uses an expression to resolve
+            or create the object that will "memoize" the frame. Useful when
+            information in the frame doesn't correspond to a specific type or
+            is denormalized.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/XmlFrame.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>XML parser configuration can use absolute URIs by prefixing
+            URI with a colon.
+          </scm:Note>
+          <scm:Note>Added "afterClose" binding to allow any type of frame to
+            perform an action after a frame closes.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/AbstractFrameHandler.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>Use a type expression to determine type so XML parser
+            can be configured from an assembly.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/TupleFrame.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>Rename onSave to afterSave in Editor hierarchy to better
+            indicate when the binding will fire.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>editor/EditorBase.java
+          </URI>
+          <URI>editor/TupleEditor.java
+          </URI>
+          <URI>task/Edit.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>Remove hardcoded debug state for TransactionMethod
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/core/TransactionMethod.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when comparing a primitive type to a data-defined
+            type via isAssignableFrom()
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/core/TypeImpl.java
+        </path>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev114
+        </revision>
+      
+        <notes>
+          <scm:Note>Add a row limit to flat file scan for testing or sampling
+          </scm:Note>
+          <scm:Note>Add 'afterParseRecord' binding to permit modification of
+            data before finalizing
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/flatfile/Scan.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev113
         </revision>
       
