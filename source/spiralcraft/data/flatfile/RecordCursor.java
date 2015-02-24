@@ -130,15 +130,8 @@ public class RecordCursor
       {
         byte[] record=recordIterator.read();
         if (tuple==null)
-        { 
-          tuple=new EditableArrayTuple(getType())
-          {
-            @Override
-            public boolean isVolatile()
-            { return true;
-            }
-          };
-        }
+        { tuple=new VolatileTuple(getType());
+        }        
         try
         { format.parse(record,tuple);
         }
@@ -187,4 +180,18 @@ public class RecordCursor
     { throw new DataException("Error closing recordIterator: "+x);
     }
   }
+}
+
+class VolatileTuple
+  extends EditableArrayTuple
+{
+  public VolatileTuple(Type<?> type)
+  { super(type);
+  }
+
+  @Override
+  public boolean isVolatile()
+  { return true;
+  }
+  
 }
