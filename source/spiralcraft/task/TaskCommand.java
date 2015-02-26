@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spiralcraft.command.CommandAdapter;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.spi.ClosureFocus;
 
 
@@ -94,10 +95,22 @@ public class TaskCommand<Tcontext,Tresult>
           try
           {
             task.run();
-            setException(task.getException());
+            if (task.getException()!=null)
+            { 
+              setException
+                (new ContextualException
+                  ("Exception running task"
+                  ,scenario.getDeclarationInfo()
+                  ,task.getException())
+                );
+            }
           }
           catch (RuntimeException x)
-          { setException(x);
+          {
+            setException
+              (new ContextualException
+                ("Runtime error executing task ",scenario.getDeclarationInfo(),x)
+              );
           }
           onTaskCompletion();
         }
@@ -115,8 +128,8 @@ public class TaskCommand<Tcontext,Tresult>
       if (error!=null)
       { 
         setException
-          (new Exception
-            ("Task completed in error state: error="+error.toString()));
+          (new ContextualException
+            ("Task completed in error state: error="+error.toString(),scenario.getDeclarationInfo()));
       }
     }
     catch (RuntimeException x)
