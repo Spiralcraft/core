@@ -16,10 +16,12 @@ package spiralcraft.data.core;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
+import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.reflect.ReflectionType;
-
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -29,7 +31,6 @@ import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
-
 import spiralcraft.task.Scenario;
 import spiralcraft.task.TaskCommand;
 
@@ -47,8 +48,13 @@ public abstract class AbstractTaskMethod<T,C,R>
 {
 
   private boolean returnCommand;
+  private Binding<Type<R>> returnTypeX;
   private boolean throwException;
   
+  
+  public void setReturnTypeX(Binding<Type<R>> returnTypeX)
+  { this.returnTypeX=returnTypeX;
+  }
   
   @Override
   public void subclassResolve()
@@ -56,6 +62,40 @@ public abstract class AbstractTaskMethod<T,C,R>
   { 
     if (this.returnType==null)
     { 
+      if (returnTypeX!=null)
+      { 
+        try
+        { 
+          returnTypeX.bind(selfFocus);
+          if (!Type.class.isAssignableFrom(returnTypeX.getReflector().getContentType()))
+          { 
+            throw new DataException
+              ("ReturnTypeX must resolve to a Type, not a "
+                +returnTypeX.getReflector().getTypeURI()
+              ,getDeclarationInfo()
+              );
+          }
+          returnType=returnTypeX.get();
+          if (returnType==null)
+          { 
+            throw new DataException
+              ("Resolved null return type for "+getURI(),getDeclarationInfo());
+            
+          } 
+        }
+        catch (BindException x)
+        { 
+          throw new DataException
+            ("Error resolving return type for "+getURI(),getDeclarationInfo(),x);
+        }
+      }
+    }
+    
+    if (this.returnType==null)
+    { 
+      log.warning("Method "+getURI()+" has no return type. This usage is"
+        +" no longer supported"
+        );
       this.returnType=ReflectionType.canonicalType(TaskCommand.class);
       this.returnCommand=true;
     }
@@ -101,8 +141,19 @@ public abstract class AbstractTaskMethod<T,C,R>
       // context=argFocus;
     }
 
-    if (!context.isContext(source))
-    { context=context.chain(source);
+    
+    context=context.chain(source);
+    if (source.getReflector() instanceof DataReflector)
+    { 
+      try
+      { 
+        context.addFacet
+          (((DataReflector<?>) source.getReflector()).getType().getSelfFocus());
+      }
+      catch (DataException x)
+      { throw new BindException("Error reflecting containing type ",x);
+      }
+
     }
         
 
@@ -126,9 +177,9 @@ public abstract class AbstractTaskMethod<T,C,R>
 
     if (returnCommand)
     { 
-      if (debug)
-      { log.fine("Returning Command Channel for "+getURI());
-      }
+      log.warning("DEPRECATED: Returning Command Channel for "+getURI()+"."
+        +" The returnCommand parameter in method is no longer supported"
+      );
       return commandChannel;
     }
     else

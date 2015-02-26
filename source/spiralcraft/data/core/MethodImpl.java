@@ -9,9 +9,13 @@ import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
+
 import spiralcraft.util.refpool.URIPool;
 
 public abstract class MethodImpl
@@ -31,6 +35,7 @@ public abstract class MethodImpl
   private boolean locked;
   private URI uri;
   private String description;
+  protected Focus<MethodImpl> selfFocus;
   
   protected boolean debug;
   
@@ -158,9 +163,20 @@ public abstract class MethodImpl
     { lock();
     }
     
-    subclassResolve();
     qualifiedName=getDataType().getURI()+"!"+name;
     uri=URIPool.create(qualifiedName);
+    try
+    {
+      selfFocus=getDataType().getSelfFocus().chain
+       (new SimpleChannel<MethodImpl>
+         (BeanReflector.<MethodImpl>getInstance(getClass()),this,true)
+       );
+      selfFocus.addAlias(URIPool.create("class:/spiralcraft/data/types/meta/Method"));
+    }
+    catch (BindException x)
+    { throw new DataException("Error binding "+getURI(),getDeclarationInfo(),x);
+    }
+    subclassResolve();
   }
   
   protected void subclassResolve()
