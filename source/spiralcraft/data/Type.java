@@ -826,6 +826,7 @@ public abstract class Type<T>
       { // log.fine(getURI()+" has no type parameters");
       }
       selfFocus=new SimpleFocus(new SimpleChannel(genericReflector,this,true));
+      selfFocus.addAlias(URIPool.create("class:/spiralcraft/data/types/meta/Type"));
     }
     return selfFocus;
   }
