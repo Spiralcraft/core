@@ -13,6 +13,52 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev115
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide access to contextual Type and Method meta-objects
+            in method definitions to facilitate metaprogramming and generic
+            methods.
+          </scm:Note>
+          <scm:Note>Method definitions now have a returnTypeX property to
+            allow the method return type to be computed based on contextual
+            metadata at resolution time.
+          </scm:Note>
+          <scm:Note>Enhance exception handling by including declaration info
+            (source code location) in the exception stack for methods.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>DataException.java
+          </URI>
+          <URI>Type.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev115
+        </revision>
+      
+        <notes>
+          <scm:Note>Improve exception handling in the spiralcraft.task
+            subsystem by added declaration info (source location) to the
+            exception stack.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/TaskCommand.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev114
         </revision>
       
