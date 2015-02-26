@@ -42,10 +42,10 @@
           </testX>
         </test:Assertion>
 
-        <task:Exec>
-          <commandX>[example:Customer].score1().@tune("TaskMethod 1")
-          </commandX>
-        </task:Exec>
+        <task:Eval>
+          <x>[example:Customer].score1().@tune("TaskMethod 1")
+          </x>
+        </task:Eval>
 
         <test:Assertion>
           <name>scenario method post-test
@@ -56,10 +56,10 @@
           </testX>
         </test:Assertion>
         
-        <task:Exec>
-          <commandX>[example:Customer].score1().@tune("TaskMethod 2")
-          </commandX>
-        </task:Exec>
+        <task:Eval>
+          <x>[example:Customer].score1().@tune("TaskMethod 2")
+          </x>
+        </task:Eval>
 
         <test:Assertion>
           <name>scenario method post-test
@@ -70,10 +70,10 @@
           </testX>
         </test:Assertion>
         
-        <task:Exec>
-          <commandX>[example:Customer].score(10).@tune("TaskMethod 3")
-          </commandX>
-        </task:Exec>
+        <task:Eval>
+          <x>[example:Customer].score(10).@tune("TaskMethod 3")
+          </x>
+        </task:Eval>
                     
         <test:Assertion>
           <name>parameterized scenario method post-test
@@ -108,7 +108,7 @@
           </name>
           
           <subjectX>
-            [@example:Customer].(id:=12345){{cust:=.., .cust.score(10).execute() }}.cust
+            [@example:Customer].(id:=12345){{cust:=.., .cust.score(10) }}.cust
           </subjectX>
         
           <testX>.score==10

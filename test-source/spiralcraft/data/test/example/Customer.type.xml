@@ -156,6 +156,8 @@
     <meta:TaskMethod>
       <name>score1
       </name>
+      <returnType><Void.type/>
+      </returnType>
     </meta:TaskMethod>
     
     <meta:TaskMethod>
@@ -164,7 +166,8 @@
       <parameterTypes>
         <Integer.type/>
       </parameterTypes>
-      
+      <returnType><Void.type/>
+      </returnType>
     </meta:TaskMethod>
     
     <meta:Method>
