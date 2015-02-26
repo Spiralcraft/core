@@ -15,6 +15,7 @@
 package spiralcraft.data;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.DeclarationInfo;
 
 /**
  * A generic exception associated with the spiralcraft.data package
@@ -34,5 +35,12 @@ public class DataException
   { super(message,cause);
   }
   
+  public DataException(String message,DeclarationInfo context,Throwable cause)
+  { super(message,context,cause);
+  }
 
+  public DataException(String message,DeclarationInfo context)
+  { super(message,context);
+  }
+  
 }
