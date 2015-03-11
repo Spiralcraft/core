@@ -13,6 +13,35 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev116
+        </revision>
+      
+        <notes>
+          <scm:Note>Improve the flat-file output utility to write headers,
+            provide additional configurability, and optionally return the
+            result as a byte[] if no output destination is selected.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/flatfile
+        </path>
+        
+        <resources>
+          <URI>DelimitedRecordFormat.java
+          </URI>
+          <URI>FieldMapping.java
+          </URI>
+          <URI>Output.java
+          </URI>
+          <URI>RecordFormat.java
+          </URI>
+          <URI>Writer.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev115
         </revision>
       
