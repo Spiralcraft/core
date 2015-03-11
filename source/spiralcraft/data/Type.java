@@ -81,11 +81,11 @@ public abstract class Type<T>
   { return TypeResolver.getTypeResolver().<X>resolve(uri);
   }
   
-  public static <X> Type<List<X>> getArrayType(Type<X> type)
+  public static <X> Type<X[]> getArrayType(Type<X> type)
   { 
     try
     { 
-      return type.getTypeResolver().<List<X>>resolve
+      return type.getTypeResolver().<X[]>resolve
         (URIPool.create(type.getURI().toString()+".array"));
     }
     catch (DataException x)
@@ -436,7 +436,25 @@ public abstract class Type<T>
    */
   public abstract FieldSet getFieldSet();
   
+  /**
+   * Return the equivalent Array type for this type
+   * 
+   * @return
+   */
+  public Type<T[]> getArrayType()
+  { return getArrayType(this);
+  }
   
+  /**
+   * Return the equivalent Aggregate type for this type
+   * 
+   * @return
+   */
+  public Type<List<T>> getAggregateType()
+  { return getAggregateType(this);
+  }
+  
+
   /**
    * Return the Keys defined for this Type, if any.
    * 
