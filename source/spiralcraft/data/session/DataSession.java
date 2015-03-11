@@ -381,7 +381,9 @@ public class DataSession
       DeltaTuple delta=t;
       if (!first)
       { 
-        log.fine("Multiple updates for buffer "+t+" rebasing");
+        if (debug)
+        { log.fine("Multiple updates for buffer "+t+" rebasing");
+        }
         // TODO: deltaSnapshot could be null, if we have independent new
         //   buffers in same tx, which happens if we have multiple
         //   DataSessions in the same transaction. For now, make it so we
