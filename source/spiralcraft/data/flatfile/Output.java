@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.flatfile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -24,7 +25,6 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.task.Collect;
-
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -55,6 +55,11 @@ public class Output<Titem extends Tuple>
   private URI resourceURI;
   protected DelimitedRecordFormat format;
   protected String recordSeparator="\r\n";  
+  private boolean writeHeader;
+  
+  { 
+    storeResults=true;
+  }
 
   /**
    * Command that is referenceable from subtasks to add an item.
@@ -90,8 +95,24 @@ public class Output<Titem extends Tuple>
   { this.format=format;
   }
   
+  public void setWriteHeader(boolean writeHeader)
+  { this.writeHeader=writeHeader;
+  }
+  
   public void setURI(URI uri)
   { this.resourceURI=uri;
+  }
+  
+  public void setRecordSeparator(String recordSeparator)
+  { this.recordSeparator=recordSeparator;
+  }
+  
+  @Override
+  public Focus<?> bindImports(Focus<?> focus)
+    throws ContextualException
+  { 
+    resultReflector=BeanReflector.getInstance(byte[].class);
+    return super.bindImports(focus);
   }
   
   @Override
@@ -122,12 +143,22 @@ public class Output<Titem extends Tuple>
       {
         try
         {
-          Resource resource=Resolver.getInstance().resolve(resourceURI);
-          OutputStream out=resource.getOutputStream();
-          try
+          OutputStream out;
+          if (resourceURI!=null)
           {
+            Resource resource=Resolver.getInstance().resolve(resourceURI);
+            out=resource.getOutputStream();
+          }
+          else
+          { out=new ByteArrayOutputStream();
+          }
+          
+          try
+          { 
             Writer writer=new Writer(out);
+            writer.setRecordSeparator(recordSeparator);
             writer.setRecordFormat(format);
+            writer.setWriteHeader(writeHeader);
             writer.dataInitialize(format.getType().getFieldSet());
             consumerChannel.push(writer);
             try
@@ -142,6 +173,9 @@ public class Output<Titem extends Tuple>
           finally
           {
             out.flush();
+            if (resourceURI==null)
+            { addResult(((ByteArrayOutputStream) out).toByteArray());
+            }
             out.close();
           }
         }

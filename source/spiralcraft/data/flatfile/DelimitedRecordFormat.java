@@ -32,14 +32,14 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 
 public class DelimitedRecordFormat
   implements RecordFormat
 {
 
-  private static final ClassLog log
-    =ClassLog.getInstance(DelimitedRecordFormat.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(DelimitedRecordFormat.class);
   private String fieldSeparator;
   private FieldMapping<?>[] fields;
   private Channel<Tuple> channel;
@@ -104,6 +104,29 @@ public class DelimitedRecordFormat
   
   public void setDebug(boolean debug)
   { this.debug=debug;
+  }
+  
+  @Override
+  public byte[] formatHeader()
+    throws IOException
+  {
+    StringBuffer buf=new StringBuffer();
+    boolean first=true;
+    for (FieldMapping<?> mapping: fields)
+    {
+      if (first)
+      { first=false;
+      }
+      else
+      { buf.append(fieldSeparator);
+      }
+      mapping.formatHeader(buf);
+    }
+    String out=buf.toString();
+    if (trim)
+    { out=out.trim();
+    }
+    return out.getBytes(charset);
   }
   
   @Override

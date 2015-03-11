@@ -42,6 +42,7 @@ public class FieldMapping<T>
   private FieldEncoder encoder=new FieldEncoder();
   private boolean optional;
   private boolean debug;
+  private String header;
   
   public FieldMapping()
   {
@@ -66,6 +67,10 @@ public class FieldMapping<T>
   
   public FieldEncoder getEncoder()
   { return this.encoder;
+  }
+  
+  public void setHeader(String header)
+  { this.header=header;
   }
   
   /**
@@ -103,6 +108,17 @@ public class FieldMapping<T>
   public void format(Appendable out)
     throws IOException
   { encoder.format(out,channel.get());
+  }
+  
+  public void formatHeader(Appendable out)
+    throws IOException
+  { 
+    if (header!=null)
+    { out.append(header);
+    }
+    else
+    { out.append(channel.getTarget().getText());
+    }
   }
   
   @Override

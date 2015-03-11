@@ -34,6 +34,9 @@ public interface RecordFormat
 
   public Type<?> getType();
   
+  public byte[] formatHeader()
+    throws IOException;
+  
   public byte[] format(Tuple data)
     throws IOException;
   
