@@ -17,6 +17,21 @@
         </revision>
       
         <notes>
+          <scm:Note>Add Type.getArrayType() and Type.getAggregateType() 
+            methods for more concise metaprogramming.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/Type.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev116
+        </revision>
+      
+        <notes>
           <scm:Note>Improve the flat-file output utility to write headers,
             provide additional configurability, and optionally return the
             result as a byte[] if no output destination is selected.
