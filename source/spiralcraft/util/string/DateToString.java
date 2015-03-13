@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 1998,2015 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -16,8 +16,12 @@ package spiralcraft.util.string;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-
 import java.text.ParseException;
+
+import spiralcraft.log.ClassLog;
+import spiralcraft.time.Calendar;
+import spiralcraft.time.Instant;
+import spiralcraft.time.TimeField;
 
 /**
  * <p>A StringConverter for Date objects which uses a 
@@ -34,12 +38,34 @@ public final class DateToString
   extends StringConverter<Date>
 {
   
+  private static final ClassLog log
+    =ClassLog.getInstance(DateToString.class);
   private String formatString="yyyy-MM-dd HH:mm:ss.S Z";
   
   private volatile ThreadLocal<SimpleDateFormat> formatLocal;
+  private TimeField precision=TimeField.MILLISECOND;
+  private Calendar calendar;
+  private boolean roundUp;
   
-  
-  
+  /**
+   * Create a StringConverter that converts a date/time with courser than
+   *   millisecond precision and rounds down or up to the beginning or end
+   *   of the period represented by the specific precision.
+   *   
+   * Rounding up will return the millisecond before the start of the next
+   *   increment of the specific precision.
+   *      
+   * @param formatString
+   * @param precision
+   * @param roundUp
+   */
+  public DateToString(String formatString,TimeField precision,boolean roundUp)
+  {
+    this.precision=precision;
+    this.roundUp=roundUp;
+    this.calendar=Calendar.DEFAULT;
+    setFormatString(formatString);
+  }
 
   public DateToString(String formatString)
   { setFormatString(formatString);
@@ -49,7 +75,7 @@ public final class DateToString
   { newFormat(formatString);
   }
   
-  public void setFormatString(String formatString)
+  private void setFormatString(String formatString)
   { 
     this.formatString=formatString;
     newFormat(formatString);
@@ -66,7 +92,8 @@ public final class DateToString
       {
         @Override
         public SimpleDateFormat initialValue()
-        { return new SimpleDateFormat(newFormatString);
+        {
+          return new SimpleDateFormat(newFormatString);
         }
       };
   }
@@ -90,7 +117,27 @@ public final class DateToString
     else
     { 
       try
-      { return formatLocal.get().parse(val);
+      { 
+        if (precision==TimeField.MILLISECOND)
+        { return formatLocal.get().parse(val);
+        }
+        else
+        {
+          Date date=formatLocal.get().parse(val);
+          if (!roundUp)
+          { return calendar.startOfPeriod(Instant.fromDate(date),precision).toDate();
+          }
+          else
+          { 
+            log.fine("Rounding up "+val);
+            return new Date
+              (calendar.startOfNextPeriod
+                (Instant.fromDate(date)
+                ,precision
+                ).getOffsetMillis()-1
+              );
+          }
+        }
       }
       catch (ParseException x)
       { 
