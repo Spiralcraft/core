@@ -564,6 +564,58 @@
       <testX>
         .dayOfWeek==[@st:DayOfWeek].@THURSDAY
       </testX>
+    </test:Assertion>  
+                    
+    <test:Assertion>
+      <name>Start of day
+      </name>
+    
+      <subjectX>
+        { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+        , cal:=[@st:Calendar].(.tz)
+        , ifmt:=[@jt:SimpleDateFormat].("yyyy-MM-dd HH:mm:ss.S")
+        , inst:=[@st:Instant].@fromDate(.ifmt.parse("2014-03-01 15:05:44.0123")) 
+        , startOfDay:=.cal.startOfPeriod(.inst,[@st:TimeField].@DAY_OF_MONTH)
+        }
+      </subjectX>
+      
+      <testX>
+        .ifmt.format(.startOfDay.toDate())=="2014-03-01 00:00:00.0"
+      </testX>
+    </test:Assertion>                  
+    <test:Assertion>
+      <name>Start of next day
+      </name>
+    
+      <subjectX>
+        { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+        , cal:=[@st:Calendar].(.tz)
+        , ifmt:=[@jt:SimpleDateFormat].("yyyy-MM-dd HH:mm:ss.S")
+        , inst:=[@st:Instant].@fromDate(.ifmt.parse("2014-03-01 15:05:44.0123")) 
+        , startOfDay:=.cal.startOfNextPeriod(.inst,[@st:TimeField].@DAY_OF_MONTH)
+        }
+      </subjectX>
+      
+      <testX>
+        .ifmt.format(.startOfDay.toDate())=="2014-03-02 00:00:00.0"
+      </testX>
+    </test:Assertion>                  
+    <test:Assertion>
+      <name>End of day
+      </name>
+    
+      <subjectX>
+        { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+        , cal:=[@st:Calendar].(.tz)
+        , ifmt:=[@jt:SimpleDateFormat].("yyyy-MM-dd HH:mm:ss.S")
+        , inst:=[@st:Instant].@fromDate(.ifmt.parse("2014-03-01 15:05:44.0123")) 
+        , endOfDay:=[@st:Instant].(.cal.startOfNextPeriod(.inst,[@st:TimeField].@DAY_OF_MONTH).offsetMillis-1)
+        }
+      </subjectX>
+      
+      <testX>
+        .ifmt.format(.endOfDay.toDate())=="2014-03-01 23:59:59.999"
+      </testX>
     </test:Assertion>                  
   </sequence>
         
