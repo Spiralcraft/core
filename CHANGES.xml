@@ -13,6 +13,39 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev118
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhance the DateToString converter to provide control over
+            the precision and rounding of the millisecond value for dates
+            with coarser than millisecond precision- e.g. allow the millisecond
+            value to round to the beginning or end of the day when a date
+            does not have a time component.
+          </scm:Note>
+          <scm:Note>
+            Provide a StringConverter for TimeField for specification of 
+              values in declarative markup.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/string/DateToString.java
+          </URI>
+          <URI>util/string/StringConverter.java
+          </URI>
+          <URI>util/string/TimeFieldToString.java
+          </URI>
+          <URI>time/TimeField.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev116
         </revision>
       
