@@ -15,6 +15,7 @@
 package spiralcraft.time;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * <p>An unit of a time expression. TimeField objects are
@@ -29,6 +30,16 @@ import java.util.Calendar;
  */
 public class TimeField
 {
+  private static final HashMap<String,TimeField> map
+    =new HashMap<>();
+  
+  public static final TimeField fromString(String label)
+  { return map.get(label);
+  }
+  
+  public static final String[] values()
+  { return map.keySet().toArray(new String[map.size()]);
+  }
   
   public static final TimeField MILLISECOND
     =new TimeField
@@ -189,6 +200,12 @@ public class TimeField
     this.calendarField=calendarField;
     this.calendarMinValue=calendarMinValue;
     this.subPeriod=subPeriod;
+    map.put(label,this);
+  }
+  
+  @Override
+  public String toString()
+  { return label;
   }
   
   public String toString(int value)
