@@ -18,7 +18,6 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-import spiralcraft.log.ClassLog;
 import spiralcraft.time.Calendar;
 import spiralcraft.time.Instant;
 import spiralcraft.time.TimeField;
@@ -38,8 +37,6 @@ public final class DateToString
   extends StringConverter<Date>
 {
   
-  private static final ClassLog log
-    =ClassLog.getInstance(DateToString.class);
   private String formatString="yyyy-MM-dd HH:mm:ss.S Z";
   
   private volatile ThreadLocal<SimpleDateFormat> formatLocal;
@@ -129,7 +126,6 @@ public final class DateToString
           }
           else
           { 
-            log.fine("Rounding up "+val);
             return new Date
               (calendar.startOfNextPeriod
                 (Instant.fromDate(date)
