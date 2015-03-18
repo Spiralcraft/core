@@ -13,6 +13,22 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev119
+        </revision>
+      
+        <notes>
+          <scm:Note>TaskRunner now resolves the specified task URI from
+            inside the root context / place to ensure that all referenced
+            resources are available when loading.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/TaskRunner.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev118
         </revision>
       
