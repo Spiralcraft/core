@@ -68,6 +68,8 @@ public class TaskRunner
   private Thread shutdownThread=new ShutdownHook();
   private URI serviceURI;
   private boolean printResult=false;
+  private URI scenarioURI;
+  private String[] scenarioArgs;
   private String[] contextArgs;
   private PlaceContext placeContext;
   private Lifecycle rootContext;
@@ -201,17 +203,8 @@ public class TaskRunner
         @Override
         public boolean processArgument(String arg)
         {
-          URI scenarioURI=URIPool.create(arg);
-          try
-          { 
-            loadScenario(scenarioURI);
-            configureScenario(remainingArguments());
-          }
-          catch (BindException x)
-          { 
-            throw new RuntimeException
-              ("Error loading scenario "+scenarioURI,x);
-          }
+          scenarioURI=URIPool.create(arg);
+          scenarioArgs=remainingArguments();
           return true;          
         }
         
@@ -269,6 +262,22 @@ public class TaskRunner
     push();
     try
     { 
+      try
+      { 
+        if (scenarioURI!=null)
+        {
+          loadScenario(scenarioURI);
+          if (scenarioArgs!=null)
+          { configureScenario(scenarioArgs);
+          }
+        }
+      }
+      catch (BindException x)
+      { 
+        throw new ContextualException
+          ("Error loading scenario "+scenarioURI,x);
+      }
+      
       if (serviceFocus!=null)
       { 
         if (logLevel.isDebug())
@@ -296,9 +305,6 @@ public class TaskRunner
   {
     executeThread=Thread.currentThread();
       
-    if (scenario==null)
-    { throw new ExecutionException("No scenario provided");
-    }
   
     if (serviceURI!=null)
     { 
@@ -332,6 +338,11 @@ public class TaskRunner
       { placeContext.start();
       }
       start();
+
+      if (scenario==null)
+      { throw new ExecutionException("No scenario provided");
+      }
+
       scenario.start();
       
       StringConverter converter
