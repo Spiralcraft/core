@@ -20,7 +20,6 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringPool;
-
 import spiralcraft.common.declare.DeclarationContext;
 import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.io.LookaheadStreamTokenizer;
@@ -28,7 +27,8 @@ import spiralcraft.io.LookaheadStreamTokenizer;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.IOException;
-
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -1601,6 +1601,13 @@ public class ExpressionParser
           return LiteralNode.get(Double.valueOf(numberString));
         case 'F':
           return LiteralNode.get(Float.valueOf(numberString));
+        case 'G':
+          if (numberString.indexOf(".")>-1)
+          { return LiteralNode.get(new BigDecimal(numberString));
+          }
+          else
+          { return LiteralNode.get(new BigInteger(numberString));
+          }
         default:
           _tokenizer.pushBack();
           throwUnexpected();
