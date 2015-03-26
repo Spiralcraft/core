@@ -17,6 +17,61 @@
         </revision>
       
         <notes>
+          <scm:Note>Add a null-coalescing operator "??" to streamline syntax
+            of providing defaults when something is null. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>Node.java
+          </URI>
+          <URI>NullDefaultNode.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev119
+        </revision>
+      
+        <notes>
+          <scm:Note>When a static method is referenced in a non-static way
+            or vice-versa, throw a more specific exception instead of 
+            "Method not found"
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev119
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a numeric literal suffix "G" to indicate a
+            BigDecimal or BigInteger, determined by the presence of a decimal
+            point.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev119
+        </revision>
+      
+        <notes>
           <scm:Note>TaskRunner now resolves the specified task URI from
             inside the root context / place to ensure that all referenced
             resources are available when loading.

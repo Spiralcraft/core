@@ -1402,6 +1402,42 @@
       <testX>.==true
       </testX>
     </test:Assertion>
+    <test:Assertion>
+      <name>null default 1
+      </name>
+      <subjectX>
+        0 ?? 1
+      </subjectX>
+      <testX>.==0
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>null default 2
+      </name>
+      <subjectX>
+        null ?? 1
+      </subjectX>
+      <testX>.==1
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>null default 3
+      </name>
+      <subjectX>
+        null ?? 1 ?? 2
+      </subjectX>
+      <testX>.==1
+      </testX>
+    </test:Assertion>
+    <test:Assertion>
+      <name>null default 4
+      </name>
+      <subjectX>
+        null ?? null ?? 2
+      </subjectX>
+      <testX>.==2
+      </testX>
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
