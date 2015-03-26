@@ -352,6 +352,11 @@ public abstract class Node
   { return new BindingNode(this,source);
   }
   
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  protected Node nullDefault(Node defaultNode)
+  { return new NullDefaultNode(this,defaultNode);
+  }
+
   protected void unsupported(String msg)
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }

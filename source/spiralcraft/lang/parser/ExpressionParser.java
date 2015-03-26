@@ -401,13 +401,13 @@ public class ExpressionParser
 
 
   /**
-   * ConditionalExpression -> LogicalOrExpression 
+   * ConditionalExpression -> NullCoalescingExpression 
    *                          ( "?" assignmentExpression ":" conditionalExpression )
    */
   private Node parseConditionalExpression()
     throws ParseException
   {
-    Node node=this.parseLogicalOrExpression();
+    Node node=this.parseNullCoalescingExpression();
     if (_tokenizer.ttype=='?' && _tokenizer.lookahead.ttype!='=')
     { 
       consumeToken();
@@ -425,6 +425,31 @@ public class ExpressionParser
     return node;
   }
 
+  /**
+   * NullCoalescingExpression -> LogicalOrExpression
+   *                          ( "??" NullCoalescingExpression )
+   */
+  private Node parseNullCoalescingExpression()
+    throws ParseException
+  
+  {
+    Node node=this.parseLogicalOrExpression();
+    return parseNullCoalescingExpressionRest(node);
+  }
+  
+  private Node parseNullCoalescingExpressionRest(Node node)
+    throws ParseException
+  {
+  
+    if (_tokenizer.ttype=='?' && _tokenizer.lookahead.ttype=='?')
+    {
+      consumeToken();
+      consumeToken();
+      return parseNullCoalescingExpressionRest(node.nullDefault(parseLogicalOrExpression()));
+    }
+    return node;
+  }
+  
   /**
    * LogicalOrExpression -> logicalAndExpression 
    *                        ( "||" logicalAndExpression )*
@@ -539,8 +564,8 @@ public class ExpressionParser
       consumeToken();
       consumeToken();
       Node secondOperand=parseRelationalExpression();
-      Node equalityNode = firstOperand.contains(secondOperand);
-      return parseEqualityExpressionRest(equalityNode);
+      Node containsNode = firstOperand.contains(secondOperand);
+      return parseEqualityExpressionRest(containsNode);
       
     }
     else
