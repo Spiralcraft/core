@@ -442,7 +442,6 @@ public class TupleReflector<T extends Tuple>
       }
       if (method.getName().equals(name) 
             && method.getParameterTypes().length==sigChannels.size()
-            && method.isStatic()==staticMethod
             )
       {
         
@@ -506,6 +505,16 @@ public class TupleReflector<T extends Tuple>
             log.fine
               ("Found match for "+name
                +": return type is "+method.getReturnType());
+          }
+          if (method.isStatic() && !staticMethod)
+          { 
+            throw new BindException
+              (method.getURI()+" must be accessed as a static method from the type- eg. .@"+method.getName()+"(...)");
+          }
+          else if (!method.isStatic() && staticMethod)
+          { 
+            throw new BindException
+              (method.getURI()+" is not static and must be accessed from an instance");
           }
           Channel boundMethod=method.bind(source, paramChannels);
           if (method.getReturnType().getNativeClass()==TaskCommand.class // Method as a functor
