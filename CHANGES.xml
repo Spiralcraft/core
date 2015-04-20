@@ -13,6 +13,26 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev120
+        </revision>
+      
+        <notes>
+          <scm:Note>Utility to read character data from a Resource
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>text/io/ReaderCharSequence.java
+          </URI>
+          <URI>vfs/ResourceUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev119
         </revision>
       
