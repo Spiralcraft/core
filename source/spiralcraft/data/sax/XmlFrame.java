@@ -50,7 +50,6 @@ public class XmlFrame<T>
   { this.preClose=preClose;
   }
   
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void bind()
     throws BindException

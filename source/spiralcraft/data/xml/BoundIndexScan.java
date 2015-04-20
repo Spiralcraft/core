@@ -25,7 +25,6 @@ public class BoundIndexScan
   private final Channel<?>[] parameters;
   private final boolean debugTrace;
   
-  @SuppressWarnings("unchecked") // Projection<Tuple> to Projection<T>
   public BoundIndexScan(EquiJoin ej,Focus<?> context,XmlQueryable source)
     throws DataException
   { 

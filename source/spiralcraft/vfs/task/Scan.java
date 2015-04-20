@@ -188,6 +188,7 @@ public class Scan
     {  
       try
       {
+        @SuppressWarnings("resource")
         PrintStream info=verbose?ExecutionContext.getInstance().out():null;
         
         Resource sourceResource

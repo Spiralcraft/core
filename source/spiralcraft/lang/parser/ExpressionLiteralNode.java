@@ -28,7 +28,6 @@ public class ExpressionLiteralNode<T>
   private final Node expression;
   private final Channel<Expression<T>> _optic;
 
-  @SuppressWarnings("rawtypes")
   public ExpressionLiteralNode(Node expression)
   { 
     this.expression=expression;

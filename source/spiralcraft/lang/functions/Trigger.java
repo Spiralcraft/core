@@ -40,7 +40,6 @@ public class Trigger<S>
   }
 
   
-  @SuppressWarnings("unchecked")
   @Override
   protected Context<S> newContext(
     Channel<S> source,

@@ -85,7 +85,6 @@ public class CacheIndex
    * 
    * @return
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   public SerialCursor<JournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
     throws DataException
   {

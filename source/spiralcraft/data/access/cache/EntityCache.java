@@ -58,7 +58,6 @@ public class EntityCache
 
   private Level logLevel=Level.INFO;
   
-  @SuppressWarnings("unchecked")
   public EntityCache(Type<?> t) 
     throws DataException
   { 

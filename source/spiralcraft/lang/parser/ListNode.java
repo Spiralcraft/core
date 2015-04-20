@@ -134,7 +134,6 @@ public class ListNode<T>
       { this.context=focus;
       }
       
-      @SuppressWarnings("rawtypes")
       @Override
       protected List<T> retrieve()
       {

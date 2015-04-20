@@ -36,7 +36,6 @@ public class MapLookupChannel<T,K,V>
     this.subscriptChannel=subscriptChannel;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected V retrieve()
   { return decorator.get(subscriptChannel.get());

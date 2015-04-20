@@ -1334,7 +1334,6 @@ public class ExpressionParser
   }
 
   
-  @SuppressWarnings({ "rawtypes" })
   private Node parseExpressionLiteral()
     throws ParseException
   {

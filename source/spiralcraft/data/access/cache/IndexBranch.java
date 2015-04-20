@@ -83,7 +83,6 @@ public class IndexBranch
    * 
    * @return
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   public SerialCursor<JournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
     throws DataException
   {

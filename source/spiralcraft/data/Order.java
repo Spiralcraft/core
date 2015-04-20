@@ -89,14 +89,13 @@ public class Order
       (focusA,focusB);
   }
 
-  @SuppressWarnings("rawtypes")
   public class OrderChannel
     extends AbstractChannel<Integer>
   {
      
     public Channel<Integer>[] elementChannels;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public OrderChannel(Focus<Tuple> focusA,Focus<Tuple> focusB)
       throws BindException
     { 

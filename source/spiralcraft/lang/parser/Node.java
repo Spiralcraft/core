@@ -352,7 +352,6 @@ public abstract class Node
   { return new BindingNode(this,source);
   }
   
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   protected Node nullDefault(Node defaultNode)
   { return new NullDefaultNode(this,defaultNode);
   }

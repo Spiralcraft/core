@@ -255,7 +255,6 @@ public class StructNode
     fields.put(field.name,field);
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException

@@ -21,7 +21,6 @@ public class FunctionNode
   private final Node body;
   private String typeQName;
   
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   public FunctionNode(String typeQName,Node context,Node body)
   { 
     this.typeQName=typeQName;

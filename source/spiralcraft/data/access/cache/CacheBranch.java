@@ -228,7 +228,6 @@ public class CacheBranch
   }
    
   
-  @SuppressWarnings("unused")
   private TupleBranch enlist(Identifier id)
   {
     synchronized (enlisted)
