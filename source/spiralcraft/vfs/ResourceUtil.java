@@ -16,12 +16,14 @@ package spiralcraft.vfs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import spiralcraft.exec.ExecutionContext;
 import spiralcraft.text.html.URLEncoder;
+import spiralcraft.text.io.ReaderCharSequence;
 import spiralcraft.util.refpool.URIPool;
 
 
@@ -135,6 +137,37 @@ public class ResourceUtil
     
   }
   
+  public static String readAsciiString(URI uri)
+    throws IOException
+  {
+    if (uri==null)
+    { throw new IllegalArgumentException("URI cannot be null");
+    }
+    return readAsciiString(Resolver.getInstance().resolve(uri));
+  }
+  
+  public static CharSequence read(Resource resource)
+    throws IOException
+  { 
+    if (resource==null)
+    { throw new IllegalArgumentException("Resource cannot be null");
+    }
+    if (!resource.supportsRead())
+    { throw new IllegalArgumentException("Resource does not support streaming");
+    }
+    return new 
+      ReaderCharSequence(new InputStreamReader(resource.getInputStream()));
+  }
+  
+  public static CharSequence read(URI uri)
+      throws IOException
+  { 
+    if (uri==null)
+    { throw new IllegalArgumentException("URI cannot be null");
+    }
+    return read(Resolver.getInstance().resolve(uri));
+  }
+
   /**
    * Resolve a resource relative to the Execution Context default path using an 
    *   unescaped path
