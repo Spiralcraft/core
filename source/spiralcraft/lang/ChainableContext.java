@@ -14,6 +14,24 @@
 //
 package spiralcraft.lang;
 
+/**
+ * <p>A ChainableContext provides a way to compose a Context (the environment
+ *   available to a thread after it enters a scope such as a component) from
+ *   multiple providers. Providers who wish to expose data and functionality
+ *   will implement ChainableContext to integrate into the environment.
+ * </p> 
+ * 
+ * <p>Each Context chained will be bound to the scope provided by 
+ *   the Context chained before it, and has access to ancestor Contexts in
+ *   this fashion. A chain of ChainableContexts will be pushed into ThreadLocal
+ *   context in order of their chaining, and will be popped from the ThreadLocal
+ *   context in reverse order. Each Context can access whatever was pushed
+ *   into its parent context.
+ * </p>
+ * 
+ * @author mike
+ *
+ */
 public interface ChainableContext
   extends Context
 {

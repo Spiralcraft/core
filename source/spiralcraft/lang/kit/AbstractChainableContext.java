@@ -30,7 +30,7 @@ import spiralcraft.log.Level;
  * </p>
  * 
  * @author mike
- *
+ * @see ChainableContext
  */
 public class AbstractChainableContext
   implements ChainableContext,Declarable
