@@ -55,6 +55,8 @@ public class PathContext
   private Binding<?>[] exports;
   private Binding<?>[] constantImports;
   private Binding<?>[] constantExports;
+  private Binding<?>[] onEnter;
+  private Binding<?>[] onExit;
       
   /**
    * The path from the context root
@@ -123,6 +125,24 @@ public class PathContext
   { this.publishContent=publishContent;
   }
   
+  /**
+   * Evaluate an expression after this PathContext is entered
+   * 
+   * @param onEnter
+   */
+  public void setOnEnter(Binding<?>[] onEnter)
+  { this.onEnter=onEnter;
+  }
+  
+  /**
+   * Evaluate an expression before this PathContext is exited
+   * 
+   * @param onEnter
+   */
+  public void setOnExit(Binding<?>[] onExit)
+  { this.onExit=onExit;
+  }
+
   public void setCodeX(Binding<URI> codeX)
   { 
     if (codeX!=null)
@@ -431,6 +451,13 @@ public class PathContext
     if (placeContext!=null)
     { chain(placeContext);
     }
+
+    if (onEnter!=null)
+    { Binding.bindArray(onEnter,chain);
+    }
+    if (onExit!=null)
+    { Binding.bindArray(onExit,chain);
+    }
     
     return chain;
   }
@@ -475,11 +502,23 @@ public class PathContext
     if (baseContext!=null)
     { baseContext.push();
     }
+    if (onEnter!=null)
+    { 
+      for (Binding<?> binding:onEnter)
+      { binding.get();
+      }
+    }
   }
   
   @Override
   protected void popLocal()
   {
+    if (onExit!=null)
+    { 
+      for (Binding<?> binding:onExit)
+      { binding.get();
+      }
+    }
     if (baseContext!=null)
     { baseContext.pop();
     }
