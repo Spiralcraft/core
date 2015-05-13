@@ -46,6 +46,7 @@ public class PluginContext
   private Container codeContainer;
   private Store[] stores;
   private Authority[] authorities;
+  private String[] fileContainers;
   private PlaceContext placeContext;
   private ContextResourceMap vfsMappings
     =new ContextResourceMap();  
@@ -64,6 +65,18 @@ public class PluginContext
   
   public void setMounts(Authority[] authorities)
   { this.authorities=authorities;
+  }
+  
+  /**
+   * A list of names for file containers managed by this plugin. Each specified
+   *   container name will cause a directory "[name].dir" to be created in
+   *   the plugin's data directory, and will be mapped to a VFS authority
+   *   "place.[plugin-id].[name]"
+   * 
+   * @param fileContainers
+   */
+  public void setFileContainers(String[] fileContainers)
+  { this.fileContainers=fileContainers;
   }
   
   public void setPluginId(String pluginId)
@@ -136,12 +149,42 @@ public class PluginContext
       { registerMount(authority);
       }
     }
+    if (fileContainers!=null)
+    { 
+      for (String name:fileContainers)
+      { registerFileContainer(name);
+      }
+    }
+    
     
     return chain;
   }
   
   private void registerMount(Authority authority)
   { placeContext.registerMount(authority);
+  }
+  
+  private void registerFileContainer(String name)
+    throws ContextualException
+  { 
+    try
+    {
+      Authority authority
+        =new Authority
+          ("place."+pluginId+"."+name
+          ,dataContainer.ensureChildContainer(name+".dir").getURI()
+          );
+
+    
+      registerMount(authority);
+    }
+    catch (IOException x)
+    { 
+      throw new ContextualException
+        ("Error allocating file container '"+name+"' in plugin "+pluginId
+        ,x
+        );
+    }
   }
   
   private void registerStore(Store store)
