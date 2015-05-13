@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.spi.ProxyChannel;
 import spiralcraft.lang.util.LangUtil;
 
@@ -35,6 +36,17 @@ public class Binding<T>
   implements Channel<T>,Contextual
 {
 
+  public static final void bindArray(Binding<?>[] bindings,Focus<?> focus)
+    throws ContextualException
+  { 
+    if (bindings!=null)
+    {
+      for (Binding<?> binding: bindings)
+      { binding.bind(focus);
+      }
+    }    
+  }
+  
   private final Expression<T> expression;
   private Class<T> targetType;
   
