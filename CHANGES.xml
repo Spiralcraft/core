@@ -13,6 +13,51 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev121
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow plugins to manage and export file containers as part
+            of the data model they contribute to a PlaceContext.
+          </scm:Note>
+          <scm:Note>Fix issue where presence of trailing slash in contextual
+            mapping would affect resolution of relative contextual VFS urls.
+          </scm:Note>
+          <scm:Note>Add hooks that get invoked when a thread enters or leaves a
+            PathContext
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/PathContext.java
+          </URI>
+          <URI>app/PluginContext.java
+          </URI>
+          <URI>vfs/context/Authority.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev121
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix exception when sorting collections containing different
+            subtypes of Number by comparing the double values of each pair.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Ordering.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev120
         </revision>
       
