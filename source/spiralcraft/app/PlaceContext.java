@@ -370,6 +370,14 @@ public class PlaceContext
   { return dataContainer.ensureChildContainer(placeId+".place");
   }
   
+  /**
+   * Allocates a subdirectory of the Place's data directory for exclusive
+   *   use by a plugin to store its own instance data.
+   * 
+   * @param pluginId The subdirectory will be named [pluginId].plugin
+   * @return The Container resource allocated exclusively to the plugin
+   * @throws IOException
+   */
   Container allocatePluginDataContainer(String pluginId)
     throws IOException
   { return dataContainer.ensureChildContainer(pluginId+".plugin");
