@@ -56,10 +56,20 @@ public class Authority
   { this.debugLevel=debugLevel;
   }
   
+  /** 
+   * The authority part of the URI (ie. context://[authorityName]/[path]), or
+   *   empty for the default authority.
+   */
   public void setAuthorityName(String name)
   { this.authorityName=name;
   }
   
+  /**
+   * Specifies the root path for this authority. All paths resolved against
+   *   this authority will be mapped under this root.
+   * 
+   * @param rootURI
+   */
   public void setRootURI(URI rootURI)
   { this.defaultRoot=rootURI;
   }
@@ -219,7 +229,12 @@ public class Authority
             +(authorityName!=null?"//"+authorityName:"")
             +"/"+rawPath
             )
-          ,Resolver.getInstance().resolve(URIPool.get(defaultRoot.resolve(pathURI)))
+          ,Resolver.getInstance().resolve
+            (URIPool.get
+              (URIUtil.ensureTrailingSlash(defaultRoot)
+                .resolve(pathURI)
+              )
+            )
           );
             
       }
