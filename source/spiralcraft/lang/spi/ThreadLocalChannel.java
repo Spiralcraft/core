@@ -17,6 +17,9 @@ package spiralcraft.lang.spi;
 
 import java.net.URI;
 
+import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -39,7 +42,7 @@ import spiralcraft.log.Level;
  */
 public class ThreadLocalChannel<T>
   extends AbstractChannel<T>
-  implements Channel<T>
+  implements Channel<T>,Declarable
 {
   private static final ClassLog log
     =ClassLog.getInstance(ThreadLocalChannel.class);
@@ -60,6 +63,7 @@ public class ThreadLocalChannel<T>
     :null;
     
   private final boolean writeThrough;
+  private DeclarationInfo declarationInfo;
 
   class InheritableThreadLocalImpl
     extends InheritableThreadLocal<ThreadReference<T>>
@@ -157,6 +161,15 @@ public class ThreadLocalChannel<T>
 
   }
   
+  @Override
+  public void setDeclarationInfo(DeclarationInfo di)
+  { this.declarationInfo=di;
+  }
+  
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
   
   public boolean isInheritable()
   { return inheritable;
@@ -179,14 +192,14 @@ public class ThreadLocalChannel<T>
     }
     else
     {
-      AccessException x=new AccessException
-        ("ThreadLocal not initialized for "+getReflector().getTypeURI());
+      ContextualException x=new ContextualException
+        ("ThreadLocal not initialized for "+getReflector().getTypeURI(),getDeclarationInfo());
       log.log(Level.WARNING,x.getMessage(),x);
       if (initTrace!=null)
       { log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
       }
       log.log(Level.WARNING,"ThreadLocal channel trace: "+trace(null));
-      throw x;
+      throw new AccessException(x);
     }
   }
 

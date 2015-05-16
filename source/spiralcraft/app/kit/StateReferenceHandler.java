@@ -1,11 +1,13 @@
 package spiralcraft.app.kit;
 
+import spiralcraft.app.Component;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.MessageHandler;
 import spiralcraft.app.State;
 import spiralcraft.common.ContextualException;
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -27,8 +29,16 @@ public class StateReferenceHandler<Tstate extends State>
 {
 
   private ThreadLocalChannel<Tstate> reference;
+  private Component comp;
   
   
+  public StateReferenceHandler(Component comp,Class<Tstate> stateClass)
+  { 
+    this(BeanReflector.<Tstate>getInstance(stateClass));
+    this.comp=comp;
+   
+  }
+
   public StateReferenceHandler(Class<Tstate> stateClass)
   { this(BeanReflector.<Tstate>getInstance(stateClass));
   }
@@ -41,7 +51,11 @@ public class StateReferenceHandler<Tstate extends State>
   public Focus<?> bind(
     Focus<?> focusChain)
     throws ContextualException
-  { return focusChain;
+  { 
+    if (comp!=null)
+    { reference.setDeclarationInfo(comp.getDeclarationInfo());
+    }
+    return focusChain;
   }
 
   @SuppressWarnings("unchecked")
@@ -59,7 +73,14 @@ public class StateReferenceHandler<Tstate extends State>
   }
   
   public Tstate get()
-  { return reference.get();
+  { 
+    try
+    { return reference.get();
+    }
+    catch (AccessException x)
+    { throw new AccessException("Component not in context "+(comp!=null?comp.getDeclarationInfo():""),x);
+    }
+    
   }
   
   public Reflector<Tstate> getReflector()

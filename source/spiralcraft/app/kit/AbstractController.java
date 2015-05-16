@@ -46,7 +46,7 @@ public abstract class AbstractController<Tstate extends State>
   protected void addHandlers()
   { 
     super.addHandlers();
-    stateReference=new StateReferenceHandler(getStateClass());
+    stateReference=new StateReferenceHandler(this,getStateClass());
     addHandler(stateReference);
   } 
   
