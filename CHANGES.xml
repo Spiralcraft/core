@@ -17,6 +17,51 @@
         </revision>
       
         <notes>
+          <scm:Note>Add a subsequence method to Sequence
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util
+        </path>
+        
+        <resources>
+          <URI>ArrayUtil.java
+          </URI>
+          <URI>Sequence.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev121
+        </revision>
+      
+        <notes>
+          <scm:Note>Add declaration info to exception when a component is 
+            called from out of scope.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/kit/AbstractController.java
+          </URI>
+          <URI>app/kit/StateReferenceHandler.java
+          </URI>
+          <URI>lang/spi/ThreadLocalChannel.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev121
+        </revision>
+      
+        <notes>
           <scm:Note>Allow plugins to manage and export file containers as part
             of the data model they contribute to a PlaceContext.
           </scm:Note>

@@ -512,6 +512,21 @@
     </test:Assertion>
     
     <test:Assertion>
+    
+      <name>Subsequence
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Sequence].([{1,2,3,4,5}]).subsequence(4).format(".")
+      </subjectX>
+      
+      <testX>
+        .=="5"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
       <name>encode URL query mark
       </name>
     
