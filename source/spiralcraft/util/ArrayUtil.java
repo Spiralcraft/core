@@ -839,7 +839,7 @@ class ArrayIterator<X>
 {
   private final X[] array;
   private int index=0;
-  private final int length;
+  private final int stop;
 
   ArrayIterator(X[] array)
   { this(array,0,array.length);
@@ -849,18 +849,18 @@ class ArrayIterator<X>
   { 
     this.array=array;
     this.index=start;
-    this.length=len;
+    this.stop=start+len;
   }
   
   @Override
   public boolean hasNext()
-  { return index<length;
+  { return index<stop;
   }
   
   @Override
   public X next()
   { 
-    if (index>=length)
+    if (index>=stop)
     { throw new NoSuchElementException();
     }
     return array[index++];

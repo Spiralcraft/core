@@ -54,8 +54,8 @@ public class Sequence<T>
         ("Cannot construct a sequence with null data");
     }
     this.data=data;
-    this.start=0;
-    this.len=data.length;
+    this.start=start;
+    this.len=len;
   }
   
   public int size()
@@ -63,7 +63,7 @@ public class Sequence<T>
   }
   
   public T get(Integer index)
-  { return data[index];
+  { return data[index+start];
   }
   
   public T getFirst()
@@ -93,9 +93,17 @@ public class Sequence<T>
   }
 
   public Sequence<T> removeFirst()
-  { return new Sequence<T>(data,start+1,len);
+  { return new Sequence<T>(data,start+1,len-1);
   }
 
+  public Sequence<T> subsequence(int startPos)
+  { 
+    if (startPos==0)
+    { return this;
+    }
+    return new Sequence<T>(data,start+startPos,len-startPos);
+  }
+  
   public boolean isEmpty()
   { return len<=0;
   }
