@@ -91,6 +91,10 @@ public class Authority
   public void setGrafts(Graft[] grafts)
   { this.grafts=grafts;
   }
+
+  public void addGraft(Graft graft)
+  { grafts=ArrayUtil.append(grafts,graft,Graft.class);
+  }
   
   /**
    * Return the Graft mapped to the specified path
@@ -106,6 +110,7 @@ public class Authority
     { return null;
     }
   }
+  
   
   /**
    * Map a path to a graft

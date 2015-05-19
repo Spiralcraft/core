@@ -53,6 +53,17 @@ public class FileSpace
     authorities=ArrayUtil.append(authorities,authority);
   }
   
+  public Authority getAuthority(String name)
+  { 
+    for (Authority authority: authorities)
+    { 
+      if (authority.getAuthorityName().equals(name))
+      { return authority;
+      }
+    }
+    return null;
+  }
+  
   @Override
   public Focus<?> bindExports(Focus<?> focusChain)
     throws ContextualException

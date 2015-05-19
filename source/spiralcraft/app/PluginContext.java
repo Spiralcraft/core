@@ -29,6 +29,7 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.context.Authority;
 import spiralcraft.vfs.context.ContextResourceMap;
+import spiralcraft.vfs.context.Graft;
 
 /**
  * <p>Connects a specific plugin into the application hierarchy.
@@ -50,6 +51,7 @@ public class PluginContext
   private PlaceContext placeContext;
   private ContextResourceMap vfsMappings
     =new ContextResourceMap();  
+  private Graft[] publishedGrafts;
   
   void setPlaceContext(PlaceContext placeContext)
   { this.placeContext=placeContext;
@@ -77,6 +79,14 @@ public class PluginContext
    */
   public void setFileContainers(String[] fileContainers)
   { this.fileContainers=fileContainers;
+  }
+  
+  /**
+   * A set of VFS grafts that will added to the primary/default filetree 
+   *   so that this plugin can publish specific data.
+   */
+  public void setPublishedGrafts(Graft[] publishedGrafts)
+  { this.publishedGrafts=publishedGrafts;
   }
   
   public void setPluginId(String pluginId)
@@ -155,7 +165,12 @@ public class PluginContext
       { registerFileContainer(name);
       }
     }
-    
+    if (publishedGrafts!=null)
+    { 
+      for (Graft graft:publishedGrafts)
+      { placeContext.publishGraft(graft);
+      }
+    }
     
     return chain;
   }
@@ -219,6 +234,5 @@ public class PluginContext
     placeContext.registerStore(store);
     
   }
-  
   
 }

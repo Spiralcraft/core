@@ -44,6 +44,7 @@ import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.context.Authority;
 import spiralcraft.vfs.context.ContextResourceMap;
 import spiralcraft.vfs.context.FileSpace;
+import spiralcraft.vfs.context.Graft;
 
 /**
  * <p>Defines a point in the compositional hierarchy of an application
@@ -363,6 +364,18 @@ public class PlaceContext
   
   void registerMount(Authority authority)
   { fileSpace.addAuthority(authority);
+  }
+  
+  void publishGraft(Graft graft)
+  { 
+    Authority defaultTree=fileSpace.getAuthority("");
+    if (defaultTree==null)
+    { 
+      defaultTree=new Authority();
+      fileSpace.addAuthority(defaultTree);
+    }
+    defaultTree.addGraft(graft);
+    
   }
   
   private Container allocatePlaceDataContainer(String placeId)
