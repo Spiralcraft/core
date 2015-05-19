@@ -79,9 +79,13 @@
         <resources>
           <URI>app/PathContext.java
           </URI>
+          <URI>app/PlaceContext.java
+          </URI>
           <URI>app/PluginContext.java
           </URI>
           <URI>vfs/context/Authority.java
+          </URI>
+          <URI>vfs/context/FileSpace.java
           </URI>
         </resources>
         
