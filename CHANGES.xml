@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Fix NPE when no peer is specified
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/XmlFrame.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev121
+        </revision>
+      
+        <notes>
           <scm:Note>Add a subsequence method to Sequence
           </scm:Note>
         </notes>
