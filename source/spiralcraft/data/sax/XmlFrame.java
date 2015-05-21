@@ -76,7 +76,9 @@ public class XmlFrame<T>
   protected void openData()
     throws DataException
   {
-    channel.set(peer.get());
+    if (peer!=null)
+    { channel.set(peer.get());
+    }
     if (afterOpen!=null)
     { afterOpen.get();
     }
