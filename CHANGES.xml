@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Utility function to add a query parameter to a URI
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev121
+        </revision>
+      
+        <notes>
           <scm:Note>Fix NPE when no peer is specified
           </scm:Note>
         </notes>
