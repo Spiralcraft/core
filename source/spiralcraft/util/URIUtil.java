@@ -205,6 +205,24 @@ public class URIUtil
       );
   }
   
+  public static final URI addQueryParameter
+    (URI source
+    ,String parameterName
+    ,String value
+    )
+  {
+    String oldQuery=source.getRawQuery();
+    String newQuery;
+    if (oldQuery==null)
+    { newQuery=encodeParameter(parameterName,value);
+    }
+    else
+    { newQuery=oldQuery+"?"+encodeParameter(parameterName,value);
+    }
+    
+    return replaceRawQuery(source,newQuery);
+  }
+  
   /**
    * Trim the query and fragment from the specified URI.  
    * 
