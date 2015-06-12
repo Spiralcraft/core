@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
@@ -47,7 +49,7 @@ import spiralcraft.log.ClassLog;
  * </p>
  */
 public class Authenticator
-  implements Contextual
+  implements Contextual,Declarable
 {
   private final ClassLog log
     =ClassLog.getInstance(Authenticator.class);
@@ -78,6 +80,9 @@ public class Authenticator
   protected String digestAlgorithm="SHA-256";
 
   protected Authorizer authorizer;
+  
+  protected DeclarationInfo declarationInfo;
+  protected boolean bound;
   
   protected DigestFunction digestFunction
     =new DigestFunction()
@@ -161,6 +166,16 @@ public class Authenticator
   { this.debug=debug;
   }
 
+  @Override
+  public void setDeclarationInfo(DeclarationInfo di)
+  { this.declarationInfo=di;
+  }
+  
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
+  
   /**
    * <p>Compute a message digest which includes the specified input 
    *   token (eg. a password in some form) for later comparison as an 
@@ -278,6 +293,7 @@ public class Authenticator
 //      sessionFocus.addFacet(new BeanFocus<Authorizer>(authorizer));
       
     }
+    bound=true;
     return sessionFocus;
   }
   
@@ -289,8 +305,19 @@ public class Authenticator
   { sessionChannel.pop();
   }
   
-  public HashMap<String,Integer> getModuleMap()
-  { return moduleMap;
+  public Integer getSessionIndex(String moduleName)
+  { 
+    if (moduleMap==null)
+    { 
+      if (bound)
+      { log.warning("No moduleMap for authenticator defined at "+getDeclarationInfo());
+      }
+      else
+      { log.warning("Authenticator is not bound "+getClass().getName()+"  "+getDeclarationInfo());
+      }
+      return null;
+    }
+    return moduleMap.get(moduleName);
   }
   
 

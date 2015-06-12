@@ -311,7 +311,7 @@ public class AuthSession
   
   private AuthModule.Session getModuleSession(String moduleName)
   { 
-    Integer sessionIndex=authenticator.getModuleMap().get(moduleName);
+    Integer sessionIndex=authenticator.getSessionIndex(moduleName);
     if (sessionIndex!=null && sessions[sessionIndex]!=null)
     { return sessions[sessionIndex];
     }
