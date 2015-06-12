@@ -13,6 +13,42 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev122
+        </revision>
+      
+        <notes>
+          <scm:Note>Contextualizeed Runtime Exception to report instance 
+            declaration information for the source of a RuntimeException 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/ContextualRuntimeException.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev122
+        </revision>
+      
+        <notes>
+          <scm:Note>Improved reporting for configuration errors in Authenticator
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security/auth
+        </path>
+        
+        <resources>
+          <URI>Authenticator.java
+          </URI>
+          <URI>AuthSession.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev121
         </revision>
       
