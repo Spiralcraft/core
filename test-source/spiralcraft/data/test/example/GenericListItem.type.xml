@@ -3,6 +3,7 @@
 <meta:Type
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
+  xmlns:dm="class:/spiralcraft/data/methods/"
   >
 
   <fields>
@@ -40,5 +41,9 @@
     </meta:Key>
     
   </keys>
+  
+  <methods>
+    <dm:ForId/>
+  </methods>
       
 </meta:Type>
