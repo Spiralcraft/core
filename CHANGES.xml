@@ -13,6 +13,49 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev123
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a ForId method prototype for basic primary key
+            lookup in pattern-conformant entities.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/methods/ForId.proto.xml
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev123
+        </revision>
+      
+        <notes>
+          <scm:Note>Basic mechanism for "Prototypes- a Type URI can refer to
+            an object tree defined in a ".proto.xml" which represents an
+            instance of the type. The archetype of a Prototype is the type
+            declared for the root of the tree.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>TypeResolver.java
+          </URI>
+          <URI>core/Prototype.java
+          </URI>
+          <URI>reflect/ReflectionType.java
+          </URI>
+          <URI>xml/XmlPrototypeFactory.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev122
         </revision>
       
