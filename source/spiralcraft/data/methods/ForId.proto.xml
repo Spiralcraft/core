@@ -1,0 +1,24 @@
+<meta:Method
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:dt="class:/spiralcraft/data/task/"
+  xmlns:j="class:/java/lang/"
+  >
+  <name>forId
+  </name>
+  <description>
+    Return the instance of the containing type with the specified id, or
+      null if the id is not found.
+  </description>
+  <static>true
+  </static>
+  <parameterTypes>
+    <String.type/>
+  </parameterTypes>
+  <returnTypeX>[meta:Type]
+  </returnTypeX>
+  <contextX>
+    [#p] { id:[@j:String] }
+  </contextX>
+  <x>[*dt:Fetch{ [meta:Type] , [{ `id:=id` }] }].()
+  </x>
+</meta:Method>
