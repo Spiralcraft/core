@@ -147,6 +147,7 @@ public class TypeResolver
       ,"spiralcraft.data.core.CoreTypeFactory"
       ,"spiralcraft.data.builder.BuilderTypeFactory"
       ,"spiralcraft.data.reflect.ReflectionTypeFactory"
+      ,"spiralcraft.data.xml.XmlPrototypeFactory"
       };
 
     for (String className:factoryClassNames)

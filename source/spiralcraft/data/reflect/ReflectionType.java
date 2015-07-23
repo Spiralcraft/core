@@ -26,19 +26,16 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.Method;
-
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
-
+import spiralcraft.data.core.Prototype;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-
 import spiralcraft.util.CycleDetector;
-
 import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringConverter;
@@ -48,7 +45,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Collection;
@@ -59,7 +55,6 @@ import java.util.regex.Pattern;
 import spiralcraft.time.Instant;
 
 import java.net.URI;
-
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
@@ -577,11 +572,14 @@ public class ReflectionType<T>
     }
     else if (!(type instanceof ReflectionType<?>)
         && !(type instanceof AssemblyType<?>)
+        && !(type instanceof Prototype)
        )
     { return super.isAssignableFrom(type);
     }
     else
-    { return getNativeClass().isAssignableFrom(type.getNativeClass());
+    { 
+      return type.getNativeClass()!=null 
+        && getNativeClass().isAssignableFrom(type.getNativeClass());
     }
   }
     
