@@ -20,11 +20,18 @@
           <scm:Note>Added a ForId method prototype for basic primary key
             lookup in pattern-conformant entities.
           </scm:Note>
+          <scm:Note>Added an "All" method prototype to retrieve all instances
+            of a type.
+          </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/data/methods/ForId.proto.xml
+        <path>source/spiralcraft/data/methods
         </path>
         
+        <resources>
+          <URI>ForId.proto.xml</URI>
+          <URI>All.proto.xml</URI>
+        </resources>
       </scm:Change>
 
       <scm:Change>

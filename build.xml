@@ -4,7 +4,7 @@
   <property name="organization" value="spiralcraft"/>
   <property name="module" value="core"/>
   <property name="buildVersion" value="0.4.17-dev123"/>
-  <property name="build.status" value="integration"/>
+  <property name="build.status" value="milestone"/>
 
   <property name="logs.dir" location="test/log"/>  
   <property name="depends.dir" location="../../repo"/>
