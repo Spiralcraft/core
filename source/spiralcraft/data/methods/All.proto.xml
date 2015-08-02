@@ -1,0 +1,19 @@
+<meta:Method
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:dt="class:/spiralcraft/data/task/"
+  xmlns:j="class:/java/lang/"
+  >
+  <name>all
+  </name>
+  <description>
+    Return all instances of the containing type
+  </description>
+  <static>true
+  </static>
+  <parameterTypes>
+  </parameterTypes>
+  <returnTypeX>[meta:Type].aggregateType
+  </returnTypeX>
+  <x>[*dt:Fetch{ [meta:Type].aggregateType }].()
+  </x>
+</meta:Method>
