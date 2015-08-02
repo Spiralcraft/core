@@ -43,6 +43,7 @@
   </keys>
   
   <methods>
+    <dm:All/>
     <dm:ForId/>
   </methods>
       

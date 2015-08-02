@@ -349,6 +349,15 @@
           <testX>true
           </testX>
         </test:Assertion>
+        <test:Assertion>
+          <name>prototype method
+          </name>
+          <subjectX>[@example:ToDoListItem].@all()
+          </subjectX>
+          <testX>.@type==[@example:ToDoListItem.list]
+          </testX>
+        
+        </test:Assertion>
       </sequence>
     </task:Eval>
             
