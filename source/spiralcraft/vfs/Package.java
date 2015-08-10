@@ -4,6 +4,7 @@ package spiralcraft.vfs;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
@@ -239,15 +240,21 @@ public class Package
     }
   }
   
+  public Resource searchForBaseResource(Resource overlayResource)
+      throws IOException
+  { return searchForBaseResource(overlayResource,null);
+  }
+      
   /**
    * Map a resource path into the nearest containing package that can provide
    *   an existing resource
    * 
    * @param overlayResource
+   * @param searchedPath Intermediate URIs searched
    * @return
    * @throws IOException
    */
-  public Resource searchForBaseResource(Resource overlayResource)
+  public Resource searchForBaseResource(Resource overlayResource,LinkedList<URI> searchedPath)
     throws IOException
   {
     if (cycleDetector.detectOrPush(this))
@@ -276,7 +283,11 @@ public class Package
           { log.log(Level.WARNING,"Error reading package in "+container.getURI(),x);
           }
           if (pkg!=null)
-          { return pkg.searchForBaseResource(baseResource);
+          { 
+            if (searchedPath!=null)
+            { searchedPath.add(baseResource.getResolvedURI());
+            }
+            return pkg.searchForBaseResource(baseResource,searchedPath);
           }
           else
           { return null;
