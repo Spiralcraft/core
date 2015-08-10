@@ -13,6 +13,21 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev124
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide a way to collect the intermediate search paths
+            when searching for a resource in the VFS package system
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/Package.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev123
         </revision>
       
