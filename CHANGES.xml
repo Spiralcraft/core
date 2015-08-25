@@ -13,6 +13,33 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev125
+        </revision>
+      
+        <notes>
+          <scm:Note>Introduced the @Constant annotation for bean property
+            getter methods that are guaranteed to always return the same 
+            value for a given object instance, e.g. from a final field.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>common/Constant.java
+          </URI>
+          <URI>data/lang/DataReflector.java
+          </URI>
+          <URI>data/task/Edit.java
+          </URI>
+          <URI>lang/reflect/BeanPropertyChannel.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev124
         </revision>
       
