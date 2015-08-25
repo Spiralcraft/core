@@ -20,21 +20,14 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.TypeFactory;
 import spiralcraft.data.Type;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
-import spiralcraft.data.access.DataFactory;
-import spiralcraft.data.core.MetaType;
 import spiralcraft.data.core.Prototype;
 import spiralcraft.data.sax.DataReader;
-import spiralcraft.data.spi.EditableArrayListAggregate;
-import spiralcraft.data.spi.EditableArrayTuple;
 
 
-import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
