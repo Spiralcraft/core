@@ -15,6 +15,7 @@
 package spiralcraft.data.task;
 
 
+import spiralcraft.common.Constant;
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -160,6 +161,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
    * 
    * @return The TupleEditor 
    */
+  @Constant
   public EditorBase<Tbuffer> getEditor()
   { return editor;
   }

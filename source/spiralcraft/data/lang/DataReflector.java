@@ -37,6 +37,7 @@ import spiralcraft.lang.spi.NullChannel;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.common.Constant;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.core.ArrayType;
@@ -225,11 +226,13 @@ public abstract class DataReflector<T extends DataComposite>
   }
   
   @Override
+  @Constant
   public Type<T> getType()
   { return type;
   }
   
   @Override
+  @Constant
   public URI getTypeURI()
   {
     if (type!=null)

@@ -24,6 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
+import spiralcraft.common.Constant;
+import spiralcraft.common.Immutable;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -88,10 +90,15 @@ class BeanPropertyChannel<T,S>
     { _beanPropertyChangeListenerParams=null;
     }
 
+    
     _static=
       (_writeMethod==null && _writeField==null
         && _propertyChangeEventSetDescriptor==null
         && isSourceConstant()
+        && (_readMethod.isAnnotationPresent(Constant.class)
+            || source.getReflector().getContentType()
+                .isAnnotationPresent(Immutable.class)
+           )
       );
       
   }
