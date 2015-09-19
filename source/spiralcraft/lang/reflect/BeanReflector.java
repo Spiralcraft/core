@@ -625,7 +625,7 @@ public class BeanReflector<T>
   }
   
   @Override
-  public synchronized <X> Channel<X> 
+  public <X> Channel<X> 
     resolveMeta(Channel<T> source
         ,Focus<?> focus
         ,String name
@@ -667,7 +667,7 @@ public class BeanReflector<T>
   }
   
   @Override
-  public synchronized <X> Channel<X> 
+  public <X> Channel<X> 
     resolve(Channel<T> source
         ,Focus<?> focus
         ,String name
@@ -1465,8 +1465,11 @@ public class BeanReflector<T>
     throws BindException
   {
     
-    if (methodResolver==null)
-    { methodResolver=new MethodResolver(targetClass);
+    synchronized (this)
+    {
+      if (methodResolver==null)
+      { methodResolver=new MethodResolver(targetClass);
+      }
     }
     
     ArrayList<Channel<?>> indexedParamList=new ArrayList<Channel<?>>();
@@ -1540,11 +1543,14 @@ public class BeanReflector<T>
     else 
     {
       ConstructorTranslator<T> translator=null;
-      if (constructors==null)
-      { constructors=new HashMap<String,ConstructorTranslator<T>>();
-      }
-      else
-      { translator= constructors.get(sig);
+      synchronized (this)
+      {
+        if (constructors==null)
+        { constructors=new HashMap<String,ConstructorTranslator<T>>();
+        }
+        else
+        { translator= constructors.get(sig);
+        }
       }
       
       if (translator==null)
@@ -1605,13 +1611,16 @@ public class BeanReflector<T>
           =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
         if (ENABLE_METHOD_BINDING_CACHE)
         { 
-          MethodKey cacheKey=new MethodKey(translator,indexedParams);
-          constructorChannel=getSelfChannel().<T>getCached(cacheKey);
-          if (constructorChannel==null)
-          { 
-            constructorChannel
-              =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
-            getSelfChannel().cache(cacheKey,constructorChannel);
+          synchronized (this)
+          {
+            MethodKey cacheKey=new MethodKey(translator,indexedParams);
+            constructorChannel=getSelfChannel().<T>getCached(cacheKey);
+            if (constructorChannel==null)
+            { 
+              constructorChannel
+                =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
+              getSelfChannel().cache(cacheKey,constructorChannel);
+            }
           }
         }
         else
