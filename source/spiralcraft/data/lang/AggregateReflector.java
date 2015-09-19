@@ -44,6 +44,7 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
+import spiralcraft.common.Constant;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.ListAggregate;
@@ -241,6 +242,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
    * @return
    * @throws BindException
    */
+  @Constant
   public Reflector<I> getComponentType() 
     throws BindException
   { return DataReflector.getInstance(type.getContentType());
