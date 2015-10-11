@@ -123,7 +123,7 @@ public class LoginEntry
   { return digest;
   }
   
-  public void setChallengeCredential(String challenge)
+  public void setChallenge(String challenge)
   { 
 //    sessionChannel.get().addCredentials
 //    (new Credential[] {new ChallengeCredential(challenge)});
