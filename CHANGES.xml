@@ -13,6 +13,27 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev127
+        </revision>
+      
+        <notes>
+          <scm:Note>Complete challenge-response functionality in
+            authentication logic
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security
+        </path>
+        
+        <resources>
+          <URI>auth/LoginEntry.java
+          </URI>
+          <URI>spi/PasswordDataAuthModule.assy.xml
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev126
         </revision>
       
