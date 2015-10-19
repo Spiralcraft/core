@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Prototypes can be resolved using the VFS package
+            overlay model.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlPrototypeFactory.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev127
+        </revision>
+      
+        <notes>
           <scm:Note>Flow.restart() method added
           </scm:Note>
         </notes>
