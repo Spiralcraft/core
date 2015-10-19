@@ -17,6 +17,44 @@
         </revision>
       
         <notes>
+          <scm:Note>Flow.restart() method added
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/components/Flow.java
+        </path>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev127
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow data Types to initialize the Tuple DTOs when
+            they are created through a reflection constructor, allowing
+            for the instantiation of Tuple-based Prototypes.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Type.java
+          </URI>
+          <URI>core/Prototype.java
+          </URI>
+          <URI>lang/TupleConstructorChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev127
+        </revision>
+      
+        <notes>
           <scm:Note>Complete challenge-response functionality in
             authentication logic
           </scm:Note>
