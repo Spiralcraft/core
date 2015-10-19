@@ -31,11 +31,9 @@ import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
-import spiralcraft.vfs.UnresolvableURIException;
+import spiralcraft.vfs.Package;
 import spiralcraft.util.CycleDetector;
-import spiralcraft.util.refpool.URIPool;
 
 /**
  * A Prototype is a type that is created from a predefined object. Creating
@@ -86,26 +84,32 @@ public class XmlPrototypeFactory
     }
   }
   
+  private Resource findResource(URI typeURI)
+    throws IOException
+  {
+    return Package.findResource(typeURI.toString()+".proto.xml");
+ 
+  }
+  
   private boolean typeExists(URI uri)
     throws DataException
   { 
-    URI resourceUri=URIPool.create(uri.toString()+".proto.xml");
     Resource resource=null;
     
     try
-    { resource=Resolver.getInstance().resolve(resourceUri);
+    { resource=findResource(uri);
     }
-    catch (UnresolvableURIException x)
+    catch (IOException x)
     { 
       throw new DataException
-        ("Could not resolve resource "+resourceUri+": "+x.toString()
+        ("Could not resolve resource "+uri+": "+x.toString()
         ,x
         );
     } 
     
     try
     { 
-      if (resource.exists())
+      if (resource!=null && resource.exists())
       {
         if (debug || debugLevel.isFine())
         { log.fine(uri+" exists");
@@ -123,13 +127,12 @@ public class XmlPrototypeFactory
     catch (IOException x)
     { 
       throw new DataException
-        ("IOException checking resource "+resourceUri+": "+x.toString()
+        ("IOException checking resource "+uri+": "+x.toString()
         ,x
         );
     }
   }
   
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   private synchronized Type<?> loadType(final TypeResolver resolver,final URI uri)
     throws DataException
   {
@@ -148,7 +151,7 @@ public class XmlPrototypeFactory
 
       
       Object object=dataReader
-          .readFromURI(URIPool.create(uri.toString()+".proto.xml")
+          .readFromResource(findResource(uri)
                       ,null
                       );
           
