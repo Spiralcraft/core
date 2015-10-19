@@ -99,6 +99,10 @@ public class Flow<T>
   { getState().setCurrentState(state);
   }
 
+  public void restart()
+  { fsm.restart();
+  }
+  
   @Override
   protected void addHandlers()
   {
