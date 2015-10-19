@@ -2,6 +2,8 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.EditableTuple;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.reflect.ReflectionType;
@@ -31,6 +33,7 @@ public class Prototype<T>
       proto.setArchetype(((DataComposite) object).getType());
       proto.nativeClass=proto.getArchetype().getNativeClass();
       proto.protoComposite=(DataComposite) object;
+      proto.constructed();
     }
     else
     { 
@@ -49,6 +52,25 @@ public class Prototype<T>
   { super(resolver,uri);
   }
   
+  private void constructed()
+  {
+    log.fine("Protocomposite="+protoComposite);
+  }
+  
+  @Override
+  public void init(DataComposite composite)
+    throws DataException
+  { 
+    if (protoComposite==null)
+    { return;
+    }
+    
+    if (composite instanceof EditableTuple)
+    { ((EditableTuple) composite).copyFrom((Tuple) protoComposite);
+    }
+  
+  }
+  
   @SuppressWarnings("unchecked")
   @Override
   public T fromData(DataComposite composite,InstanceResolver resolver) 
@@ -59,10 +81,14 @@ public class Prototype<T>
     //   work when additional definition is included at the referencing
     //   location.
     if (protoComposite!=null)
-    { return (T) archetype.fromData(protoComposite,resolver);
+    { 
+      T ret = (T) archetype.fromData(protoComposite,resolver);
+      return ret;
     }
     else
-    { return protoObject;
+    { 
+      // TODO: Make a copy so we don't inadvertently share.
+      return protoObject;
     }
   }
   

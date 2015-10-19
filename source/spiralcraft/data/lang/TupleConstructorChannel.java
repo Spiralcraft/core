@@ -2,6 +2,7 @@ package spiralcraft.data.lang;
 
 import java.util.ArrayList;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -94,6 +95,14 @@ public class TupleConstructorChannel<T extends Tuple>
       buffer
         ?(T) new BufferTuple(dataSessionChannel.get(),type)
         :(T) new EditableArrayTuple(type);
+    
+    try
+    { type.init(tuple);
+    }
+    catch (DataException x)
+    { throw new AccessException("Error initializing "+type.getURI(),x);
+    }
+    
     if (setters!=null)
     { 
       local.push(tuple);

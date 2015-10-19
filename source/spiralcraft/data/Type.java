@@ -697,6 +697,17 @@ public abstract class Type<T>
    */
   public abstract boolean isLinked();
   
+  /**
+   * Initialize a DataComposite that defines the data for a new instance of 
+   *   this type.
+   * 
+   * @param t
+   */
+  public void init(DataComposite t)
+    throws DataException
+  {
+  }
+  
   public boolean getDebug()
   { return debug;
   }
