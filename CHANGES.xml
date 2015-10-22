@@ -13,6 +13,27 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev128
+        </revision>
+      
+        <notes>
+          <scm:Note>Additional debugging output to diagnose issues when 
+            programmatically creating data-defined types.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>reflect/ReflectionType.java
+          </URI>
+          <URI>util/StaticInstanceResolver.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev127
         </revision>
       
