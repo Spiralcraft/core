@@ -14,6 +14,8 @@
 //
 package spiralcraft.data.util;
 
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * An InstanceResolver that simply holds an Object
@@ -21,6 +23,12 @@ package spiralcraft.data.util;
 public class StaticInstanceResolver
   implements InstanceResolver
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(StaticInstanceResolver.class);
+ 
+  private static final Level logLevel
+    =ClassLog.getInitialDebugLevel(StaticInstanceResolver.class,Level.INFO);
+  
   private Object object;
   
   public StaticInstanceResolver(Object object)
@@ -42,6 +50,12 @@ public class StaticInstanceResolver
     if (clazz.isAssignableFrom(object.getClass()))
     { return object;
     }
+    else
+    { 
+      if (logLevel.isFine())
+      { log.fine(clazz.getName()+" is not assignable from "+object.getClass());
+      }
+    }
     return null;
   }
 
@@ -54,5 +68,10 @@ public class StaticInstanceResolver
 
   public Object getInstance()
   { return object;
+  }
+  
+  @Override
+  public String toString()
+  { return super.toString()+": "+object;
   }
 }
