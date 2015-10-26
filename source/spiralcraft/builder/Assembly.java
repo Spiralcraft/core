@@ -149,21 +149,21 @@ public class Assembly<T>
       }
     }
     
+    String constructor=_assemblyClass.getConstructor();
     if (javaClass==null)
     { 
       throw _assemblyClass.newBuildException
         ("No java class defined for assembly",null);
     }
-    else if (Modifier.isAbstract(javaClass.getModifiers()))
+    else if (constructor==null && Modifier.isAbstract(javaClass.getModifiers()))
     { 
       throw _assemblyClass.newBuildException
         ("Cannot instantiate an abstract class "+javaClass.getName(),null);
     }
-    else if (!javaClass.isInterface())
+    else if (constructor!=null || !javaClass.isInterface())
     { 
       try
       {
-        String constructor=_assemblyClass.getConstructor();
         T instance;
         if (constructor!=null)
         { instance=constructFromString(javaClass,constructor);
