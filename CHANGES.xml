@@ -13,6 +13,22 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev129
+        </revision>
+      
+        <notes>
+          <scm:Note>Permit instantiation of interfaces and abstract classes
+            when a text-based constructor is specified and there is an
+            appropriate registered StringConverter available.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/Assembly.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev128
         </revision>
       

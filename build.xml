@@ -3,8 +3,8 @@
   <property name="classpath" value=""/>
   <property name="organization" value="spiralcraft"/>
   <property name="module" value="core"/>
-  <property name="buildVersion" value="0.4.17-dev128"/>
-  <property name="build.status" value="milestone"/>
+  <property name="buildVersion" value="0.4.17-dev129"/>
+  <property name="build.status" value="integration"/>
 
   <property name="logs.dir" location="test/log"/>  
   <property name="depends.dir" location="../../repo"/>
