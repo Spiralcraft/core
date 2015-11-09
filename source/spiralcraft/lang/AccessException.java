@@ -35,5 +35,15 @@ public class AccessException
   public AccessException(Throwable cause)
   { super(cause);
   }
+  
+  public Throwable unwrapCause()
+  {
+    if (getCause() instanceof AccessException)
+    { return ((AccessException) getCause()).unwrapCause();
+    }
+    else
+    { return getCause();
+    }    
+  }
 
 }
