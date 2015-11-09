@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Method to unwrap the cause of a stack of AccessExceptions
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/AccessException.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev129
+        </revision>
+      
+        <notes>
           <scm:Note>Permit instantiation of interfaces and abstract classes
             when a text-based constructor is specified and there is an
             appropriate registered StringConverter available.
