@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.kit;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -22,6 +23,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.parser.BindingNode;
 import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.lang.spi.ContextualFunction;
+import spiralcraft.lang.spi.SourcedChannel;
 
 /**
  * <p>Encapsulates the use of multiple binding channels for a single operation,
@@ -103,8 +105,42 @@ public class BindingSet<T>
     for (BindingChannel<?> bindingChannel: bindingChannels)
     { bindingChannel.bindTarget(inputFocus);
     }
-    return inputFocus.getSubject();
+    return new BindingSetChannel<T>
+      (inputFocus.getSubject(),bindingChannels);
   }
 
 
+}
+
+class BindingSetChannel<T>
+  extends SourcedChannel<T,T>
+{
+  private final BindingChannel<?>[] bindings;
+  
+  public BindingSetChannel(Channel<T> input,BindingChannel<?>[] bindings)
+  { 
+    super(input);
+    this.bindings=bindings;
+  }
+
+  @Override
+  protected T retrieve()
+  {
+    for (BindingChannel<?> binding: bindings)
+    { binding.get();
+    }
+    return source.get();
+  }
+
+  @Override
+  protected boolean store(
+    T val)
+      throws AccessException
+  { return false;
+  }
+  
+  public boolean isWritable()
+  { return false;
+  }
+  
 }

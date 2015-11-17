@@ -1,9 +1,13 @@
 package spiralcraft.rules;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.text.MessageFormat;
+import spiralcraft.text.ParseException;
+import spiralcraft.text.markup.MarkupException;
 
 /**
  * <p>A Rule which is Violated when a boolean expression fails when evaluated
@@ -21,6 +25,7 @@ public class ExpressionRule<C,T>
 
   private Expression<Boolean> expression;
   private boolean ignoreNull;
+  private String messageFormat;
   
   public ExpressionRule()
   { }
@@ -33,6 +38,14 @@ public class ExpressionRule<C,T>
   { this.expression=expression;
   }
   
+  public void setMessageFormat(String messageFormat)
+  { this.messageFormat=messageFormat;
+  }
+  
+  public void setX(Expression<Boolean> expression)
+  { this.expression=expression;
+  }
+
   /**
    * <p>Indicate that a null result will not trigger a violation
    * </p>
@@ -63,10 +76,30 @@ public class ExpressionRule<C,T>
     extends RuleChannel<T>
   {
     private final Channel<Boolean> channel;
+    private MessageFormat messageFormat;
     
     public ExpressionRuleChannel(Focus<T> focus)
       throws BindException
-    { channel=focus.bind(expression);
+    { 
+      channel=focus.bind(expression);
+      if (ExpressionRule.this.messageFormat!=null)
+      { 
+        try
+        { 
+          messageFormat=new MessageFormat(ExpressionRule.this.messageFormat);
+          messageFormat.bind(focus);
+        }
+        catch (MarkupException x)
+        { throw new BindException("Error parsing rule message format",x);
+        }
+        catch (ParseException x)
+        { throw new BindException("Error parsing rule message format",x);
+        }
+        catch (ContextualException x)
+        { throw new BindException("Error parsing rule message format",x);
+        }
+        
+      }
     }
     
     @Override
@@ -80,7 +113,13 @@ public class ExpressionRule<C,T>
       { return null;
       }
       else
-      { return new Violation<T>(ExpressionRule.this,getMessage());
+      { 
+        return new Violation<T>
+          (ExpressionRule.this
+          ,messageFormat!=null
+            ?messageFormat.render()
+            :ExpressionRule.this.getMessage()
+          );
       }
     }
     

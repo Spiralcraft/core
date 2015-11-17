@@ -18,7 +18,6 @@ package spiralcraft.data.task;
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Aggregate.Index;
-import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.Key;
@@ -46,6 +45,11 @@ import spiralcraft.lang.kit.BindingSet;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.Level;
+import spiralcraft.rules.Inspector;
+import spiralcraft.rules.Rule;
+import spiralcraft.rules.RuleException;
+import spiralcraft.rules.RuleSet;
+import spiralcraft.rules.Violation;
 import spiralcraft.task.Chain;
 import spiralcraft.util.KeyFunction;
 
@@ -56,8 +60,8 @@ import spiralcraft.util.KeyFunction;
  *
  * @param <Tcontext>
  */
-public class Synchronize<Tcontext>
-  extends Chain<Tcontext,DataComposite>
+public class Synchronize
+  extends Chain<Void,Void>
 {
   private Binding<?> source;
   private IterationDecorator<?,Tuple> sourceIter;
@@ -70,6 +74,11 @@ public class Synchronize<Tcontext>
   private ThreadLocalChannel<Aggregate<BufferTuple>> bufferChannel;
   private boolean autoSave;
   private BindingSet<Tuple> keyBindings;
+  private RuleSet<Void,Tuple> insertRules;
+  private Inspector<Void,Tuple> insertInspector;
+  private RuleSet<Void,Tuple> sourceRules;
+  private Inspector<Void,Tuple> sourceInspector;
+  
 
   { importContext=true;
   }
@@ -99,7 +108,30 @@ public class Synchronize<Tcontext>
   public void setAutoSave(boolean autoSave)
   { this.autoSave=autoSave;
   }
+
+  /**
+   * Validation rules for all incoming source entities
+   * 
+   * @param sourceRules
+   */
+  public void setSourceRules(Rule<Void,Tuple>[] sourceRules)
+  { 
+    this.sourceRules=new RuleSet<Void,Tuple>(null);
+    this.sourceRules.addRules(sourceRules);
+  }
   
+  /**
+   * Validation rules for source entities that will be created because they
+   *   were not found in the local set.
+   * 
+   * @param sourceRules
+   */
+  public void setInsertRules(Rule<Void,Tuple>[] insertRules)
+  {
+    this.insertRules=new RuleSet<Void,Tuple>(null);
+    this.insertRules.addRules(insertRules);
+  }
+
   @SuppressWarnings({ "rawtypes", "unchecked"})
   @Override
   protected Focus<?> bindContext(Focus<?> focusChain)
@@ -160,6 +192,23 @@ public class Synchronize<Tcontext>
     if (dataSessionChannel==null)
     { throw new BindException("Must be within the scope of a data session");
     }
+    
+    if (sourceRules!=null)
+    { 
+      sourceInspector=sourceRules.bind
+        (sourceIter.getComponentReflector()
+        ,focusChain
+        );
+    }
+
+    if (insertRules!=null)
+    { 
+      insertInspector=insertRules.bind
+        (sourceIter.getComponentReflector()
+        ,focusChain
+        );
+    }
+    
     return focusChain;
   }
   
@@ -221,6 +270,13 @@ public class Synchronize<Tcontext>
         
         for (Tuple sourceTuple:sourceIter)
         {
+          if (sourceInspector!=null)
+          { 
+            Violation<Tuple>[] violations=sourceInspector.inspect(sourceTuple);
+            if (violations!=null && violations.length>0)
+            { throw new RuleException(violations);
+            }
+          }
           KeyTuple sourceKey=keyFunction.key(sourceTuple);
           Tuple localTuple=index.getFirst(sourceKey);
           if (debug)
@@ -231,6 +287,14 @@ public class Synchronize<Tcontext>
           {
             if (debug)
             { log.fine("Adding: "+sourceTuple);
+            }
+            
+            if (insertInspector!=null)
+            { 
+              Violation<Tuple>[] violations=insertInspector.inspect(sourceTuple);
+              if (violations!=null && violations.length>0)
+              { throw new RuleException(violations);
+              }
             }
             
             // Create a new buffer
@@ -257,9 +321,8 @@ public class Synchronize<Tcontext>
             // Buffer the localTuple
             if (dataSession!=null)
             { 
-              BufferTuple buffer=(BufferTuple) dataSession.buffer(sourceTuple);
+              BufferTuple buffer=(BufferTuple) dataSession.buffer(localTuple);
               buffer.updateFrom(sourceTuple);
-
               if (keyBindings!=null)
               { keyBindings.evaluate(buffer);
               }
@@ -292,7 +355,11 @@ public class Synchronize<Tcontext>
         if (autoSave)
         { 
           for (BufferTuple buffer: buffers)
-          { buffer.save();
+          { 
+            if (debug)
+            { log.fine("Saving "+buffer);
+            }
+            buffer.save();
           }
         }
         
@@ -302,6 +369,13 @@ public class Synchronize<Tcontext>
       { 
         if (debug)
         { log.log(Level.WARNING,"Threw",x);
+        }
+        addException(x);
+      }
+      catch (RuleException x)
+      {
+        if (debug)
+        { log.log(Level.WARNING,"Rule Violation "+x.getMessage(),x);
         }
         addException(x);
       }

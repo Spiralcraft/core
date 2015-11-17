@@ -22,12 +22,27 @@ public class RuleException
 
   private static final long serialVersionUID = 1L;
   
-  private Violation<?>[] violations;
+  private final Violation<?>[] violations;
+  private final String message;
   
   public RuleException(Violation<?> ... violations)
-  { this.violations=violations;
+  { 
+    this.violations=violations;
+    StringBuilder message=new StringBuilder();
+    for (Violation<?> violation: violations)
+    { 
+      if (message.length()>0)
+      { message.append("\r\n");
+      }
+      message.append(violation.getMessage());
+    }
+    this.message=message.toString();
   }
 
+  public String getMessage()
+  { return message;
+  }
+  
   public Violation<?>[] getViolations()
   { return violations;
   }

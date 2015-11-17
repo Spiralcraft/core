@@ -37,6 +37,10 @@ public class RuleSet<Tcontext,Tvalue>
   private final Tcontext context;
   private final RuleSet<Tcontext,Tvalue> baseSet;
   private List<RuleSet<Tcontext,Tvalue>> additionalSets;
+  private final ArrayList<Rule<Tcontext,Tvalue>> rules
+  =new ArrayList<Rule<Tcontext,Tvalue>>();
+
+
   
   /**
    * <p>Create a new RuleSet for the specified Context
@@ -67,10 +71,6 @@ public class RuleSet<Tcontext,Tvalue>
   { return context;
   }
   
-  private final ArrayList<Rule<Tcontext,Tvalue>> rules
-    =new ArrayList<Rule<Tcontext,Tvalue>>();
-  
-
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Varargs parameter
   @Override
   public Iterator<Rule<Tcontext,Tvalue>> iterator()

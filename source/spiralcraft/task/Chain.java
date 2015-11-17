@@ -65,13 +65,15 @@ public abstract class Chain<Tcontext,Tresult>
     protected void work()
       throws InterruptedException
     { 
-      if (chain!=null && exception==null)
+      if (exception==null)
       {
-        command=chain.command();
-        super.work();
+        if (chain!=null)
+        {
+          command=chain.command();
+          super.work();
+        }
         if (resultX!=null)
-        { 
-          addResult(resultX.get());
+        { addResult(resultX.get());
         }        
       }
     }
