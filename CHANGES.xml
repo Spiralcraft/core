@@ -13,6 +13,37 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev130
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhancements to the Synchronize task and supporting 
+            components to support validation of external entities and 
+            inserts.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/task/Synchronize.java
+          </URI>
+          <URI>lang/kit/BindingSet.java
+          </URI>
+          <URI>rules/ExpressionRule.java
+          </URI>
+          <URI>rules/RuleException.java
+          </URI>
+          <URI>rules/RuleSet.java
+          </URI>
+          <URI>task/Chain.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev129
         </revision>
       
