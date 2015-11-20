@@ -1,6 +1,7 @@
 <task:Sequence
   xmlns:task="class:/spiralcraft/task/"
   xmlns:test="class:/spiralcraft/test/"
+  xmlns:sr="class:/spiralcraft/rules/"
   >
   <scenarios>
     <test:Assertion>
@@ -166,6 +167,41 @@
             </test:Assertion>  
           </else>
         </task:If>
+        
+        <test:AssertFailure>
+          <name>Validation Fail test
+          </name>
+          <chain>
+            <task:Validate>
+              <rules>
+                <sr:ExpressionRule>
+                  <x>false
+                  </x>
+                  <message>Validation fail asserted
+                  </message>
+                </sr:ExpressionRule>
+              </rules>
+            
+            
+            </task:Validate>
+          
+          </chain>
+        
+        </test:AssertFailure>
+        
+        <task:Validate>
+          <rules>
+            <sr:ExpressionRule>
+              <x>true
+              </x>
+              <message>This can't happen               
+              </message>
+            </sr:ExpressionRule>
+          </rules>
+         
+         
+        </task:Validate>
+          
         
       </scenarios>   
     </task:Sequence>
