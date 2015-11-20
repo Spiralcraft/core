@@ -13,6 +13,34 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev131
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a test that asserts that a chained task will fail to
+            assist implementing negative test cases.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/test/AssertFailure.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev131
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a Validate task to run checks against input before
+            invoking a chain.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Validate.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev130
         </revision>
       
