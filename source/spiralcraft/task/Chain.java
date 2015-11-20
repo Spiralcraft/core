@@ -107,7 +107,7 @@ public abstract class Chain<Tcontext,Tresult>
     if (addChainResult)
     {
       storeResults=true;
-      if (chain.getResultReflector()!=null && resultReflector==null)
+      if (chain!=null && chain.getResultReflector()!=null && resultReflector==null)
       {
         if (debug)
         { log.fine("Inheriting chain result- result is "+chain.getResultReflector()+" ("+getDeclarationInfo()+")");
