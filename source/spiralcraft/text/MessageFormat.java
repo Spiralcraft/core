@@ -43,7 +43,7 @@ import spiralcraft.util.string.StringPool;
  *
  */
 public class MessageFormat
-  implements Contextual,Renderer
+  implements Contextual,Renderer,Cloneable
 {
   private static final MarkupParser substitutionParser
     =new MarkupParser("{|","|}",'\\');
@@ -109,6 +109,17 @@ public class MessageFormat
       );
   }
   
+  public MessageFormat clone()
+    throws CloneNotSupportedException
+  {
+    MessageFormat clone=(MessageFormat) super.clone();
+    clone.renderers=new LinkedList<AbstractRenderer>();
+    for (AbstractRenderer renderer : renderers)
+    { clone.renderers.add(renderer.clone());
+    }
+    return clone;
+  }
+  
   @Override
   public void render(Appendable appendable)
     throws IOException
@@ -148,9 +159,12 @@ public class MessageFormat
 }
 
 abstract class AbstractRenderer
-  implements Renderer,Contextual
+  implements Renderer,Contextual,Cloneable
 {
- 
+  public AbstractRenderer clone()
+    throws CloneNotSupportedException
+  { return (AbstractRenderer) super.clone();
+  }
 }
 
 class ContentRenderer
@@ -188,6 +202,16 @@ class MarkupRenderer
   public MarkupRenderer(CharSequence expression) 
     throws ParseException
   { this.binding=new Binding<Object>(expression.toString());
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public MarkupRenderer clone()
+    throws CloneNotSupportedException
+  { 
+    MarkupRenderer clone= (MarkupRenderer) super.clone();
+    clone.binding=new Binding(binding.getExpression());
+    return clone;
   }
   
   @Override

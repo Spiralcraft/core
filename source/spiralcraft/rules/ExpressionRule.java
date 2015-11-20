@@ -6,8 +6,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.text.MessageFormat;
-import spiralcraft.text.ParseException;
-import spiralcraft.text.markup.MarkupException;
 
 /**
  * <p>A Rule which is Violated when a boolean expression fails when evaluated
@@ -25,7 +23,7 @@ public class ExpressionRule<C,T>
 
   private Expression<Boolean> expression;
   private boolean ignoreNull;
-  private String messageFormat;
+  private MessageFormat messageFormat;
   
   public ExpressionRule()
   { }
@@ -38,7 +36,7 @@ public class ExpressionRule<C,T>
   { this.expression=expression;
   }
   
-  public void setMessageFormat(String messageFormat)
+  public void setMessageFormat(MessageFormat messageFormat)
   { this.messageFormat=messageFormat;
   }
   
@@ -86,14 +84,11 @@ public class ExpressionRule<C,T>
       { 
         try
         { 
-          messageFormat=new MessageFormat(ExpressionRule.this.messageFormat);
+          messageFormat=ExpressionRule.this.messageFormat.clone();
           messageFormat.bind(focus);
         }
-        catch (MarkupException x)
-        { throw new BindException("Error parsing rule message format",x);
-        }
-        catch (ParseException x)
-        { throw new BindException("Error parsing rule message format",x);
+        catch (CloneNotSupportedException x)
+        { throw new BindException("Error cloning rule message format",x);
         }
         catch (ContextualException x)
         { throw new BindException("Error parsing rule message format",x);
