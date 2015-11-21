@@ -48,11 +48,11 @@ public abstract class AbstractTaskMethod<T,C,R>
 {
 
   private boolean returnCommand;
-  private Binding<Type<R>> returnTypeX;
+  private Expression<Type<R>> returnTypeX;
   private boolean throwException;
   
   
-  public void setReturnTypeX(Binding<Type<R>> returnTypeX)
+  public void setReturnTypeX(Expression<Type<R>> returnTypeX)
   { this.returnTypeX=returnTypeX;
   }
   
@@ -66,6 +66,7 @@ public abstract class AbstractTaskMethod<T,C,R>
       { 
         try
         { 
+          Binding<Type<R>> returnTypeX=new Binding<>(this.returnTypeX);
           returnTypeX.bind(selfFocus);
           if (!Type.class.isAssignableFrom(returnTypeX.getReflector().getContentType()))
           { 
