@@ -13,6 +13,21 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev132
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where returnTypeX binding was inadvertently
+            shared between concrete instances of the method in different
+            types, causing a type loading error.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/AbstractTaskMethod.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev131
         </revision>
       
