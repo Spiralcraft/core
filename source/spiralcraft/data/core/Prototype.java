@@ -54,7 +54,6 @@ public class Prototype<T>
   
   private void constructed()
   {
-    log.fine("Protocomposite="+protoComposite);
   }
   
   @Override
