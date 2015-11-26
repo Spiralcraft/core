@@ -13,6 +13,20 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev133
+        </revision>
+      
+        <notes>
+          <scm:Note>Remove coarse-grained synchronization in TupleReflector
+            to avoid deadlock.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev132
         </revision>
       
