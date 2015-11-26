@@ -230,7 +230,7 @@ public class TupleReflector<T extends Tuple>
    */
   @SuppressWarnings({ "unchecked", "rawtypes" }) // We haven't genericized the data package yet
   @Override
-  public synchronized <X> Channel<X> resolve
+  public <X> Channel<X> resolve
     (final Channel<T> source
     ,Focus<?> focus
     ,String name
@@ -245,17 +245,20 @@ public class TupleReflector<T extends Tuple>
     
     if (name.equals("_tuple"))
     { 
-      // Provide access to 
-      Channel binding=source.getCached("_tuple");
-      if (binding==null)
-      { 
-        binding=new AspectChannel
-          (BeanReflector.getInstance(contentType)
-          ,source
-          );
-        source.cache("_tuple",binding);
+      synchronized (this)
+      {
+        // Provide access to 
+        Channel binding=source.getCached("_tuple");
+        if (binding==null)
+        { 
+          binding=new AspectChannel
+            (BeanReflector.getInstance(contentType)
+            ,source
+            );
+          source.cache("_tuple",binding);
+        }
+        return binding;
       }
-      return binding;
     }
     
     
@@ -270,27 +273,30 @@ public class TupleReflector<T extends Tuple>
 
     if (params==null)
     {
-      Channel binding=source.getCached(name);
-      if (binding!=null)
-      { return binding;
-      }
-      
-      if (type!=null)
-      { field=type.getField(name);
-      }
-      else
-      { field=untypedFieldSet.getFieldByName(name);
-      }
-    
-      if (field!=null)
+      synchronized (this)
       {
-              
-        binding=field.bindChannel(source,focus,null);
-      
+        Channel binding=source.getCached(name);
         if (binding!=null)
-        { 
-          source.cache(name,binding);
-          return binding;      
+        { return binding;
+        }
+      
+        if (type!=null)
+        { field=type.getField(name);
+        }
+        else
+        { field=untypedFieldSet.getFieldByName(name);
+        }
+    
+        if (field!=null)
+        {
+              
+          binding=field.bindChannel(source,focus,null);
+      
+          if (binding!=null)
+          { 
+            source.cache(name,binding);
+            return binding;      
+          }
         }
       }
     }
