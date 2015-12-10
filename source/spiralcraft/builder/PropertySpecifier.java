@@ -910,13 +910,16 @@ public class PropertySpecifier
   public String getTextData()
   { return _textData;
   }
+  
+  public String getSourceInfo()
+  {
+    return ArrayUtil.format(_container.getInnerPath(),".","")
+      +"."+ArrayUtil.format(_specifier,".","")
+      +"("+_container.getSourceURI()+")";
+  }
 
   @Override
   public String toString()
-  { 
-    return super.toString()
-      +":"+ArrayUtil.format(_container.getInnerPath(),".","")
-      +"."+ArrayUtil.format(_specifier,".","")
-      +"("+_container.getSourceURI()+")";
+  { return super.toString()+": "+getSourceInfo();
   }
 }

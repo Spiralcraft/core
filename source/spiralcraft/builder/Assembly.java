@@ -332,22 +332,18 @@ public class Assembly<T>
     }
     else
     { 
-      // XXX: Remove warning once functionality is well verified
-      //
-      // If we opt to create an incompatible type, that's still valid as long 
-      //   as it 
-      //   is still compatible with the formal property type, not the actual
-      //   type of the
-      //   default object. 
-      log.debug
-        ("Assembly: Default value of type "
+      // If the specified class is not assignable from the default instance
+      //   type then we will discard the default instance and create a new
+      //   value for the property.
+      log.info
+        (  (_assemblyClass.getContainingProperty()!=null
+            ?""+_assemblyClass.getContainingProperty().getSourceInfo()
+              :""
+           )
+        +": "+(_assemblyClass.getBaseURI()!=null?_assemblyClass.getBaseURI().toString():"")
+        +" ("+_assemblyClass.getJavaClass().getName()+")"
+        +" will replace default instance of type "
         +val.getClass()
-        +" is not compatible with "
-        +_assemblyClass.getJavaClass()
-        +(_assemblyClass.getContainingProperty()!=null
-          ?" ("+_assemblyClass.getContainingProperty()+")"
-          :""
-         )
         );
     }
   }
