@@ -13,6 +13,67 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev134
+        </revision>
+      
+        <notes>
+          <scm:Note>Use Disposable interface to clean up static services in
+            a way that supports Classloader context reloading and ensure that
+            Classloaders are not prevented from being GC'd.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>common/Disposable.java
+          </URI>
+          <URI>common/DisposableContext.java
+          </URI>
+          <URI>common/DisposableReference.java
+          </URI>
+          <URI>service/Application.java
+          </URI>
+          <URI>time/Clock.java
+          </URI>
+          <URI>time/Scheduler.java
+          </URI>
+          <URI>util/ClassLoaderLocal.java
+          </URI>
+          <URI>util/ClasspathResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev134
+        </revision>
+      
+        <notes>
+          <scm:Note>Pool should allow some time for checkouts to be collected
+            before discarding checked on entries on stop.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/pool/Pool.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev134
+        </revision>
+      
+        <notes>
+          <scm:Note>Centralize open/close functionality in Jar class loader
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/classloader/JarArchive.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev133
         </revision>
       
