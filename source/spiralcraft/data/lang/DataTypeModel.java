@@ -48,7 +48,14 @@ public class DataTypeModel
     {
     }
     catch (DataException x)
-    { throw new BindException("Error resolving type "+typeURI,x);
+    { 
+      if (x.getCause() instanceof TypeNotFoundException)
+      {
+      
+      }
+      else
+      { throw new BindException("Error resolving type "+typeURI,x);
+      }
     }
     
     if (type!=null)

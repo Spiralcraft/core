@@ -206,7 +206,13 @@ public class TypeResolver
   
   public final <T> Type<T> resolve(URI typeUri)
     throws DataException
-  { return resolve(typeUri,true);
+  { 
+    try
+    { return resolve(typeUri,true);
+    }
+    catch (Throwable x)
+    { throw new DataException(toString()+": Error resolving type "+typeUri,x);
+    }
   }
   
   @SuppressWarnings("unchecked") // Generic method but heterogeneous implementation
