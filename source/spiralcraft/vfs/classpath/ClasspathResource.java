@@ -33,6 +33,7 @@ import java.util.List;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 
 public class ClasspathResource
   extends AbstractResource
@@ -74,7 +75,7 @@ public class ClasspathResource
     }
   }
   
-  private final ClassLoader _classLoader;
+  private final WeakReference<ClassLoader> _classLoader;
   private final String _path;
   private URL _url;
   private List<String> _contents;
@@ -87,17 +88,20 @@ public class ClasspathResource
     if (getURI().getPath().length()>0)
     {
       _path=getURI().getPath().substring(1);
-      _classLoader=Thread.currentThread().getContextClassLoader();
+      _classLoader
+        =new WeakReference<ClassLoader>
+          (Thread.currentThread().getContextClassLoader());
     }
     else
     { throw new IllegalArgumentException("Invalid URI "+uri);
     }
   }
 
+  
   @Override
   public InputStream getInputStream()
     throws IOException
-  { return _classLoader.getResourceAsStream(_path);
+  { return _classLoader.get().getResourceAsStream(_path);
   }
 
   @Override
@@ -110,7 +114,7 @@ public class ClasspathResource
     throws IOException
   { 
     if (_url==null)
-    { _url=_classLoader.getResource(_path);
+    { _url=_classLoader.get().getResource(_path);
     }
     if (_url==null)
     { throw new IOException("Resource '"+_path+"' cannot be written to");
@@ -136,7 +140,7 @@ public class ClasspathResource
         if (debug)
         { log.fine("Checking "+_path+" in "+_classLoader);
         }
-        Enumeration<URL> resources=_classLoader.getResources(_path);
+        Enumeration<URL> resources=_classLoader.get().getResources(_path);
         
         List<URL> parts=new LinkedList<URL>();
         List<String> contents=new LinkedList<String>();
@@ -206,7 +210,7 @@ public class ClasspathResource
   @Override
   public boolean exists()
     throws IOException
-  { return _classLoader.getResource(_path) !=null;
+  { return _classLoader.get().getResource(_path) !=null;
   }
   
   @Override
@@ -268,6 +272,6 @@ public class ClasspathResource
   
   @Override
   public URL getURL()
-  { return _classLoader.getResource(_path);
+  { return _classLoader.get().getResource(_path);
   }
 }

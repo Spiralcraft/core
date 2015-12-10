@@ -18,6 +18,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+//import spiralcraft.log.ClassLog;
+//import spiralcraft.log.Level;
+
+import spiralcraft.common.DisposableReference;
+
 /**
  * <p>A tool which permits classes to associate an instance with a ClassLoader.
  * </p>
@@ -33,8 +38,11 @@ import java.util.WeakHashMap;
  */
 public class ClassLoaderLocal<T>
 {
+//  private static final ClassLog log
+//    =ClassLog.getInstance(ClassLoaderLocal.class);
+  
   // TODO: Make a reference to T so we don't have a strong ref to classloader
-  private final WeakHashMap<ClassLoader,T> map=new WeakHashMap<ClassLoader,T>();
+  private final WeakHashMap<ClassLoader,DisposableReference<T>> map=new WeakHashMap<>();
 
   /**
    * Return the instance associated with this thread's contextClassLoader
@@ -82,7 +90,7 @@ public class ClassLoaderLocal<T>
   {
     ClassLoader loader=Thread.currentThread().getContextClassLoader();
     if (loader!=null)
-    { map.put(loader,instance);
+    { map.put(loader,new DisposableReference<T>(instance));
     }
   }
   
@@ -91,8 +99,9 @@ public class ClassLoaderLocal<T>
    */
   public void setInstance(ClassLoader loader,T instance)
   { 
-    if (map.get(loader)==null)
-    { map.put(loader,instance);
+//    log.log(Level.FINE,"Created ref "+instance+" for "+loader,new Exception("trace"));
+    if (map.get(loader)==null || map.get(loader).get()==null)
+    { map.put(loader,new DisposableReference<T>(instance));
     }
     else
     { 
@@ -106,8 +115,15 @@ public class ClassLoaderLocal<T>
   { 
     // Tickle map to flush GC'd keys
     map.isEmpty(); 
-
-    return map.get(loader);
+    DisposableReference<T> ref=map.get(loader);
+    if (ref!=null)
+    { 
+      if (ref.get()==null)
+      { // log.warning("Ref disappeared for "+loader);
+      }
+      return ref.get();
+    }
+    return null;
   }
   
   /**

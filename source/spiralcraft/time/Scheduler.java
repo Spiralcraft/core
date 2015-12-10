@@ -14,9 +14,11 @@
 //
 package spiralcraft.time;
 
-//import java.util.logging.Logger;
+import spiralcraft.common.Disposable;
+import spiralcraft.common.DisposableContext;
 
-//import spiralcraft.log.ClassLogger;
+
+// import spiralcraft.log.ClassLog;
 
 import spiralcraft.pool.ThreadPool;
 import spiralcraft.util.thread.ThreadLocalStack;
@@ -27,8 +29,8 @@ import spiralcraft.util.thread.ThreadLocalStack;
  */
 public class Scheduler
 {
-//  private static final Logger log
-//    =ClassLogger.getInstance(Scheduler.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(Scheduler.class);
 
   private static volatile int NEXT_ID=-0;
   private static final Scheduler _INSTANCE=new Scheduler();
@@ -57,8 +59,7 @@ public class Scheduler
   private ScheduledItem _nextItem;
   private final Object _sync=new Object();
   private int id=NEXT_ID++;
-  private final Thread _thread
-    =new Thread(new Dispatcher(),"scheduler-"+id);
+  private final Dispatcher dispatcher=new Dispatcher();
   
   private ThreadPool _pool
     =new ThreadPool();
@@ -69,26 +70,52 @@ public class Scheduler
   
   private boolean _started=false;
   private volatile boolean shutdown=false;
-  
+
+  private final Disposable disposer=
+    new Disposable() 
+    { 
+      public void dispose() 
+      { Scheduler.this.dispose();
+      } 
+    };
 
 
 
   public Scheduler()
   { 
-    _thread.setDaemon(true);
-    _thread.start();
+    Thread thread
+      =new Thread(dispatcher,"scheduler-"+id);
+    thread.setDaemon(true);
+    thread.start();
     
-    Runtime.getRuntime().addShutdownHook
-      (new Thread()
-      {
-        @Override
-        public void run()
-        { shutdown=true;
-        }
-      }
-      );
+//    Runtime.getRuntime().addShutdownHook
+//      (new Thread()
+//      {
+//        @Override
+//        public void run()
+//        { dispose();
+//        }
+//      }
+//      );
+    
+    DisposableContext.register( disposer);    
   }
 
+  private void dispose()
+  {
+    dispatcher.stop();
+    synchronized (_sync)
+    { 
+      shutdown=true;
+      _sync.notifyAll();
+    }
+    if (_pool!=null)
+    { _pool.stop();
+    }
+    _pool=null;
+    
+  }
+  
   public void scheduleIn(Runnable runnable,long msFromNow)
   { scheduleAt(runnable,Clock.instance().approxTimeMillis()+msFromNow);
   }
@@ -181,6 +208,9 @@ public class Scheduler
              || _nextItem.duetime> (time=Clock.instance().approxTimeMillis()) 
              )
       { 
+        if (shutdown)
+        { return;
+        }
         if (_nextItem==null)
         { _sync.wait();
         }
@@ -189,10 +219,12 @@ public class Scheduler
         }
       }
       next=_nextItem;
-      _nextItem=_nextItem.nextItem;
+      if (_nextItem!=null)
+      { _nextItem=_nextItem.nextItem;
+      }
     }
 
-    if (next!=null)
+    if (next!=null && !shutdown)
     {
       try
       { dispatch(next.runnable);
@@ -218,13 +250,23 @@ public class Scheduler
   class Dispatcher
     implements Runnable
   {
+    private volatile boolean shutdown=false;
+    
+    private void stop()
+    {
+      synchronized (this)
+      { shutdown=true;
+      }
+    }
+    
     @Override
     public void run()
     {
       try
       {
         while (!shutdown)
-        { runNext();
+        { 
+          runNext();
         }
       }
       catch (InterruptedException x)

@@ -16,6 +16,8 @@ package spiralcraft.service;
 
 
 
+import java.lang.ref.WeakReference;
+
 import spiralcraft.app.CallContext;
 import spiralcraft.app.CallMessage;
 import spiralcraft.app.DisposeMessage;
@@ -26,6 +28,8 @@ import spiralcraft.app.StateFrame;
 import spiralcraft.app.kit.SimpleState;
 import spiralcraft.app.kit.StandardDispatcher;
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.Disposable;
+import spiralcraft.common.DisposableContext;
 import spiralcraft.common.LifecycleException;
 
 import spiralcraft.command.AbstractCommandFactory;
@@ -58,7 +62,7 @@ public class Application
   private String[] _args;
   private Scenario<?,?> afterStart;
   
-  private ShutdownHook _shutdownHook=new ShutdownHook();
+  private Disposer disposer=new Disposer();
   private State rootState;
   private CallContext callContext=new CallContext();
   private PlaceContext placeContext;
@@ -184,7 +188,7 @@ public class Application
       finally
       {
         _running=false;
-        _shutdownHook.finish();
+        disposer.finish();
       }
     }
     
@@ -232,7 +236,9 @@ public class Application
   
   private void handleEvents()
   {
-    Runtime.getRuntime().addShutdownHook(_shutdownHook);
+    DisposableContext.register(disposer);
+    final ShutdownHook hook=new ShutdownHook(disposer);
+    Runtime.getRuntime().addShutdownHook(hook);
     try
     { 
       while (_running && !_stopRequested)
@@ -256,7 +262,7 @@ public class Application
     { x.printStackTrace();
     }
     try
-    { Runtime.getRuntime().removeShutdownHook(_shutdownHook);
+    { Runtime.getRuntime().removeShutdownHook(hook);
     }
     catch (IllegalStateException x)
     {
@@ -264,12 +270,12 @@ public class Application
     
   }
   
-  class ShutdownHook
-    extends Thread
-  { 
-    @Override
-    public void run()
-    { 
+  class Disposer
+    implements Disposable
+  {
+  
+    public void dispose()
+    {
       terminate();
       synchronized(this)
       { 
@@ -286,6 +292,7 @@ public class Application
         { log.log(spiralcraft.log.Level.INFO,"Timed out waiting for stop.");
         }
       }
+      
     }
     
     public void finish()
@@ -296,5 +303,26 @@ public class Application
     }
     
   }
+  
 
 }
+
+class ShutdownHook
+  extends Thread
+{
+  private final WeakReference<Disposable> disposer;
+  
+  public ShutdownHook(Disposable disposer)
+  {
+    this.disposer=new WeakReference<Disposable>(disposer);
+  }
+  
+  public void run()
+  {
+    Disposable disposable=disposer.get();
+    if (disposable!=null)
+    { disposable.dispose();
+    }
+  }
+}
+  

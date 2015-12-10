@@ -14,6 +14,8 @@
 //
 package spiralcraft.time;
 
+import spiralcraft.common.Disposable;
+import spiralcraft.common.DisposableContext;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -27,8 +29,22 @@ public final class Clock
 
   private static final Clock _INSTANCE=new Clock(100);
 
+  private static final Disposable disposer=
+    new Disposable() 
+    { public void dispose() 
+      { disposed=true;
+      } 
+    };
+    
+  private volatile static boolean disposed;
+  
+  static
+  {
+    DisposableContext.register
+      (disposer);
+  }
+  
   private final int _precision;
-  private final Thread _thread=new Thread(this,"Clock");
   private long _time=System.currentTimeMillis();
   private long _nanoOffset=(System.currentTimeMillis() * 1000000)-(System.nanoTime());
   private Object _lock=new Object();
@@ -38,13 +54,15 @@ public final class Clock
   Clock(int precisionMillis)
   { 
     _precision=precisionMillis;
-    _thread.setDaemon(true);
-    _thread.start();
+    Thread thread=new Thread(this,"Clock");
+    thread.setDaemon(true);
+    thread.start();
   }
 
   public static final Clock instance()
   { return _INSTANCE;
   }
+  
 
   /**
    * Obtain the approximate time in milliseconds.
@@ -95,7 +113,7 @@ public final class Clock
   {
     try
     {
-      while (true)
+      while (!disposed)
       {
         update();
         Thread.sleep(_precision);
