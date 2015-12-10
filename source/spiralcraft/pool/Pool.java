@@ -73,6 +73,7 @@ public class Pool<T>
   private int _removesCount;
   private Sink<T> onCheckout;
   private Sink<T> onCheckin;
+  private volatile boolean _stopping;
 
   private final LinkedList<T> returnQueue
     =new LinkedList<T>();
@@ -174,6 +175,7 @@ public class Pool<T>
   {
     synchronized (_monitor)
     {
+      _stopping=false;
       _started=true;
       restoreInitial(_maxStartupMs);
       _keeper.start();
@@ -183,6 +185,20 @@ public class Pool<T>
     
   }
 
+  private void collectCheckouts()
+  { 
+    try
+    {
+      while (!_out.isEmpty())
+      { _monitor.wait(5000);
+      }
+    }
+    catch (InterruptedException x)
+    {
+      
+    }
+  }
+  
   /**
    * Stop the pool and discard all resources
    */
@@ -191,7 +207,10 @@ public class Pool<T>
   {
     synchronized (_monitor)
     {
+      _stopping=true;
       _started=false;
+      collectCheckouts();
+      
       _keeper.stop();
       clearReturnQueue();
       while (!_available.isEmpty())
@@ -237,6 +256,9 @@ public class Pool<T>
     T ret=null;
     synchronized (_monitor)
     {
+      if (_stopping)
+      { throw new InterruptedException("Pool is stopping");
+      }
       _lastUse=lastUse;
       if (!_started)
       { 
