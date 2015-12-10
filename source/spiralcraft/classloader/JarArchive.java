@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import spiralcraft.log.ClassLog;
 import spiralcraft.vfs.file.FileResource;
 import spiralcraft.vfs.util.ByteArrayResource;
 
@@ -53,12 +54,7 @@ public class JarArchive
   protected Entry loadEntry(String path)
     throws IOException
   {
-    JarFile jarFile=this.jarFile;
-    if (jarFile==null)
-    { 
-      jarFile
-        =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);      
-    }
+    JarFile jarFile=get();
     
     try
     {
@@ -88,6 +84,7 @@ public class JarArchive
   {
     if (jarFile!=null)
     {
+      //ClassLog.getInstance(getClass()).fine("Closing "+resource.getURI());
       try
       { jarFile.close();
       }
@@ -99,6 +96,19 @@ public class JarArchive
     super.close();
   }  
 
+  private JarFile get()
+    throws IOException
+  {
+    JarFile jarFile=JarArchive.this.jarFile;
+    if (jarFile==null)
+    { 
+      //ClassLog.getInstance(getClass()).fine("Reopening "+resource.getURI());
+      jarFile
+        =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);
+    }
+    return jarFile;
+  }
+  
   public class JarFileEntry
     extends Entry
   {
@@ -117,12 +127,7 @@ public class JarArchive
     public byte[] getData()
       throws IOException
     {
-      JarFile jarFile=JarArchive.this.jarFile;
-      if (jarFile==null)
-      { 
-        jarFile
-          =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);
-      }
+      JarFile jarFile=get();
 
       BufferedInputStream in=null;
       try
@@ -164,12 +169,7 @@ public class JarArchive
     public InputStream getResourceAsStream()
       throws IOException
     { 
-      JarFile jarFile=JarArchive.this.jarFile;
-      if (jarFile==null)
-      { 
-        jarFile
-          =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);
-      }
+      JarFile jarFile=get();
       try
       { 
         InputStream in=jarFile.getInputStream(jarEntry);
