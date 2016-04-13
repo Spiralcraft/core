@@ -14,6 +14,8 @@
 //
 package spiralcraft.command;
 
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 /**
  * <p>Provides a simple mechanism for implementing the Command interface by
  *   implementing an abstract run() method.
@@ -33,6 +35,9 @@ package spiralcraft.command;
 public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
   implements Command<Ttarget,Tcontext,Tresult>
 {
+ 
+  private static final ClassLog log=ClassLog.getInstance(CommandAdapter.class);
+  
   private boolean started;
   private boolean completed;
   
@@ -84,13 +89,7 @@ public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
   }
   
   protected synchronized void notifyStarted()
-  { 
-    if (started)
-    { 
-      throw new IllegalStateException
-        ("Cannot execute a Command instance more than once");
-    }
-    started=true;
+  { started=true;
   }
   
   protected synchronized void notifyCompleted()
@@ -122,6 +121,12 @@ public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
   @Override
   public final void execute()
   {
+    if (started)
+    { 
+      log.log(Level.WARNING,"Ignoring redundant command execution "+getClass().getName());
+      return;
+    }
+    
     notifyStarted();
     try
     { run();
