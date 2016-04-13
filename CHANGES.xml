@@ -13,6 +13,21 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev135
+        </revision>
+      
+        <notes>
+          <scm:Note>Command.execute() logs a warning and does nothing instead
+            of throwing an Exception when called more than once on an instance.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/command/CommandAdapter.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev134
         </revision>
       
