@@ -210,6 +210,9 @@ public class TypeResolver
     try
     { return resolve(typeUri,true);
     }
+    catch (TypeNotFoundException x)
+    { throw new TypeNotFoundException(toString()+": Error resolving type "+typeUri,x);
+    }
     catch (Throwable x)
     { throw new DataException(toString()+": Error resolving type "+typeUri,x);
     }
