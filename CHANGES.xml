@@ -17,6 +17,21 @@
         </revision>
       
         <notes>
+          <scm:Note>Don't convert TypeNotFoundException to a generic 
+            DataException in TypeResolver as it breaks Type probing logic.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/TypeResolver.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev135
+        </revision>
+      
+        <notes>
           <scm:Note>Command.execute() logs a warning and does nothing instead
             of throwing an Exception when called more than once on an instance.
           </scm:Note>
