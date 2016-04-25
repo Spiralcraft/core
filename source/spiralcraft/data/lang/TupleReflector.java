@@ -473,8 +473,8 @@ public class TupleReflector<T extends Tuple>
             
           Reflector paramReflector=paramChannel.getReflector();
           Type paramType;
-          if (paramReflector instanceof TypeReflector)
-          { paramType=((TypeReflector) paramReflector).getType();
+          if (paramReflector instanceof TypedDataReflector)
+          { paramType=((TypedDataReflector) paramReflector).getType();
           }
           else
           { 

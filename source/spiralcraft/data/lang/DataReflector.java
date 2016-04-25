@@ -55,7 +55,7 @@ import spiralcraft.data.session.BufferType;
  */
 public abstract class DataReflector<T extends DataComposite>
   extends AbstractReflector<T>
-  implements TypeReflector<T>
+  implements TypedDataReflector<T>
 {
   private static final TypeModel TYPE_MODEL
     =DataTypeModel.getInstance();
@@ -300,8 +300,8 @@ public abstract class DataReflector<T extends DataComposite>
     try
     {
       Reflector reflector=teleFocus.bind(expr).getReflector();
-      if (reflector instanceof TypeReflector)
-      { return ((TypeReflector) reflector).getType();
+      if (reflector instanceof TypedDataReflector)
+      { return ((TypedDataReflector) reflector).getType();
       }
       else
       { 

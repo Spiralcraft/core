@@ -18,7 +18,7 @@ package spiralcraft.data.sax;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.lang.TypeReflector;
+import spiralcraft.data.lang.TypedDataReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -139,7 +139,7 @@ public class RootFrame<T>
       
       if (type!=null)
       {
-        if (!(targetChannel.getReflector() instanceof TypeReflector))
+        if (!(targetChannel.getReflector() instanceof TypedDataReflector))
         { 
           throw new BindException
             ("Target is not an instance of "+type.getURI());
@@ -147,7 +147,7 @@ public class RootFrame<T>
         else
         {
           Type<?> targetType
-            =((TypeReflector) targetChannel.getReflector()).getType();
+            =((TypedDataReflector) targetChannel.getReflector()).getType();
         
           if (!type.isAssignableFrom(targetType))
           {
