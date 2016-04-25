@@ -74,28 +74,5 @@ public class TypeType
     return new EditableArrayTuple(metaType);
   }
   
-//  /**
-//   * Generate the data structure for a Type definition
-//   * 
-//   * @param type
-//   * @return
-//   */
-//  public Tuple toTypeData(TypeImpl type)
-//    throws DataException
-//  { return (Tuple) super.toData(type);
-//  }
-//  
-  
-//  /**
-//   * Types are always singletons- just resolve the URI.
-//   */
-//  public TypeImpl fromString(String val)
-//    throws DataException
-//  { return (TypeImpl) getTypeResolver().resolve(URIPool.create(val));
-//  }
-  
-//  public String toString(TypeImpl val)
-//  { return val.getURI().toString();
-//  } 
  
 }
