@@ -3,6 +3,8 @@
 <meta:Type
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
+  xmlns:j="class:/java/lang/"
+  xmlns:dt="class:/spiralcraft/data/task"
   >
 
   <parameters>
@@ -11,7 +13,8 @@
       </name>
     </meta:TypeParameter>
   </parameters>
-  
+  <abstract>true
+  </abstract>
   <fields>
 
     <meta:SequenceField>
@@ -37,7 +40,7 @@
       <template>true
       </template>
       
-      <typeX>listItemType
+      <typeX>listItemType.aggregateType
       </typeX>
       
       <referencedFieldList>listId
@@ -60,5 +63,73 @@
     </meta:Key>
     
   </keys>
+  
+  <methods>
+    <meta:Method>
+      <name>forId</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnTypeX>[meta:Type]
+      </returnTypeX>
+      
+      <contextX>{ id:[@j:String] }
+      </contextX>
+          
+      <x>[*dt:Fetch{[meta:Type],[{`id:=id`}]}].()
+      </x>
+          
+    </meta:Method>  
+
+    <meta:TransactionMethod>
+      <name>ensureList
+      </name>
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      <returnTypeX>[meta:Type]
+      </returnTypeX>
+      <static>true
+      </static>
+      <contextX>
+        [#p] { id:[@j:String] }
+      </contextX>
+      <x>
+        [meta:Type].@log(.).@@forId([p].id)
+          {.==null
+            ?.[*dt:Edit
+                { autoCreate:=true
+                , forceSave:=true
+                , preSave:=`.id=[p].id`
+                }
+              ].()
+            :.
+          }
+      </x>
+    </meta:TransactionMethod>   
+
+    <meta:TransactionMethod>
+      <name>getItemForId
+      </name>
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      <returnTypeX>[meta:Type].listItemType
+      </returnTypeX>
+      <generic>true
+      </generic>
+      <contextX>
+        [#p] { id:[@j:String] }
+      </contextX>
+      <x>
+        [example:GenericList].items[.id==id][0]
+      </x>
+    </meta:TransactionMethod>   
+  </methods>  
       
 </meta:Type>

@@ -6,7 +6,9 @@
   >
   <archetype>
     <example:GenericList.type>
-      <listItemType><example:ToDoListItem.list.type/>
+      <abstract>true
+      </abstract>
+      <listItemType><example:ToDoListItem.type/>
       </listItemType>
     </example:GenericList.type>
   </archetype>

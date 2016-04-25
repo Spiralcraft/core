@@ -9,9 +9,54 @@
     <authorId>miketoth
     </authorId>
     
-    
+     
 
     <detail> 
+      <scm:Change>
+        <revision>-dev136
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhancements to generics reification in data defined types
+            to support generic relationships and methods. Includes additional
+            language support for indirection using type variables such as
+            calling static methods on types resolved from type-variable based
+            expressions.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Method.java
+          </URI>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/core/AbstractAggregateType.java
+          </URI>
+          <URI>data/core/AbstractTaskMethod.java
+          </URI>
+          <URI>data/core/ExpressionMethod.java
+          </URI>
+          <URI>data/core/MetaType.java
+          </URI>
+          <URI>data/core/MethodImpl.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>data/core/TransactionMethod.java
+          </URI>
+          <URI>data/core/TypeImpl.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/spi/GenericReflector.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev135
         </revision>

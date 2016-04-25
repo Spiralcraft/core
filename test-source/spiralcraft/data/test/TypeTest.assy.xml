@@ -358,6 +358,27 @@
           </testX>
         
         </test:Assertion>
+        <test:Assertion>
+          <name>prototype method
+          </name>
+          <subjectX>[@example:ToDoList].@ensureList("firstList")
+          </subjectX>
+          <testX>.@type==[@example:ToDoList]
+          </testX>
+        
+        </test:Assertion>
+        <test:Assertion>
+          <name>generic method
+          </name>
+          <subjectX>
+            [@example:ToDoList]
+              .@ensureList("firstList")
+              .getItemForId("yo").@type
+          </subjectX>
+          <testX>.==[@example:ToDoListItem]
+          </testX>
+        
+        </test:Assertion>
       </sequence>
     </task:Eval>
             
