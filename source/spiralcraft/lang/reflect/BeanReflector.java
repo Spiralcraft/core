@@ -24,6 +24,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Range;
+import spiralcraft.lang.Reflectable;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;
@@ -327,6 +328,7 @@ public class BeanReflector<T>
   private MethodResolver methodResolver;
   private final Reflector<T> boxedEquivalent;
   private final boolean immutable;
+//  private final boolean reflectable;
 
   private boolean traceResolution=false;
   
@@ -428,6 +430,8 @@ public class BeanReflector<T>
     else
     { immutable=false;
     }
+    
+  //  reflectable=Reflectable.class.isAssignableFrom(clazz);
   }
 
   @Override
@@ -648,18 +652,67 @@ public class BeanReflector<T>
       if (ret!=null)
       { return ret;
       }
-      else if (Reflector.class.isAssignableFrom(source.getContentType()))
-      { 
-        // Check static channel for fluent syntax
-        return ((Reflector<?>) source.get()).getStaticChannel(focus)
-          .<X>resolve(focus,name.substring(1),params);
+      else 
+      { return resolveStatic(source,focus,name.substring(1),params);
       }
-      else
-      { return null;
-      }
+      
     }
     
 
+  }
+
+  /**
+   * Resolve "static" members not associated with an instance. The default
+   *   implementation knows about Reflectors. 
+   * 
+   * @param source
+   * @param focus
+   * @param name
+   * @param params
+   * @return
+   * @throws BindException
+   */
+  protected <X> Channel<X> resolveStatic
+    (Channel<T> source,Focus<?> focus,String name,Expression<?>[] params)
+      throws BindException
+  {
+    // We've already stripped the first "@". If the name has a second leading
+    //   "@" then the constant target will be checked for static members.
+    
+    if (source.isConstant()
+        && Reflector.class.isAssignableFrom(source.getContentType())
+        && name.startsWith("@")
+        )
+    { 
+//      log.fine("Statically resolving  "+name+" in "+this);
+      // Check static channel for fluent syntax. 
+      Channel<X> ret=((Reflector<?>) source.get()).getStaticChannel(focus)
+        .<X>resolve(focus,name,params);
+//      log.fine("Static check for "+name+" returned "+ret+" in "+this);
+      return ret;
+    }
+    else 
+//    if (source.isConstant() 
+//        && reflectable
+//        && name.startsWith("@")
+//        )
+//    { 
+//      Reflectable r=(Reflectable) source.get();
+//      if (r!=null)
+//      {
+//        Reflector reflector=r.reflect();
+//        log.fine("Resolving "+name+" in "+reflector);
+//        return reflector.<X>resolve(reflector.getStaticChannel(focus),focus,name,params);
+//      }
+//      else
+//      { 
+//        throw new BindException("Source is null resolving static @@"+name+" in "
+//          +toString());
+//      }
+//    }
+//    else
+    { return null;
+    }
   }
   
   public void setTraceResolution(boolean traceResolution)

@@ -70,18 +70,40 @@ public abstract class AbstractTaskMethod<T,C,R>
           returnTypeX.bind(selfFocus);
           if (!Type.class.isAssignableFrom(returnTypeX.getReflector().getContentType()))
           { 
-            throw new DataException
-              ("ReturnTypeX must resolve to a Type, not a "
-                +returnTypeX.getReflector().getTypeURI()
-              ,getDeclarationInfo()
-              );
+//            if (returnTypeX.getReflector() instanceof DataReflector
+//                && Type.class.isAssignableFrom
+//                  (((DataReflector<?>) returnTypeX.getReflector()).getType().getNativeClass()
+//                  )
+//                )
+//            { 
+//              Tuple returnTypeT=(Tuple) returnTypeX.get();
+//              if (returnTypeT !=null )
+//              { returnType = (Type<?>) returnTypeT.getType().fromData(returnTypeT,null);
+//              }
+//            }
+//            else
+//            {
+//              log.fine("Reflector is "+returnTypeX.getReflector());
+//              log.fine(Type.class+" notassignable from "+returnTypeX.getReflector().getContentType());
+              throw new DataException
+                ("ReturnTypeX must resolve to a Type, not a "
+                  +returnTypeX.getReflector().getTypeURI()
+                  +" ("+returnTypeX.getReflector().getContentType().getName()+")"
+                ,getDeclarationInfo()
+                );
+//            }
           }
-          returnType=returnTypeX.get();
+          else
+          { returnType=returnTypeX.get();
+          }
+          
           if (returnType==null)
           { 
-            throw new DataException
-              ("Resolved null return type for "+getURI(),getDeclarationInfo());
-            
+            if (!this.getDataType().isAbstract())
+            {
+              throw new DataException
+                ("Resolved null return type for "+getURI(),getDeclarationInfo());
+            }
           } 
         }
         catch (BindException x)
@@ -92,7 +114,7 @@ public abstract class AbstractTaskMethod<T,C,R>
       }
     }
     
-    if (this.returnType==null)
+    if (this.returnType==null && !generic)
     { 
       log.warning("Method "+getURI()+" has no return type. This usage is"
         +" no longer supported"
@@ -117,6 +139,14 @@ public abstract class AbstractTaskMethod<T,C,R>
   { this.throwException=throwException;
   }
   
+  @Override
+  public MethodImpl extend()
+  {
+    @SuppressWarnings("unchecked")
+    AbstractTaskMethod<T,C,R> m=(AbstractTaskMethod<T,C,R>) super.extend();
+    m.returnTypeX=returnTypeX;
+    return m;
+  }
   
   protected abstract Focus<Scenario<C,R>> bindTask(
     Focus<?> context,

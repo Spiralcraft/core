@@ -46,6 +46,14 @@ public class TaskMethod<T,C,R>
   }
   
 
+  @Override
+  public MethodImpl extend()
+  {
+    @SuppressWarnings("unchecked")
+    TaskMethod<T,C,R> m=(TaskMethod<T,C,R>) super.extend();
+    m.scenarioURI=scenarioURI;
+    return m;
+  }
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override

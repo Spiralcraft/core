@@ -28,13 +28,13 @@ import spiralcraft.common.attributes.AttributeSet;
 import spiralcraft.data.core.DeltaType;
 import spiralcraft.data.core.MetaType;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.lang.TypeReflector;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.ArrayTuple;
-// import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.AccessException;
@@ -43,16 +43,15 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflectable;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-//import spiralcraft.log.ClassLog;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.refpool.URIPool;
@@ -66,6 +65,7 @@ import spiralcraft.vfs.Resource;
  * Describes the data type of a data element.
  */
 public abstract class Type<T>
+  implements Reflectable<Type<T>>
 {  
   private static final ClassLog log=ClassLog.getInstance(Type.class);
   private static final Level LOG_LEVEL
@@ -241,6 +241,7 @@ public abstract class Type<T>
   protected Translator<?,T> externalizer;
   protected AttributeSet attributes;
   protected Focus<Type<T>> selfFocus;
+  protected TypeReflector<T> selfReflector;
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -345,20 +346,25 @@ public abstract class Type<T>
    */
   public abstract Type<?> getArchetype();
   
-  @SuppressWarnings("unchecked") // Scheme is not genericized
-  public Key<T> getPrimaryKey()
+  @Override
+  public Reflector<Type<T>> reflect()
+    throws BindException
   { 
     link();
-    Key<T> key=null;
-    if (getScheme()!=null)
-    { key=(Key<T>) getScheme().getPrimaryKey();
+    if (selfReflector==null)
+    {
+      try
+      { getSelfFocus();
+      }
+      catch (DataException x)
+      { throw new BindException("Error self reflecting: "+x.getMessage(),x);
+      }
     }
-    if (key==null && getBaseType()!=null)
-    { key=getBaseType().getPrimaryKey();
-    }
-    return key;
-    
+    return selfReflector;
   }
+
+  public abstract Key<T> getPrimaryKey();
+  
   
   /**
    * @return Whether this Type or any of its archetypes (recursively) is the
@@ -819,21 +825,30 @@ public abstract class Type<T>
   {
     if (selfFocus==null)
     {
-      Reflector<Type<T>> baseReflector
-        =BeanReflector.<Type<T>>getInstance(getClass());
-      GenericReflector<Type<T>> genericReflector
-        =new GenericReflector<Type<T>>(baseReflector);
+      if (selfReflector==null)
+      {
+        selfReflector
+          =new TypeReflector<T>(this);
+      }
       if (getParameters()!=null)
       {
         for (TypeParameter<?> parameter: getParameters())
         { 
           Type paramType=parameter.getType();
+          Reflector<?> paramReflector=null;
             
           if (paramType==null)
           {
             Object argVal=getArgument(parameter.getName());
             if (argVal!=null)
-            { paramType=ReflectionType.canonicalType(argVal.getClass());
+            { 
+              paramType=ReflectionType.canonicalType(argVal.getClass());
+              if (argVal instanceof Type)
+              { 
+                paramReflector
+                  =((Type) argVal).reflect();
+              }
+              // log.fine("Deduced paramType "+paramType+" from argument value "+argVal);
             }
           }
           
@@ -841,12 +856,22 @@ public abstract class Type<T>
           { paramType=ReflectionType.canonicalType(Type.class);
           }
           
+          if (paramReflector==null)
+          {
+            // log.fine("ParamType for "+parameter.getName()+" is "+paramType);
+            if (Type.class.isAssignableFrom(paramType.getNativeClass()))
+            { paramReflector=BeanReflector.getInstance(paramType.getNativeClass());
+            }
+            else
+            { paramReflector=DataReflector.getInstance(paramType);
+            }
+          }
           
-          genericReflector
+          selfReflector
             .enhance
               (parameter.getName()
               ,null
-              ,new ParameterAccessor(this,paramType,parameter)
+              ,new ParameterAccessor(this,paramReflector,parameter)
               );
           // log.fine("Added type parameter binding for "+parameter.getName()+"("+paramType.getURI()+") to "+getURI());
         }
@@ -854,7 +879,7 @@ public abstract class Type<T>
       else
       { // log.fine(getURI()+" has no type parameters");
       }
-      selfFocus=new SimpleFocus(new SimpleChannel(genericReflector,this,true));
+      selfFocus=new SimpleFocus(new SimpleChannel(selfReflector,this,true));
       selfFocus.addAlias(URIPool.create("class:/spiralcraft/data/types/meta/Type"));
     }
     return selfFocus;
@@ -868,11 +893,11 @@ class ParameterAccessor<T,Ttype>
   private final Type<?> type;
   private final TypeParameter<T> param;
   
-  public ParameterAccessor(Type<?> type,Type<T> paramType,TypeParameter<T> parameter)
+  public ParameterAccessor(Type<?> type,Reflector<T> paramReflector,TypeParameter<T> parameter)
     throws BindException
   { 
     super
-      (DataReflector.<T>getInstance(paramType));
+      (paramReflector);
     this.type=type;
     this.param=parameter;
   }

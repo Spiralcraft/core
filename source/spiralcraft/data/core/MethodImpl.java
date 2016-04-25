@@ -36,6 +36,7 @@ public abstract class MethodImpl
   private URI uri;
   private String description;
   protected Focus<MethodImpl> selfFocus;
+  protected boolean generic;
   
   protected boolean debug;
   
@@ -53,7 +54,16 @@ public abstract class MethodImpl
   
   @Override
   public URI getURI()
-  { return uri;
+  { 
+    if (uri!=null)
+    { return uri;
+    }
+    else if (dataType!=null)
+    { 
+      String qualifiedName=getDataType().getURI()+"!"+name;
+      return URIPool.create(qualifiedName);
+    }
+    else return URIPool.create("?!"+name);
   }
   
   @Override
@@ -112,6 +122,16 @@ public abstract class MethodImpl
   public void setReturnType(Type<?> type)
   { returnType=type;
   }
+
+  @Override
+  public boolean isGeneric()
+  { return generic;
+  }
+  
+  public void setGeneric(boolean generic)
+  { this.generic=generic;
+  }
+
   
   @Override
   public boolean isStatic()
@@ -149,6 +169,30 @@ public abstract class MethodImpl
   
   protected void resolveTypes()
   {
+  }
+  
+  protected MethodImpl extend()
+  {
+    try
+    {
+      MethodImpl m=getClass().newInstance();
+      m.returnType=returnType;
+      m.staticMethod=staticMethod;
+      m.name=name;
+      m.parameterTypes=parameterTypes;
+      m.description=description;
+      m.debug=debug;
+      m.declarationInfo=declarationInfo;
+      return m;
+    }
+    catch (IllegalAccessException x)
+    { throw new RuntimeException(x);
+    }
+    catch (InstantiationException x)
+    { throw new RuntimeException(x);
+    }
+    
+    
   }
   
   /**
@@ -206,6 +250,12 @@ public abstract class MethodImpl
              );
 
   }
+  
+  @Override
+  public String toString()
+  { return super.toString()+": "+getURI();
+  }
+  
 }
 
 

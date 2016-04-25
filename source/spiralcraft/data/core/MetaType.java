@@ -258,7 +258,11 @@ public class MetaType
         }
         
         if (type instanceof DataDefinedType)
-        { ((DataDefinedType) type).setArchetype(genericType);
+        { 
+          ((DataDefinedType) type).setArchetype(genericType);
+          if (genericType.isAbstract())
+          { ((DataDefinedType) type).setAbstract(true);
+          }
         }
         
         // Register the type (but don't link)

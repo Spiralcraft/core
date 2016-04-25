@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Key;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
@@ -54,6 +55,8 @@ public abstract class AbstractAggregateType<T,Tcontent>
   protected Translator<?,T> externalizer;
   protected TypeParameter<?>[] parameters;
   protected HashMap<String,Object> typeArguments;
+  protected SchemeImpl scheme;
+  protected UnifiedFieldSet unifiedFieldSet;
 
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
@@ -197,12 +200,14 @@ public abstract class AbstractAggregateType<T,Tcontent>
    */
   @Override
   public Scheme getScheme()
-  { return contentType.getScheme();
+  { 
+    link();
+    return this.scheme;
   }
   
   @Override
   protected Scheme scheme()
-  { return contentType.getScheme();
+  { return this.scheme;
   }
   
   /**
@@ -211,8 +216,17 @@ public abstract class AbstractAggregateType<T,Tcontent>
    * XXX Need an aggregateScheme- great for indexes, computations, etc.  
    */
   @Override
-  public FieldSet getFieldSet()
-  { return contentType.getFieldSet();
+  public synchronized FieldSet getFieldSet()
+  { 
+    link();
+    
+    if (baseType==null && scheme!=null)
+    { return scheme;
+    }
+    if (unifiedFieldSet==null)
+    { unifiedFieldSet=new UnifiedFieldSet(this);
+    }
+    return unifiedFieldSet;
   }
   
   /**
@@ -271,6 +285,13 @@ public abstract class AbstractAggregateType<T,Tcontent>
   { return parameters;
   }
   
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @Override
+  public Key getPrimaryKey()
+  { 
+    link();
+    return getCoreType().getPrimaryKey();
+  }
 
   
   protected void combineContentTypeParams()
@@ -326,7 +347,23 @@ public abstract class AbstractAggregateType<T,Tcontent>
     catch (DataException x)
     { throw new RuntimeDataException("Error linking "+getURI(),x);
     }
+    
+    try
+    {
+      this.scheme=new SchemeImpl();
+      this.scheme.setType(this);
+      if (archetype!=null)
+      { 
+        archetype.link();
+        this.scheme.setArchetypeScheme(archetype.getScheme());
+      }
+      this.scheme.resolve();
+    }
+    catch (DataException x)
+    { throw new RuntimeException("Error linking "+getURI(),x);
+    }
   }
+  
 
   @Override
   public boolean isLinked()

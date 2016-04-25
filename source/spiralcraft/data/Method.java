@@ -97,4 +97,12 @@ public interface Method
    */
   boolean isStatic();
   
+  /**
+   * Generic methods are methods that are not resolvable without concrete
+   *   Type information supplied via type parameters or other means.
+   * 
+   * @return
+   */
+  boolean isGeneric();
+  
 }

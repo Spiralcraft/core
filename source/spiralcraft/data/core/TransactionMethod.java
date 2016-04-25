@@ -53,6 +53,19 @@ public class TransactionMethod<T,C,R>
   { this.contextX=contextX;
   }
   
+  @Override
+  public MethodImpl extend()
+  {
+    @SuppressWarnings("unchecked")
+    TransactionMethod<T,C,R> m=(TransactionMethod<T,C,R>) super.extend();
+    m.x=x;
+    m.contextX=contextX;
+    m.requireTransaction=requireTransaction;
+    m.isolateTransaction=isolateTransaction;
+    m.inheritDataSession=inheritDataSession;
+    return m;
+  }
+  
   @SuppressWarnings({ "unchecked", "rawtypes"})
   @Override
   public Focus<Scenario<C,R>> bindTask(

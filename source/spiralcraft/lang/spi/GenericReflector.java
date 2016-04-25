@@ -227,18 +227,20 @@ public class GenericReflector<T>
     Expression<?>[] params)
     throws BindException
   {
+    // Get the base result
     Channel<X> result=null;
     if (name.startsWith("@"))
     { result= resolveMeta(source,focus,name,params);
     }
-    if (base!=null)
+    
+    if (result==null && base!=null)
     { result= base.resolve(source,focus,name,params);
     }
     
     // TODO: Check result for contextual type reference and look up in
     //   local name->reflector map to augment type for use context
-    
-    
+
+    // Enhance the base result
     if (enhancerMap!=null)
     { 
       if (params==null)

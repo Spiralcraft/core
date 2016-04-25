@@ -50,6 +50,16 @@ public class ExpressionMethod<T,C,R>
   { this.contextX=contextX;
   }
   
+  @Override
+  public MethodImpl extend()
+  {
+    @SuppressWarnings("unchecked")
+    ExpressionMethod<T,C,R> m=(ExpressionMethod<T,C,R>) super.extend();
+    m.x=x;
+    m.contextX=contextX;
+    return m;
+  }
+    
   @SuppressWarnings({ "unchecked", "rawtypes"})
   @Override
   public Focus<Scenario<C,R>> bindTask(

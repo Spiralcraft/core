@@ -400,6 +400,20 @@ public class TypeImpl<T>
   { return uri;
   }
 
+  @SuppressWarnings("unchecked") // Scheme is not genericized
+  public Key<T> getPrimaryKey()
+  { 
+    link();
+    Key<T> key=null;
+    if (getScheme()!=null)
+    { key=(Key<T>) getScheme().getPrimaryKey();
+    }
+    if (key==null && getBaseType()!=null)
+    { key=getBaseType().getPrimaryKey();
+    }
+    return key;
+    
+  }  
   
   /**
    * Default implementation is to set up the SchemeImpl scheme with 
@@ -455,8 +469,9 @@ public class TypeImpl<T>
         // Add contextual field based rules
         for (FieldImpl<?> field:scheme.getFields())
         {
-          if (field.isUniqueValue())
+          if (field.isUniqueValue() && !isAbstract())
           { 
+            // Abstract types don't get set-based rules
             if (debug)
             { log.fine("Adding field unique rule for "+field.getURI());
             }
@@ -476,6 +491,27 @@ public class TypeImpl<T>
     
       resolveRules();
       
+      if (archetype!=null && archetype.getMethods()!=null)
+      {
+//        if (archetype.isAbstract())
+//        { log.fine(getURI()+" Checking archetype methods in "+archetype.getURI());
+//        }
+        for (Method method: archetype.getMethods())
+        {
+//          if (archetype.isAbstract() || method.getName()=="getItemForId")
+//          { log.fine(getURI()+" Checking archetype method "+method);
+//          }
+          if (method.isGeneric() && !hasLocalMethod(method.getName()))
+          { 
+            MethodImpl newMethod=((MethodImpl) method).extend();
+            newMethod.setGeneric(true);
+            newMethod.setDataType(this);
+//            log.fine(getURI()+" Extended method "+method+" to "+newMethod);
+            methods.add(newMethod);
+          }
+        }
+      }
+      
       if (methods!=null)
       {
         for (Method method:methods)
@@ -494,6 +530,18 @@ public class TypeImpl<T>
     }
         
 
+    
+  }
+  
+  private boolean hasLocalMethod(String name)
+  { 
+    for (Method method:methods)
+    { 
+      if (method.getName()==name)
+      { return true;
+      }
+    }
+    return false;
     
   }
 
