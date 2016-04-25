@@ -1,30 +1,87 @@
-//
-// Copyright (c) 1998,2005 Michael Toth
-// Spiralcraft Inc., All Rights Reserved
-//
-// This package is part of the Spiralcraft project and is licensed under
-// a multiple-license framework.
-//
-// You may not use this file except in compliance with the terms found in the
-// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
-// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
-//
-// Unless otherwise agreed to in writing, this software is distributed on an
-// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//
 package spiralcraft.data.lang;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.GenericReflector;
+import spiralcraft.log.ClassLog;
 import spiralcraft.data.Type;
 
 /**
- * A Reflector that exposes a Type
+ * Reflects a Type. 
  * 
  * @author mike
  *
+ * @param <T>
  */
-public interface TypeReflector<T>
+public class TypeReflector<Z>
+  extends GenericReflector<Type<Z>>
 {
-  
-  Type<T> getType();
 
+  private static final ClassLog log
+    =ClassLog.getInstance(TypeReflector.class);
+  private final Type<Z> type;
+  private Reflector<Z> dataReflector;
+  
+  public TypeReflector(Type<Z> type)
+  { 
+    super(BeanReflector.<Type<Z>>getInstance(type.getClass()));
+    this.type=type;
+  }
+  
+  public <X> Channel<X> resolve
+    (Channel<Type<Z>> source,Focus<?> focus,String name,Expression<?>[] args)
+  throws BindException
+  {
+    Channel<X> ret;
+//    log.fine("Resolving "+name+" in ("+this.toString()+")");
+    ret=super.resolve(source,focus,name,args);
+//    log.fine("Result of "+name+" is "+ret);
+    return ret;
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public <X> Channel<X> resolveMeta
+      (Channel<Type<Z>> source,Focus<?> focus,String name,Expression<?>[] args)
+    throws BindException
+  {
+    String metaName=name.substring(1);
+    Channel<X> ret=null;
+    if (metaName.startsWith("@"))
+    {
+      if (dataReflector==null)
+      { dataReflector=DataReflector.getInstance(type);
+      }
+//      log.fine("Resolving meta "+metaName+" in "+dataReflector+" ("+this.toString()+")");
+      ret=dataReflector.resolve
+         (dataReflector.getStaticChannel(focus)
+         , focus
+         , metaName.substring(1)
+         , args
+         );
+//      log.fine("Result of "+metaName+" is "+ret);
+      if (ret!=null)
+      { return ret;
+      }
+    }
+
+//    log.fine("Resolving meta "+metaName+" in bean ("+this.toString()+")");
+    ret=(Channel<X>) super.resolveMeta(source, focus, name, args);
+//    log.fine("Result of +"+metaName+" is "+ret);
+    if (ret!=null)
+    { return ret;
+    }
+    
+    return null;
+    
+  }
+  
+  @Override
+  public String toString()
+  { return super.toString()+": "+type.getURI();
+  }
 }
