@@ -287,10 +287,10 @@ public abstract class AbstractAggregateType<T,Tcontent>
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public Key getPrimaryKey()
+  public Key<T> getPrimaryKey()
   { 
     link();
-    return getCoreType().getPrimaryKey();
+    return (Key) getCoreType().getPrimaryKey();
   }
 
   

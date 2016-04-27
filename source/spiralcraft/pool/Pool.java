@@ -609,7 +609,7 @@ public class Pool<T>
     }
   }
 
-  @SuppressWarnings({"unchecked","rawtypes"})
+  @SuppressWarnings("unchecked")
   private void discardOverdue()
   {
 
@@ -618,7 +618,7 @@ public class Pool<T>
     synchronized (_monitor)
     { 
       Collection<Reference<T>> collection=_out.values();
-      snapshot=new Reference[collection.size()];
+      snapshot=(Reference<T>[]) new Reference<?>[collection.size()];
       collection.toArray(snapshot);
     }
 
