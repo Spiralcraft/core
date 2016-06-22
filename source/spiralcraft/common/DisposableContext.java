@@ -24,10 +24,10 @@ public class DisposableContext
     if (local.size()>0)
     { 
       local.get().add(d);
-      System.err.println("Registered "+d);
+      // System.err.println("Registered "+d);
     }
     else
-    { System.err.println("Not registering "+d);
+    { // System.err.println("Not registering "+d);
     
     }
   }
