@@ -11,6 +11,7 @@ public class DisposableReference<T>
     DisposableContext.register(this);
   }
   
+  @Override
   public void dispose()
   { referent=null;
   }
@@ -19,4 +20,8 @@ public class DisposableReference<T>
   { return referent;
   }
 
+  @Override
+  public String toString()
+  { return super.toString()+": "+(referent!=null?referent:"(null)");
+  }
 }
