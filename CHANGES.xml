@@ -12,6 +12,30 @@
      
 
     <detail> 
+
+      <scm:Change>
+        <revision>-dev136
+        </revision>
+    
+        <notes>
+          <scm:Note>Utility base classes for retargetable streams.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/io
+        </path>
+        
+        <resources>
+          <URI>InputStreamReference.java
+          </URI>
+          <URI>OutputStreamReference.java
+          </URI>
+          <URI>PrintStreamReference.java
+          </URI>
+        </resources>
+      </scm:Change>
+    
+
       <scm:Change>
         <revision>-dev136
         </revision>
