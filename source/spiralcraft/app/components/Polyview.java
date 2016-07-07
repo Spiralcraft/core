@@ -15,12 +15,16 @@
 package spiralcraft.app.components;
 
 
-import spiralcraft.app.kit.AbstractModelComponent;
-import spiralcraft.app.kit.ValueState;
-import spiralcraft.lang.BindException;
+import java.util.HashMap;
+
+import spiralcraft.app.Component;
+import spiralcraft.app.State;
+import spiralcraft.app.StateFrame;
+import spiralcraft.app.kit.AbstractComponent;
+import spiralcraft.app.kit.DynamicProxyComponent;
 import spiralcraft.lang.Binding;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.util.Sequence;
 
 /**
  * Dynamically provides a view based on the actual data type of the model
@@ -30,39 +34,171 @@ import spiralcraft.lang.Focus;
  *
  */
 public class Polyview<T>
-  extends AbstractModelComponent<T>
+  extends AbstractComponent
 {
 
   private Binding<T> x;
+  private HashMap<Reflector<T>,Integer> polyMap
+    = new HashMap<>();
   
   public void setX(Binding<T> x)
-  { this.x=x;
-  }
-
-  @Override
-  protected Channel<T> bindSource(
-    Focus<?> focusChain)
-    throws BindException
   { 
-    x.bind(focusChain);
-    return x;
+    this.removeParentContextual(this.x);
+    this.x=x;
+    this.addParentContextual(x);
   }
 
-  @Override
-  protected T compute(
-    ValueState<T> state)
-  { return state.getValue();
+  protected Class<? extends State> getStateClass()
+  { return PolyState.class;
   }
   
-  @Override
-  protected void onCompute(ValueState<T> state,T oldValue,T newValue)
+  // TODO: Override the bindInternal method to add a DispatchFilter that reads
+  //  the mask in the state to select which component to dispatch to.
+  
+  protected void rotate(PolyState<T> state,T value)
   {
+    Reflector<T> subtype=x.getReflector().subtype(value);
+    if (subtype==null)
+    { subtype=x.getReflector();
+    }
     log.fine
       ("Subtype is "
-        +channel.getReflector().subtype(channel.get()).getTypeURI()
+        +subtype.getTypeURI()
       );
     
-    
+    if (subtype!=state.getActiveType())
+    { 
+      state.setActiveType(subtype);
+      Integer childNum=polyMap.get(subtype);
+      if (childNum==null)
+      {
+        Component child=new DynamicProxyComponent();
+        child.setScaffold(this.scaffold);
+        // TODO: Add childe to the appropriate childContainer
+      }
+      
+      // TODO: Update the mask in the PolyState to control which component
+      //  is active. This means that the polyMap returns an integer so we can
+      //  be efficient about the selection.
+    }
   }
   
+}
+
+/**
+ * Keeps a substate for each discrete subtype. 
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
+class PolyState<T>
+  implements State
+{
+
+  private Reflector<T> activeType;
+  
+  public PolyState(String id)
+  { 
+  }
+
+  Reflector<T> getActiveType()
+  { return activeType;
+  }
+  
+  void setActiveType(Reflector<T> activeType)
+  { this.activeType=activeType;
+  }
+  
+  @Override
+  public Sequence<Integer> getPath()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public State getParent()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public State getChild(
+    int index)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void link(
+    State parentState,
+    Sequence<Integer> path)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setChild(
+    int index,
+    State child)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public <X> X findState(
+    Class<X> clazz)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public State getAncestor(
+    int distance)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getLocalId()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void enterFrame(
+    StateFrame frame)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void exitFrame()
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public StateFrame getFrame()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public boolean isNewFrame()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

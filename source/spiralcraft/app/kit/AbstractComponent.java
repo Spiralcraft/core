@@ -101,7 +101,7 @@ public class AbstractComponent
   private DeclarationInfo declarationInfo;
   protected boolean createEmptyContainer;
   
-  private Scaffold<?> scaffold;
+  protected Scaffold<?> scaffold;
   
   
   @Override
@@ -695,6 +695,7 @@ public class AbstractComponent
     
     if (children!=null || (extChildren!=null && !extChildren.isEmpty()))
     { 
+      // TODO: Append extChildren to children
       childContainer
         =createChildContainer
           (children!=null

@@ -26,7 +26,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.log.Level;
 
 /**
- * Dynamically loads a child component that with a lifecycle tied to the
+ * Dynamically loads a child component with a lifecycle tied to the
  *   state of this component.
  * 
  * @author mike
@@ -56,6 +56,7 @@ public class DynamicProxyComponent
           component.setParent(DynamicProxyComponent.this);
           try
           { 
+            component.setScaffold(scaffold);
             component.bind(selfFocus);
             component.start();
             state.component=component;

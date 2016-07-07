@@ -23,6 +23,7 @@ import spiralcraft.app.Component;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.MessageHandlerChain;
+import spiralcraft.app.State;
 import spiralcraft.app.kit.ValueState;
 import spiralcraft.common.ContextualException;
 
@@ -156,5 +157,8 @@ public abstract class AbstractModelComponent<T>
    *    be put into the ValueState.
    */
   protected abstract T compute(ValueState<T> state);
-  
+
+  protected Class<? extends State> getStateClass()
+  { return ValueState.class;
+  }
 }
