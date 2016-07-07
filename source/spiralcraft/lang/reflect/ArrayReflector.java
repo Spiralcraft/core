@@ -399,8 +399,15 @@ public class ArrayReflector<I>
   @Override
   public Reflector<I[]> subtype(I[] val)
   { 
-    throw new AccessException
-       ("Array does not support subtyping");
+    if (val!=null)
+    { 
+      Class<I> compType=(Class<I>) val.getClass().getComponentType();
+      Reflector<I> compReflector=BeanReflector.<I>getInstance(compType);
+      return ArrayReflector.getInstance(compReflector);
+    }
+    else
+    { return this;
+    }
   }
 
   @Override
