@@ -18,6 +18,46 @@
         </revision>
     
         <notes>
+          <scm:Note>Implement subtype reflection in ArrayReflector
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/ArrayReflector.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev136
+        </revision>
+    
+        <notes>
+          <scm:Note>Work in progress towards data-driven just-in-time
+            binding of components that can bind multiple views and switch
+            between them as needed.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>components/Polyview.java
+          </URI>
+          <URI>kit/AbstractComponent.java
+          </URI>
+          <URI>kit/AbstractModelComponent.java
+          </URI>
+          <URI>kit/DynamicProxyComponent.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev136
+        </revision>
+    
+        <notes>
           <scm:Note>Utility base classes for retargetable streams.
           </scm:Note>
         </notes>
