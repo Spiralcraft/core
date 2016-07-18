@@ -225,10 +225,13 @@ public class DelimitedRecordFormat
     if (type!=null)
     { channel=new SimpleChannel<Tuple>(DataReflector.<Tuple>getInstance(type));
     }
-    else
+    else if (fieldSet!=null)
     { 
       channel=new SimpleChannel<Tuple>
         (TupleReflector.<Tuple>getInstance(fieldSet));
+    }
+    else
+    { throw new BindException("No type or fieldset specified");
     }
     
     if (fields==null)
