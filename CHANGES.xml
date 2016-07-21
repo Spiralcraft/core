@@ -14,6 +14,73 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev137
+        </revision>
+    
+        <notes>
+          <scm:Note>Allow expression-based filtering of textual field data
+            in flat-file fields before automatic type conversion to support
+            reading various data formats.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/flatfile
+        </path>
+        
+        <resources>
+          <URI>DelimitedRecordFormat.java
+          </URI>
+          <URI>FieldMapping.java
+          </URI>
+          <URI>Writer.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev137
+        </revision>
+    
+        <notes>
+          <scm:Note>Enhancements to string processing utilities to support
+            various data formats.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/string
+        </path>
+        
+        <resources>
+          <URI>BooleanToString.java
+          </URI>
+          <URI>DoubleToDecimalString.java
+          </URI>
+          <URI>IntegerToDecimalString.java
+          </URI>
+          <URI>NumberToDecimalString.java
+          </URI>
+          <URI>StringFunctor.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev137
+        </revision>
+    
+        <notes>
+          <scm:Note>Cache results of Focus chain searches
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/BaseFocus.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev136
         </revision>
     
