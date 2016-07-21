@@ -14,11 +14,11 @@
 //
 package spiralcraft.data.flatfile;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
 
 import java.io.OutputStreamWriter;
@@ -121,7 +121,7 @@ public class Writer
       try
       { recordFormat.bind(new SimpleFocus<Void>());
       }
-      catch (BindException x)
+      catch (ContextualException x)
       { throw new DataException("Error setting up record format",x);
       }
       

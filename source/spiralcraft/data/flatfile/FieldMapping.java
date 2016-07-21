@@ -17,13 +17,14 @@ package spiralcraft.data.flatfile;
 import java.io.IOException;
 import java.io.Reader;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.util.DictionaryBinding;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.string.StringConverter;
+import spiralcraft.util.string.StringFunctor;
 
 
 /**
@@ -39,6 +40,7 @@ public class FieldMapping<T>
     =ClassLog.getInstance(FieldMapping.class);
   
   private DictionaryBinding<T> channel=new DictionaryBinding<T>();
+  private StringFunctor inputFilter;
   private FieldEncoder encoder=new FieldEncoder();
   private boolean optional;
   private boolean debug;
@@ -87,6 +89,10 @@ public class FieldMapping<T>
   { return channel.getTarget();
   }
   
+  public void setInputFilter(StringFunctor inputFilter)
+  { this.inputFilter=inputFilter;
+  }
+  
   public void setConverter(StringConverter<T> converter)
   { channel.setConverter(converter);
   }
@@ -99,6 +105,11 @@ public class FieldMapping<T>
     throws IOException
   { 
     String value=encoder.parse(data);
+    
+    if (inputFilter!=null)
+    { value=inputFilter.evaluate(value);
+    }
+    
     if (debug)
     { log.fine("Parsed ["+value+"]");
     }
@@ -123,9 +134,12 @@ public class FieldMapping<T>
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     channel.bind(focusChain);
+    if (this.inputFilter!=null)
+    { this.inputFilter.bind(focusChain);
+    }
     return focusChain;
   }
   

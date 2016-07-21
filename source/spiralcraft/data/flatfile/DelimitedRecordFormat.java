@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
@@ -215,7 +216,7 @@ public class DelimitedRecordFormat
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     if (typeX!=null)
     { 
