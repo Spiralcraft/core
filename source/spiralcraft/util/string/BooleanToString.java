@@ -33,6 +33,7 @@ public final class BooleanToString
   private String trueValue;
   private String falseValue;
   private String nullValue;
+  private boolean emptyIsNull;
   
   public BooleanToString()
   { 
@@ -57,6 +58,10 @@ public final class BooleanToString
   public void setNullValue(String nullValue)
   { this.nullValue=nullValue;
   }
+  
+  public void setEmptyIsNull(boolean emptyIsNull)
+  { this.emptyIsNull=emptyIsNull;
+  }
 
   @Override
   public String toString(Boolean val)
@@ -70,7 +75,10 @@ public final class BooleanToString
     { return null;
     }
     val=val.trim();
-    if (val.equals(trueValue))
+    if (emptyIsNull && val.isEmpty())
+    { return null;
+    }
+    else if (val.equals(trueValue))
     { return Boolean.TRUE;
     }
     else if (val.equals(falseValue))
