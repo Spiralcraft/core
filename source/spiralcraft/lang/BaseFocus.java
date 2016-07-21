@@ -30,7 +30,6 @@ import spiralcraft.util.URIUtil;
 public abstract class BaseFocus<T>
   implements Focus<T>
 {
-  
   private volatile Channel<Focus<T>> selfChannel;
   
   protected Channel<T> subject;
@@ -41,6 +40,7 @@ public abstract class BaseFocus<T>
   protected boolean cacheChannels=false;
 
   private HashMap<Expression<?>,WeakReference<Channel<?>>> channels; 
+  private final HashMap<URI,Focus<?>> findCache=new HashMap<URI,Focus<?>>();
 
   public BaseFocus()
   { this.parent=null;
@@ -215,12 +215,29 @@ public abstract class BaseFocus<T>
     return false;
   }  
   
+  private synchronized Focus<?> findCached(URI uri)
+  { return findCache.get(uri);
+  }
+  
+  private synchronized Focus<?> putCache(URI uri,Focus<?> focus)
+  { 
+    findCache.put(uri, focus);
+    return focus;
+  }
+  
   @SuppressWarnings("unchecked") // Cast for requested interface
   @Override
   public <X> Focus<X> findFocus(URI uri)
   { 
+    Focus<?> cached=findCached(uri);
+    if (cached!=null)
+    { return (Focus<X>) cached;
+    }
+    
+    
+    
     if (isFocus(uri))
-    { return (Focus<X>) this;
+    { return (Focus<X>) putCache(uri,this);
     }
     
     if (facets!=null)
@@ -229,14 +246,14 @@ public abstract class BaseFocus<T>
       for (Focus<?> focus:facets)
       {
         if (focus.isFocus(uri))
-        { return (Focus<X>) focus;
+        { return (Focus<X>)  putCache(uri,focus);
         }
       }
     
     }
       
     if (parent!=null)
-    { return parent.findFocus(uri);
+    { return (Focus<X>) putCache(uri,parent.findFocus(uri));
     }
     else
     { return null;
