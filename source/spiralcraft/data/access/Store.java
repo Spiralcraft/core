@@ -121,7 +121,7 @@ public interface Store
    * Take a snapshot of the changes to the datastore since transactionId
    * 
    * @param transactionId
-   * @return ASsnapshot newer than the transactionId, or null
+   * @return A Snapshot newer than the transactionId, or null
    */
   // XXX Change to export(fromId)
   Snapshot snapshot(long transactionId)
