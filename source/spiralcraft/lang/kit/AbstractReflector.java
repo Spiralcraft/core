@@ -21,6 +21,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.Reflectable;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.TypeModel;
@@ -42,6 +43,8 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.util.LangUtil;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
@@ -94,6 +97,8 @@ import java.util.LinkedList;
 public abstract class AbstractReflector<T>
   implements Reflector<T>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(AbstractReflector.class);
 
   private static final HashMap<String,Member<Reflector<?>,?,?>> 
     metaMembers=new HashMap<String,Member<Reflector<?>,?,?>>();
@@ -289,11 +294,34 @@ public abstract class AbstractReflector<T>
   /**
    * @param val
    */
+  @SuppressWarnings("unchecked")
   @Override
   public Reflector<T> subtype(T val)
   { 
-    throw new AccessException
-      ("Subtype not supported for type system "+getClass().getName());
+    if (val==null)
+    { return this;
+    }
+    if (val instanceof Reflectable)
+    { 
+      try
+      { return ((Reflectable<T>) val).reflect();
+      }
+      catch (BindException x)
+      {
+        log.log
+          (Level.WARNING
+          ,"Attempt to allow reflectable to self-reflect failed"
+          ,x
+          );
+      }
+    }
+    Reflector<T> baseSubtype = base.subtype(val);
+    if (baseSubtype==base)
+    { return this;
+    }
+    else 
+    { return baseSubtype;
+    }
   }
   
   /**
