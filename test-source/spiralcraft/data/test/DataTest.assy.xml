@@ -1,6 +1,9 @@
 <test:TestGroup
   xmlns:task="class:/spiralcraft/task/"
   xmlns:test="class:/spiralcraft/test/"
+  xmlns:du="class:/spiralcraft/data/util/"
+  xmlns:d="class:/spiralcraft/data/"
+  xmlns:jn="class:/java/net/"
   >
   <name>spiralcraft.data.test
   </name>
@@ -11,6 +14,10 @@
     <QueryTest/>
     <TypeTest/>
     <SummaryTest/>
+    <task:Eval>
+      <x>[@du:Dumper].().dump([@jn:URI].("out/dump/"),[d:Space].stores)
+      </x>
+    </task:Eval>
   </sequence>
         
 </test:TestGroup>

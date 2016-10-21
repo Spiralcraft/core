@@ -18,6 +18,41 @@
         </revision>
     
         <notes>
+          <scm:Note>Utility to dump snapshots of a set of stores to a tree of 
+            XML data.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/Dumper.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev137
+        </revision>
+    
+        <notes>
+          <scm:Note>Implement a default approach for resolving the specific
+            runtime type of an object (Rs) identified by a more general 
+            type (Rg). A null returns Rg. Otherwise return the object's
+            self-provided reflector, if none, delegate to the Rg's base reflector
+            , if it returns the same base reflector (ie. no more specific info)
+            return Rg. Subtypes of AbstractReflector can override this behavior
+            when necessary.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/AbstractReflector.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev137
+        </revision>
+    
+        <notes>
           <scm:Note>Allow expression-based filtering of textual field data
             in flat-file fields before automatic type conversion to support
             reading various data formats.
