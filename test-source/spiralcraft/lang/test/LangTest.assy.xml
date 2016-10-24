@@ -1456,6 +1456,17 @@
       <testX>.==[{ 2,3.5,4,9.6 }]
       </testX>
     </test:Assertion>
+    
+    <test:Assertion>
+      <name>Autoconvert date
+      </name>
+      <subjectX>
+        [@ju:Date].(1477351719999L).[*fn:ToString{pattern:="yyyyMMdd"}]
+      </subjectX>
+      <testX>.=="20161024"
+      </testX>
+    </test:Assertion>
+    
   </sequence>
         
 </test:TestGroup>

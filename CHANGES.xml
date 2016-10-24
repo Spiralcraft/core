@@ -18,6 +18,22 @@
         </revision>
     
         <notes>
+          <scm:Note>To facilitate expression-based date and number conversion,
+            the ToString lang function now accepts a pattern and
+            locates a pattern-configurable converter for common types.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/Dumper.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev137
+        </revision>
+    
+        <notes>
           <scm:Note>Utility to dump snapshots of a set of stores to a tree of 
             XML data.
           </scm:Note>
