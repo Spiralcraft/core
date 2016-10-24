@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang.functions;
 
+import java.util.Date;
+
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -22,6 +24,9 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SourcedChannel;
+import spiralcraft.util.string.DateToString;
+import spiralcraft.util.string.DoubleToDecimalString;
+import spiralcraft.util.string.IntegerToDecimalString;
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -38,6 +43,7 @@ public class ToString<T>
 {
 
   private StringConverter<T> converter;
+  private String pattern;
   
   public ToString()
   {
@@ -45,6 +51,10 @@ public class ToString<T>
   
   public ToString(StringConverter<T> converter)
   { this.converter=converter;
+  }
+  
+  public void setPattern(String pattern)
+  { this.pattern=pattern;
   }
   
   @Override
@@ -69,6 +79,21 @@ public class ToString<T>
        throws BindException
     { 
       super(BeanReflector.<String>getInstance(String.class),source);
+      if (converter==null && pattern!=null)
+      {
+        if (Date.class.isAssignableFrom(source.getReflector().getContentType()))
+        { converter=(StringConverter<T>) new DateToString(pattern);
+        }
+        else if (Integer.class.isAssignableFrom(source.getReflector().getContentType()))
+        { converter=(StringConverter<T>) new IntegerToDecimalString(pattern);
+        }
+        else if (Double.class.isAssignableFrom(source.getReflector().getContentType()))
+        { converter=(StringConverter<T>) new DoubleToDecimalString(pattern);
+        }
+        else
+        { throw new BindException("Can't interpret pattern for type "+source.getReflector().getTypeURI());
+        }
+      }
       if (converter==null)
       { converter=source.getReflector().getStringConverter();
       }
