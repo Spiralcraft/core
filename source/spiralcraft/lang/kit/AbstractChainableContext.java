@@ -189,7 +189,11 @@ public class AbstractChainableContext
     if (next!=null)
     { 
       if (chainable)
-      { return ((ChainableContext) next).chain(chain);
+      { 
+        if (next==this)
+        { throw new IllegalStateException("Self referential chain");
+        }
+        return ((ChainableContext) next).chain(chain);
       }
       else
       { throw new IllegalStateException("Chain already sealed with "+next);
@@ -226,12 +230,18 @@ public class AbstractChainableContext
         ("Contextual to insertNext cannot be null");
     }
 
-    if (next!=null)
-    { insert.chain(next);
+    try
+    {
+      if (next!=null)
+      { insert.chain(next);
+      }
     }
-    next=insert; 
-    chainable=true;
-    context=true;
+    finally
+    {
+      next=insert; 
+      chainable=true;
+      context=true;
+    }
   }
     
   @Override
