@@ -155,7 +155,17 @@ public class BindingChannel<T>
   public void bindTarget(Focus<?> targetFocus)
     throws BindException
   { 
-    targetChannel=targetFocus.bind(targetX);
+    try
+    {  targetChannel=targetFocus.bind(targetX);
+    }
+    catch (BindException x)
+    { 
+      throw new BindException
+        ("Unable to resolve target expression `"+targetX.getText()+"` in "
+           +targetFocus.getSubject().getReflector()
+        ,x
+        );
+    }
 
 // 
 //  writable is not a bind-time property
