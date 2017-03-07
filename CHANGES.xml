@@ -14,6 +14,50 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev139
+        </revision>
+        
+        <notes>
+          <scm:Note>Add DynamicLoadException to mark runtime integration failure.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/DynamicLoadException.java
+        </path>
+      </scm:Change>  
+
+      <scm:Change>
+        <revision>-dev139
+        </revision>
+    
+        <notes>
+          <scm:Note>Added very basic support for reloading Assembly classes
+            and their corresponding Types to facilitate incremental development
+            without restarting the vm.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>data/persist/AbstractXmlObjectjava
+          </URI>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/TypeResolver.java
+          </URI>
+          <URI>data/reflect/AssemblyType.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev137
         </revision>
     
