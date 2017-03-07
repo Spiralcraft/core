@@ -285,7 +285,7 @@ public class TypeResolver
   private final Type loadArrayType(Type baseType,URI typeURI,boolean link)
     throws DataException
   {
-    Type<?> type=map.get(typeURI);
+    Type<?> type=checkCache(typeURI);
     if (type!=null)
     { return type;
     }
@@ -299,7 +299,7 @@ public class TypeResolver
   private final Type loadListType(Type baseType,URI typeURI,boolean link)
     throws DataException
   {
-    Type<?> type=map.get(typeURI);
+    Type<?> type=checkCache(typeURI);
     if (type!=null)
     { return type;
     }
@@ -319,7 +319,7 @@ public class TypeResolver
   private final Type<?> loadBufferType(Type<?> baseType,URI typeURI,boolean link)
     throws DataException
   {
-    Type<?> type=map.get(typeURI);
+    Type<?> type=checkCache(typeURI);
     if (type!=null)
     { return type;
     }
@@ -330,7 +330,7 @@ public class TypeResolver
       ,baseType
       );
     
-    Type<?> existingType=map.get(typeURI);
+    Type<?> existingType=checkCache(typeURI);
     if (existingType!=null)
     { return existingType;
     }
@@ -341,7 +341,7 @@ public class TypeResolver
   private final Type<?> loadDeltaType(Type<?> baseType,URI typeURI,boolean link)
     throws DataException
   {
-    Type<?> type=map.get(typeURI);
+    Type<?> type=checkCache(typeURI);
     if (type!=null)
     { return type;
     }
@@ -352,7 +352,7 @@ public class TypeResolver
       ,baseType
       );
 
-    Type<?> existingType=map.get(typeURI);
+    Type<?> existingType=checkCache(typeURI);
     if (existingType!=null)
     { return existingType;
     }
@@ -370,7 +370,7 @@ public class TypeResolver
     { log.fine(logMessage("Loading MetaType for "+baseType));
     }
     
-    Type<?> type=map.get(typeURI);
+    Type<?> type=checkCache(typeURI);
     if (type!=null)
     { return type;
     }
@@ -385,13 +385,32 @@ public class TypeResolver
     return type;
   }
 
+  private Type<?> checkCache(URI typeURI)
+  {
+    Type<?> type=map.get(typeURI);
+
+    // Check whether type is stale and eject if so
+    if (type!=null && type.isStale())
+    { 
+      synchronized (this)
+      { 
+        type=map.get(typeURI);
+        if (type!=null && type.isStale())
+        { 
+          map.remove(typeURI);
+          type=null;
+        }
+      }
+    }
+    return type;
+  }
   
   @SuppressWarnings({ "rawtypes" })
   private final Type findLoadedType(URI typeUri,boolean link)
     throws DataException
   {
     
-    Type type=map.get(typeUri);
+    Type type=checkCache(typeUri);
     if (type!=null)
     { 
       if (link)
@@ -463,7 +482,7 @@ public class TypeResolver
   public synchronized void register(URI uri,Type<?> type)
     throws DataException
   { 
-    if (map.get(uri)!=null)
+    if (checkCache(uri)!=null)
     { 
       throw new DataException
         ("Type "+uri+" already registered as "+map.get(uri));
@@ -481,7 +500,7 @@ public class TypeResolver
   
   public synchronized void unregister(URI uri,Type<?> type)
   {
-    if (map.get(uri)!=type)
+    if (checkCache(uri)!=type)
     { log.fine(logMessage("Unregister non-registered type"+type));
     }
     else
@@ -492,7 +511,7 @@ public class TypeResolver
   private synchronized Type<?> putMap(URI uri,Type<?> type,boolean link)
     throws DataException
   {
-    Type<?> existing=map.get(uri);
+    Type<?> existing=checkCache(uri);
     if (existing!=null)
     { 
       if (existing!=type)

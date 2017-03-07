@@ -358,6 +358,7 @@ public class AssemblyClass
 
   public boolean isStale()
   {
+    
     if (_outerClass==null && resource!=null)
     {
       try
@@ -365,7 +366,7 @@ public class AssemblyClass
         if (logLevel.isFine())
         { log.fine("Checking "+resource.getURI());
         }
-        if (resource.getLastModified()>resourceTimestamp)
+        if (!resource.exists() || resource.getLastModified()>resourceTimestamp)
         { return true;
         }
       }
@@ -375,22 +376,21 @@ public class AssemblyClass
         return true;
       }
     }
-    
-    
-    if (_propertySpecifiers!=null)
-    {
-      for (PropertySpecifier prop:_propertySpecifiers)
-      { 
-        if (prop.isStale())
-        { return true;
-        }    
-      }
-    }
+
+// A recursive check on properties is extremely expensive
+//    if (_compositeMembers!=null)
+//    {
+//      for (PropertySpecifier prop:_compositeMembers)
+//      { 
+//        if (prop.isStale())
+//        { return true;
+//        }    
+//      }
+//    }
     
     if (_baseAssemblyClass!=null && _baseAssemblyClass.isStale())
     { return true;
     }
-    
     return false;
   }
   
@@ -494,7 +494,8 @@ public class AssemblyClass
   
   @Override
   public String toString()
-  { return super.toString()+":"+sourceURI+":"+_baseURI;
+  { return super.toString()+":"+sourceURI+":"+_baseURI+": resource="+resource+": "
+      +(_outerClass==null?"(ts "+resourceTimestamp+")":" in ::: "+_outerClass.toString());
   }
 
   public URI getBaseURI()

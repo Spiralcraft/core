@@ -311,7 +311,12 @@ public class AssemblyLoader
     
       AssemblyClass ret=_cache.get(resource.getURI());
       if (ret!=null && ret.isStale())
-      { _cache.remove(resource.getURI());
+      { 
+        log.fine
+          ("Ejecting stale copy of "+resourceUri+" ("+resource.getURI()+") "
+          );
+        ret=null;
+        _cache.remove(resource.getURI());
       }
       
       if (ret==null && !_cache.containsKey(resource.getURI()))

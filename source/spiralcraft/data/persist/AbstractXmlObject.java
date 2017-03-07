@@ -580,4 +580,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     }
   }
 
+  @Override
+  public String toString()
+  { 
+    return super.toString()+" typeURI="+typeURI+" : instanceURI="
+      +instanceURI+" : type="+type;
+  }
 }

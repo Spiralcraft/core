@@ -104,7 +104,16 @@ public class AssemblyType<T>
     this.nativeClass=(Class<T>) assemblyClass.getJavaClass();
   }
   
-
+  public boolean isStale()
+  { 
+    if (assemblyClass.isStale())
+    { 
+      log.fine("Stale assembly "+assemblyClass.getSourceURI());
+      return true;
+    }
+    return false;
+  }
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
@@ -363,5 +372,9 @@ public class AssemblyType<T>
     return constructorChannel;
   }
 
+  public String toString()
+  { return super.toString()+" : "+assemblyClass.toString();
+  
+  }
   
 }

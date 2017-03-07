@@ -443,6 +443,16 @@ public abstract class Type<T>
   public abstract FieldSet getFieldSet();
   
   /**
+   * Indicates that a reloadable type has an updated definition
+   * 
+   * @return Whether the type is stale, which will cause it to be removed
+   *    from the cache and reloaded when it is resolved
+   */
+  public boolean isStale()
+  { return false;
+  }
+  
+  /**
    * Return the equivalent Array type for this type
    * 
    * @return
