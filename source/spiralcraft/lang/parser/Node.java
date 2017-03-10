@@ -236,6 +236,11 @@ public abstract class Node
   { return new LogicalAndNode(this,op);
   }
   
+  @SuppressWarnings("rawtypes") // Generics for internal use only
+  public Node intersection(Node op)
+  { return new BinaryOpNode(this,op,'&');
+  }
+  
   public Node or(Node op)
   { return new LogicalOrNode(this,op);
   }

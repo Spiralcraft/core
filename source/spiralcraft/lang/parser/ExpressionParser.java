@@ -494,10 +494,19 @@ public class ExpressionParser
     if (_tokenizer.ttype=='&')
     { 
       consumeToken();
-      expect('&');
-      Node secondOperand=parseExclusiveOrExpression();
-      Node logicalAndNode = firstOperand.and(secondOperand);
-      return parseLogicalAndExpressionRest(logicalAndNode);
+      if (_tokenizer.ttype=='&')
+      {
+        consumeToken();
+        Node secondOperand=parseExclusiveOrExpression();
+        Node logicalAndNode = firstOperand.and(secondOperand);
+        return parseLogicalAndExpressionRest(logicalAndNode);
+      }
+      else
+      {
+        Node secondOperand=parseExclusiveOrExpression();
+        Node intersectionNode = firstOperand.intersection(secondOperand);
+        return parseLogicalAndExpressionRest(intersectionNode);        
+      }
     }
     else
     { return firstOperand;

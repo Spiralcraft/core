@@ -39,7 +39,10 @@ import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.IterableChain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -204,7 +207,7 @@ class IterationBindingHelper
     if (d2==null)
     {
       throw new BindException
-        ("Second operand of '+' (concatenation) must be iterable. "
+        ("Second operand of '"+op+"' (concatenation) must be iterable. "
         +t2.getReflector()
         );
       
@@ -216,25 +219,93 @@ class IterationBindingHelper
     if (commonReflector==null)
     { 
       throw new BindException
-        ("Component types of operands for '+' (concatenation) must have"
+        ("Component types of operands for '"+op+"' operator must have"
         +" a common supertype: "+d1.getComponentReflector()+" + "
         +d2.getComponentReflector()
         );
     }
 
-    if (cd!=null && commonReflector==cd.getComponentReflector())
-    { 
-      return new CollectionConcatenationChannel
-        (collectionReflector
-        ,cd
-        ,d1
-        ,d2
+    if (op=='+')
+    {
+      if (cd!=null && commonReflector==cd.getComponentReflector())
+      { 
+        return new CollectionConcatenationChannel
+          (collectionReflector
+          ,cd
+          ,d1
+          ,d2
+          );
+        
+      }
+  
+      return new IterableConcatenationChannel(commonReflector,d1,d2);
+    }
+    else if (op=='&')
+    {
+      if (cd!=null && commonReflector==cd.getComponentReflector())
+      { return new CollectionIntersectionChannel(collectionReflector,cd,d1,d2);
+      }
+      else
+      { return new IterableIntersectionChannel(commonReflector,d1,d2);
+      }
+      
+    }
+    else
+    {
+      throw new BindException
+        ("The '"+op+"' operator cannot be applied to iterables/collections."
         );
       
     }
-
-    return new IterableConcatenationChannel(commonReflector,d1,d2);
   }
+}
+
+class CollectionIntersectionChannel<C,T>
+  extends AbstractChannel<C>
+{
+
+  private final CollectionDecorator<C,T> cd;
+  private final IterationDecorator<?,T> decorator1;
+  private final IterationDecorator<?,T> decorator2;
+
+  public CollectionIntersectionChannel
+    (Reflector<C> collectionReflector
+    ,CollectionDecorator<C,T> cd
+    ,IterationDecorator<?,T> d1
+    ,IterationDecorator<?,T> d2
+    )
+  { 
+    super(collectionReflector);
+    this.cd=cd;
+    this.decorator1=d1;
+    this.decorator2=d2;
+  }
+
+  @Override
+  protected C retrieve()
+  {
+    HashSet<T> set=new HashSet<T>();
+    LinkedList<T> common=new LinkedList<T>();
+    C collection=cd.newCollection();
+    
+    for (T val:decorator1)
+    { set.add(val);
+    }
+    for (T val:decorator2)
+    { 
+      if (set.contains(val))
+      { common.add(val);
+      }
+    }
+    return cd.addAll(collection, common.iterator());
+  }
+
+  @Override
+  protected boolean store(C val)
+    throws AccessException
+  { return false;
+  }
+
 }
 
 class CollectionConcatenationChannel<C,T>
@@ -317,6 +388,49 @@ class IterableConcatenationChannel<T>
   }
 }
 
+class IterableIntersectionChannel<T>
+  extends AbstractChannel<Iterable<T>>
+{
+
+  private final IterationDecorator<?,T> decorator1;
+  private final IterationDecorator<?,T> decorator2;
+
+  public IterableIntersectionChannel
+    (Reflector<T> commonReflector
+    ,IterationDecorator<?,T> d1
+    ,IterationDecorator<?,T> d2
+    )
+  { 
+    super(IterableReflector.getInstance(commonReflector));
+    this.decorator1=d1;
+    this.decorator2=d2;
+  }
+
+  @Override
+  protected Iterable<T> retrieve()
+  { 
+    HashSet<T> set=new HashSet<T>();
+    ArrayList<T> common=new ArrayList<T>();
+    
+    for (T val:decorator1)
+    { set.add(val);
+    }
+    for (T val:decorator2)
+    { 
+      if (set.contains(val))
+      { common.add(val);
+      }
+    }
+    return common;
+    
+  }
+
+  @Override
+  protected boolean store(Iterable<T> val)
+  throws AccessException
+  { return false;
+  }
+}
 
 class StringBindingHelper
 {

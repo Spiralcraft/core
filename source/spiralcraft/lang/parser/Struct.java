@@ -67,7 +67,7 @@ public class Struct
     if (o instanceof Struct)
     {
       Struct struct=(Struct) o;
-      return reflector==struct.reflector
+      return reflector.isAssignableFrom(struct.reflector)
         && (baseExtent==null || baseExtent.equals(struct.baseExtent))
         && ArrayUtil.arrayEquals(data,struct.data);
         

@@ -192,6 +192,32 @@
 
     <test:Assertion>
     
+      <name>array concat
+      </name>
+      
+      <subjectX>[{1,2,3}] + [{4,5,6}]
+      </subjectX>
+      
+      <testX>.==[{1,2,3,4,5,6}]
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>array intersection
+      </name>
+      
+      <subjectX>[{1,2,3,4,5,6}] &amp; [{2,4,6,8,10,12}]
+      </subjectX>
+      
+      <testX>.==[{2,4,6}]
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
       <name>array @top
       </name>
       
@@ -1467,6 +1493,35 @@
       </testX>
     </test:Assertion>
     
+    <test:Assertion>
+      <name>Struct array intersection
+      </name>
+      <subjectX>
+        [{ { id:=1, title:="one" }
+         , { id:=2, title:="two" }
+         , { id:=3, title:="three" }
+         , { id:=4, title:="four" }
+         , { id:=5, title:="five" }
+         , { id:=6, title:="six" }
+        }]
+        &amp;
+        [{ { id:=2, title:="two" }
+         , { id:=4, title:="four" }
+         , { id:=6, title:="six" }
+         , { id:=8, title:="eight" }
+         , { id:=10, title:="ten" }
+         , { id:=12, title:="twelve" }
+        }]
+        
+      </subjectX>
+      <testX>.==
+        [{ { id:=2, title:="two" }
+         , { id:=4, title:="four" }
+         , { id:=6, title:="six" }
+        }]
+      </testX>
+    </test:Assertion>
+
   </sequence>
         
 </test:TestGroup>
