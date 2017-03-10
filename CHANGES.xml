@@ -14,6 +14,26 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev140
+        </revision>
+        
+        <notes>
+          <scm:Note>Add '&amp;' operator to compute intersection of collections
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>BinaryOpNode.java</URI>
+          <URI>ExpressionParser.java</URI>
+          <URI>Node.java</URI>
+          <URI>Struct.java</URI>
+        </resources>
+      </scm:Change>  
+
+      <scm:Change>
         <revision>-dev139
         </revision>
         
