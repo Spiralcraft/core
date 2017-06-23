@@ -71,7 +71,7 @@ public final class ArrayToString<Tdata>
       StringConverter converter
         =(StringConverter<Tdata>) StringConverter.getInstance(componentClass);
       this.converter
-        =converter!=null?converter:StringConverter.getOneWayInstance();
+        =converter!=null?converter:(StringConverter<Tdata>) StringConverter.getOneWayInstance();
     }
     
     this.componentClass=componentClass;

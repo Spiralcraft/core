@@ -21,6 +21,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.FocusChannel;
 import spiralcraft.lang.spi.SourcedChannel;
@@ -210,9 +211,9 @@ class SubcontextChannel<T,S>
     throws BindException
   {
     super
-      (subcontext.length>0
+      ((Reflector<T>) (subcontext.length>0
       ?subcontext[subcontext.length-1].getReflector()
-      :source.getReflector()
+      :source.getReflector())
       ,source
       );
     
