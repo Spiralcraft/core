@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.reflect;
 
-import spiralcraft.lang.AccessException;
 import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;

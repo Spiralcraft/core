@@ -24,7 +24,6 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Range;
-import spiralcraft.lang.Reflectable;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;

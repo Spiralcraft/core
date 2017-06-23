@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import spiralcraft.log.ClassLog;
 import spiralcraft.vfs.file.FileResource;
 import spiralcraft.vfs.util.ByteArrayResource;
 
