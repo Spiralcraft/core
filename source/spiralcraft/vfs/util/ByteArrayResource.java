@@ -42,7 +42,7 @@ public class ByteArrayResource
   }
   
   private byte[] _bytes;
-  
+  private long lastModified;
   
   public ByteArrayResource(byte[] bytes)
   { 
@@ -111,4 +111,13 @@ public class ByteArrayResource
   
   }
 
+  public long getLastModified()
+  { return lastModified;
+  }
+  
+  public boolean setLastModified(long lastModified)
+  { 
+    this.lastModified=lastModified;
+    return true;
+  }
 }
