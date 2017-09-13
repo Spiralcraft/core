@@ -23,6 +23,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.lang.Channel;
 import spiralcraft.log.ClassLog;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -214,12 +215,18 @@ public class ListAggregate<T>
         try
         {
           return new ListAggregate<T>
-            (this,list.getClass().newInstance());
+            (this,list.getClass().getDeclaredConstructor().newInstance());
         }
         catch (InstantiationException x)
         { throw new DataException("Error creating backing list",x);
         }
         catch (IllegalAccessException x)
+        { throw new DataException("Error creating backing list",x);
+        }
+        catch (NoSuchMethodException x)
+        { throw new DataException("Error creating backing list",x);
+        }
+        catch (InvocationTargetException x)
         { throw new DataException("Error creating backing list",x);
         }
       }

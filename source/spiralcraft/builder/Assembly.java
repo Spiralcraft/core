@@ -41,6 +41,7 @@ import spiralcraft.lang.AccessException;
 
 import spiralcraft.log.ClassLog;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 
@@ -169,7 +170,7 @@ public class Assembly<T>
         { instance=constructFromString(javaClass,constructor);
         }
         else
-        { instance=javaClass.newInstance();
+        { instance=javaClass.getDeclaredConstructor().newInstance();
         }
         focus.getSubject().set(instance);
         updateDeclarable(instance);
@@ -178,6 +179,12 @@ public class Assembly<T>
       { throw _assemblyClass.newBuildException("Error publishing instance in Focus chain",x);
       }
       catch (InstantiationException x)
+      { throw _assemblyClass.newBuildException("Error instantiating assembly",x);
+      }
+      catch (InvocationTargetException x)
+      { throw _assemblyClass.newBuildException("Error instantiating assembly",x);
+      }
+      catch (NoSuchMethodException x)
       { throw _assemblyClass.newBuildException("Error instantiating assembly",x);
       }
       catch (IllegalAccessException x)

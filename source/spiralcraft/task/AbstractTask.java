@@ -242,8 +242,8 @@ public abstract class AbstractTask
   { 
     firePropertyChange
       ("opsCompletedInUnit"
-      ,new Integer(_opsCompletedInUnit)
-      ,new Integer(_opsCompletedInUnit=val)
+      ,Integer.valueOf(_opsCompletedInUnit)
+      ,Integer.valueOf(_opsCompletedInUnit=val)
       );
   }
 
@@ -251,8 +251,8 @@ public abstract class AbstractTask
   { 
     firePropertyChange
       ("unitsCompletedInTask"
-      ,new Integer(_unitsCompletedInTask)
-      ,new Integer(_unitsCompletedInTask=val)
+      ,Integer.valueOf(_unitsCompletedInTask)
+      ,Integer.valueOf(_unitsCompletedInTask=val)
       );
   }
 
@@ -260,8 +260,8 @@ public abstract class AbstractTask
   { 
     firePropertyChange
       ("unitsInTask"
-      ,new Integer(_unitsInTask)
-      ,new Integer(_unitsInTask=val)
+      ,Integer.valueOf(_unitsInTask)
+      ,Integer.valueOf(_unitsInTask=val)
       );
   }
 
@@ -269,8 +269,8 @@ public abstract class AbstractTask
   { 
     firePropertyChange
       ("opsInUnit"
-      ,new Integer(_opsInUnit)
-      ,new Integer(_opsInUnit=val)
+      ,Integer.valueOf(_opsInUnit)
+      ,Integer.valueOf(_opsInUnit=val)
       );
   }
 

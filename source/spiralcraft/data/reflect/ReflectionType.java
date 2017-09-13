@@ -702,7 +702,7 @@ public class ReflectionType<T>
 
           
             if (defaultConstructor!=null)
-            { bean=(T) referencedClass.newInstance();
+            { bean=(T) referencedClass.getDeclaredConstructor().newInstance();
             }
             else 
             { 
@@ -732,6 +732,16 @@ public class ReflectionType<T>
         (getURI().toString()+": Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
     }
     catch (IllegalAccessException x)
+    { 
+      throw new DataException
+        (getURI().toString()+"Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
+    }
+    catch (InvocationTargetException x)
+    { 
+      throw new DataException
+        (getURI().toString()+"Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
+    }
+    catch (NoSuchMethodException x)
     { 
       throw new DataException
         (getURI().toString()+"Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);

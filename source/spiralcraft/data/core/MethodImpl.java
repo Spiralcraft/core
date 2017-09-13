@@ -1,5 +1,6 @@
 package spiralcraft.data.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import spiralcraft.common.declare.Declarable;
@@ -175,7 +176,7 @@ public abstract class MethodImpl
   {
     try
     {
-      MethodImpl m=getClass().newInstance();
+      MethodImpl m=getClass().getDeclaredConstructor().newInstance();
       m.returnType=returnType;
       m.staticMethod=staticMethod;
       m.name=name;
@@ -189,6 +190,12 @@ public abstract class MethodImpl
     { throw new RuntimeException(x);
     }
     catch (InstantiationException x)
+    { throw new RuntimeException(x);
+    }
+    catch (InvocationTargetException x)
+    { throw new RuntimeException(x);
+    }
+    catch (NoSuchMethodException x)
     { throw new RuntimeException(x);
     }
     

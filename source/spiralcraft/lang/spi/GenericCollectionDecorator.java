@@ -20,6 +20,7 @@ import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -79,7 +80,7 @@ public class GenericCollectionDecorator<C extends Collection<I>,I>
   public C newCollection()
   { 
     try
-    { return source.getReflector().getContentType().newInstance();
+    { return source.getReflector().getContentType().getDeclaredConstructor().newInstance();
     }
     catch (IllegalAccessException x)
     { 
@@ -87,6 +88,16 @@ public class GenericCollectionDecorator<C extends Collection<I>,I>
         ("Error creating collection: "+source.getReflector(),x);
     }
     catch (InstantiationException x)
+    {
+      throw new AccessException
+        ("Error creating collection: "+source.getReflector(),x);
+    }
+    catch (NoSuchMethodException x)
+    {
+      throw new AccessException
+        ("Error creating collection: "+source.getReflector(),x);
+    }
+    catch (InvocationTargetException x)
     {
       throw new AccessException
         ("Error creating collection: "+source.getReflector(),x);

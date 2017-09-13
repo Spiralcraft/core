@@ -25,6 +25,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.util.InstanceResolver;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Collection;
 
@@ -87,7 +88,7 @@ public class AbstractCollectionType<T extends Collection,Tcontent>
     if (collection==null)
     { 
       try
-      { collection=nativeClass.newInstance();
+      { collection=nativeClass.getDeclaredConstructor().newInstance();
       }
       catch (InstantiationException x)
       { 
@@ -98,6 +99,22 @@ public class AbstractCollectionType<T extends Collection,Tcontent>
           );
       }
       catch (IllegalAccessException x)
+      { 
+        throw new DataException
+          ("Error instantiating collection "
+          +nativeClass.getName()+": "+x.toString()
+          ,x
+          );
+      }
+      catch (InvocationTargetException x)
+      { 
+        throw new DataException
+          ("Error instantiating collection "
+          +nativeClass.getName()+": "+x.toString()
+          ,x
+          );
+      }
+      catch (NoSuchMethodException x)
       { 
         throw new DataException
           ("Error instantiating collection "

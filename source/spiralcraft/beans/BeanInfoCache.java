@@ -82,7 +82,7 @@ public class BeanInfoCache
    */
   public static synchronized BeanInfoCache getInstance(int introspectorFlags)
   { 
-    Integer flags=new Integer(introspectorFlags);
+    Integer flags=introspectorFlags;
 
     BeanInfoCache cache=_SINGLETONS.get(flags);
     

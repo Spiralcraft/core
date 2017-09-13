@@ -15,6 +15,7 @@
 package spiralcraft.security.auth;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +36,7 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.lang.ClassUtil;
 
 //import spiralcraft.log.ClassLog;
 
@@ -347,9 +349,9 @@ public class Authenticator
       if (protoMap.get(credClass.getSimpleName())==null)
       { 
         try
-        { protoMap.put(credClass.getSimpleName(),credClass.newInstance());
+        { protoMap.put(credClass.getSimpleName(),ClassUtil.construct(credClass));
         }
-        catch (InstantiationException x)
+        catch (InvocationTargetException x)
         { 
           throw new IllegalArgumentException
             ("Credential class "
@@ -358,16 +360,6 @@ public class Authenticator
             +x
             ,x
             );
-        }
-        catch (IllegalAccessException x)
-        {
-          throw new IllegalArgumentException
-          ("Credential class "
-          +credClass.getName()
-          +" could not be instantiated: "
-          +x
-          ,x
-          );
         }
       }
     }

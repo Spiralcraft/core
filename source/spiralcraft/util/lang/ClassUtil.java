@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 
 /**
@@ -301,5 +302,61 @@ public abstract class ClassUtil
 
   public static final boolean equals(Object a,Object b)
   { return (a==b || (a!=null && a.equals(b)));
+  }
+  
+  /**
+   * Construct a new instance of a class using the default constructor, wrapping
+   *   any checked exceptions into an InvocationTargetException
+   * 
+   * @param clazz
+   * @return
+   */
+  public static final <T> T construct(Class<T> clazz)
+    throws InvocationTargetException
+  {
+    try
+    { return clazz.getDeclaredConstructor().newInstance();
+    }
+    catch (NoSuchMethodException x)
+    {          
+      throw new InvocationTargetException
+        (x
+        ,"Class "
+        +clazz.getName()
+        +" could not be instantiated: "
+        +x
+        );
+    }
+    catch (InstantiationException x)
+    {
+      throw new InvocationTargetException
+        (x
+        ,"Class "
+        +clazz.getName()
+        +" could not be instantiated: "
+        +x
+        );
+    }
+    catch (IllegalAccessException x)
+    {
+      throw new InvocationTargetException
+        (x
+        ,"Class "
+        +clazz.getName()
+        +" could not be instantiated: "
+        +x
+        );
+    }
+    catch (InvocationTargetException x)
+    {
+      throw new InvocationTargetException
+        (x
+        ,"Class "
+        +clazz.getName()
+        +" could not be instantiated: "
+        +x
+        );
+    }
+    
   }
 }

@@ -23,6 +23,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.KeyedList;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -134,12 +135,18 @@ public class KeyedListAggregate<T>
       try
       {
         return new KeyedListAggregate<T>
-          (this,list.getClass().newInstance());
+          (this,list.getClass().getDeclaredConstructor().newInstance());
       }
       catch (InstantiationException x)
       { throw new DataException("Error creating backing list",x);
       }
       catch (IllegalAccessException x)
+      { throw new DataException("Error creating backing list",x);
+      }
+      catch (InvocationTargetException x)
+      { throw new DataException("Error creating backing list",x);
+      }
+      catch (NoSuchMethodException x)
       { throw new DataException("Error creating backing list",x);
       }
     }

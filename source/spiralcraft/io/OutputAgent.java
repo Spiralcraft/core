@@ -114,7 +114,7 @@ public abstract class OutputAgent
   @Override
   public final void write(int val)
     throws IOException
-  { write(new byte[] {new Integer(val).byteValue()},0,1);
+  { write(new byte[] {Integer.valueOf(val).byteValue()},0,1);
   }
 
   @Override

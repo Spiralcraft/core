@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.persist;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import spiralcraft.data.Type;
@@ -106,12 +107,18 @@ public class XmlBean<T>
     else
     {
       try
-      { return type.getNativeClass().newInstance();
+      { return type.getNativeClass().getDeclaredConstructor().newInstance();
       }
       catch (InstantiationException x)
       { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
       }
       catch (IllegalAccessException x)
+      { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
+      }
+      catch (NoSuchMethodException x)
+      { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
+      }
+      catch (InvocationTargetException x)
       { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
       }
     }

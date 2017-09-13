@@ -350,7 +350,7 @@ public class PropertyBinding
         try
         { 
           collection
-            =_specifier.getCollectionClass().newInstance();
+            =_specifier.getCollectionClass().getDeclaredConstructor().newInstance();
         }
         catch (Exception x)
         { 
@@ -366,7 +366,7 @@ public class PropertyBinding
         try
         { 
           collection
-            =(Collection) _target.getContentType().newInstance();
+            =(Collection) _target.getContentType().getDeclaredConstructor().newInstance();
         }
         catch (Exception x)
         { 
