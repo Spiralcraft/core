@@ -50,6 +50,7 @@ public class PathContext
   private Binding<URI> codeX;
   protected PathContextMapping[] pathMappings;
   private Boolean publishContent;
+  private Boolean onlyPublishMappedContent;
   private Binding<Boolean> guardX;
   private Binding<?>[] imports;
   private Binding<?>[] exports;
@@ -125,6 +126,16 @@ public class PathContext
   { this.publishContent=publishContent;
   }
   
+  /**
+   * Specify that only content mapped via the contentBaseURI should be published as
+   *   opposed to resources in the subtree where this PathContext is defined
+   * 
+   * @param onlyPublishMappedContent
+   */
+  public void setOnlyPublishMappedContent(boolean onlyPublishMappedContent)
+  { this.onlyPublishMappedContent=onlyPublishMappedContent;
+  }
+
   /**
    * Evaluate an expression after this PathContext is entered
    * 
@@ -241,7 +252,9 @@ public class PathContext
     }
     
     Resource ret=null;
-    if (contentResource!=null)
+    if (contentResource!=null
+        && !Boolean.TRUE.equals(onlyPublishMappedContent) 
+        )
     { 
       ret=Resolver.getInstance().resolve
         (contentResource.getURI().resolve(relativePath));
@@ -262,8 +275,12 @@ public class PathContext
     
     if (ret==null && contentBaseURI!=null)
     {
-      ret=Resolver.getInstance().resolve
-        (contentBaseURI.resolve(relativePath));
+      URI uri=contentBaseURI.resolve(relativePath);
+      ret=Resolver.getInstance().resolve(uri);
+      if (logLevel.isFine())
+      { log.fine(contentBaseURI+ " + "+relativePath+" = "+uri+" -> "+ret); 
+      }
+      
       if (ret!=null && ret.exists())
       { 
         if (logLevel.isFine())
