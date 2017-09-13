@@ -14,6 +14,20 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev142
+        </revision>
+        
+        <notes>
+          <scm:Note>Provide logging and finer control over publishing of content
+            associated with a pathContext. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PathContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev141
         </revision>
         
