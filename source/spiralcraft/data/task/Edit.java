@@ -127,6 +127,18 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   }
 
   /**
+   * Indicate that the specified action should always be performed and the buffer
+   *   should always be saved. Equivalent to setting preSave and forceSave.
+   * 
+   * @param action
+   */
+  public void setAction(Binding<?> action)
+  { 
+    this.setPreSave(action);
+    this.setForceSave(true);
+  }
+  
+  /**
    * Use afterSave property- this is deprecated
    * 
    * @param onSave
@@ -145,10 +157,21 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   { this.afterSave=afterSave;
   }
 
+  /**
+   * An expression to evaluated before the buffer is saved (e.g. to make additional
+   *   changes to data in the buffer.)
+   * 
+   * @param preSave
+   */
   public void setPreSave(Binding<?> preSave)
   { this.preSave=preSave;
   }
   
+  /** 
+   * Push the buffer to the store even if it isn't dirty.
+   * 
+   * @param forceSave
+   */
   public void setForceSave(boolean forceSave)
   { 
     this.forceSave=forceSave;
