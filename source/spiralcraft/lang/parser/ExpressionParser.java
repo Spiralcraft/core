@@ -1347,7 +1347,11 @@ public class ExpressionParser
     throws ParseException
   {
     expect('`');
-    Node node=LiteralNode.get(Expression.create(parseBindingExpression()));
+    Node expr=parseBindingExpression();
+    if (expr==null)
+    { this.throwUnexpected("Expression Literal cannot be empty");
+    }
+    Node node=LiteralNode.get(Expression.create(expr));
     expect('`');
     return node;
   }
