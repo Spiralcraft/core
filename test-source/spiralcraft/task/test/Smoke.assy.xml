@@ -168,6 +168,17 @@
           </else>
         </task:If>
         
+        <task:If>
+          <x>true
+          </x>
+          <then>
+            @log("Auto Eval")
+          </then>
+          <else>
+            @log("Auto Eval FAIL")
+          </else>
+        </task:If>
+        
         <test:AssertFailure>
           <name>Validation Fail test
           </name>
