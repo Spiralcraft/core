@@ -25,6 +25,8 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.ContextualName;
+import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.ChainableContext;
@@ -41,6 +43,7 @@ import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * <p>A Scenario provides a UI independent context for Task based behavior.
@@ -82,7 +85,31 @@ public abstract class Scenario<Tcontext,Tresult>
     return new Sequence(sequence);
   }
   
-  
+  static
+  {
+    StringConverter.registerInstance
+      (Scenario.class
+      ,new StringConverter<Scenario<?,?>>()
+      {
+        @SuppressWarnings({ "unchecked", "rawtypes"})
+        @Override
+        public Scenario<?,?> fromString(String val)
+        { 
+          try
+          { return new Eval(Expression.create(val));
+          }
+          catch (Exception x)
+          { throw new IllegalArgumentException(x);
+          }
+        }
+        
+        @Override
+        public String toString(Scenario<?,?> task)
+        { return null;
+        }
+      }
+      );
+  }
   protected ClassLog log=ClassLog.getInstance(getClass());
   
   protected ThreadLocalChannel<TaskCommand<Tcontext,Tresult>> commandChannel;
