@@ -14,6 +14,23 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev144
+        </revision>
+        
+        <notes>
+          <scm:Note>IOC framework: Shorthand for building task trees. 
+            When a spiralcraft.task.Scenario is expected,
+            a String property value will be converted to a Scenario by constructing
+            a spiralcraft.task.Eval task to wrap an Expression created from the 
+            String.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Scenario.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev143
         </revision>
         
