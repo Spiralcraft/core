@@ -20,6 +20,7 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 
 
@@ -37,6 +38,13 @@ public abstract class Branch<Tcontext,Tresult>
 
   protected ArrayList<Scenario<?,?>> children
     =new ArrayList<Scenario<?,?>>(2);
+  protected Binding<Tresult> resultX;
+  
+  public void setResultX(Binding<Tresult> resultX)
+  { 
+    this.resultX=resultX;
+    this.storeResults=true;
+  }
   
   protected abstract Scenario<?,?> select();
     
@@ -52,6 +60,10 @@ public abstract class Branch<Tcontext,Tresult>
       {
         command=scenario.command();
         super.work();
+        if (resultX!=null)
+        { addResult(resultX.get());
+        }  
+        
       }
     }
   }
@@ -83,7 +95,17 @@ public abstract class Branch<Tcontext,Tresult>
 
   }
   
-  
+  @Override
+  protected void bindResult(Focus<?> focusChain)
+    throws ContextualException
+  {   
+    if (resultX!=null)
+    { 
+      resultX.bind(focusChain);
+      resultReflector=resultX.getReflector();
+    }
+  }
+    
   @Override
   protected Task task()
   { return new BranchTask();
