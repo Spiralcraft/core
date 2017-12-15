@@ -38,6 +38,7 @@ public class MetaEmptyMember<T>
   }
   
   @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Channel<Boolean> resolve(
     Reflector<T> reflector,
     Channel<T> source,
@@ -46,7 +47,17 @@ public class MetaEmptyMember<T>
     throws BindException
   { 
     assertNoArguments(arguments);
-    return new CollectionEmptyChannel<T>(source);
+    if (source.<IterationDecorator>decorate(IterationDecorator.class)!=null)
+    { return new CollectionEmptyChannel<T>(source);
+    }
+    else if (source.getReflector().getContentType()==String.class)
+    { return new StringEmptyChannel((Channel<String>) source);
+    }
+    else
+    {
+      throw new BindException
+        (source.getReflector().getTypeURI()+" does not support @empty");
+    }
   }
 
 }
@@ -86,4 +97,30 @@ class CollectionEmptyChannel<T>
   public boolean store(Boolean val)
   { return false;
   }   
+}
+
+class StringEmptyChannel
+  extends SourcedChannel<String,Boolean>
+{
+
+  public StringEmptyChannel(Channel<String> source)
+    throws BindException
+  {
+    super(BeanReflector.<Boolean>getInstance(Boolean.class),source);
+  }
+
+  @Override
+  public Boolean retrieve()
+  { 
+    String val=source.get();
+    if (val==null || val.isEmpty())
+    { return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean store(Boolean val)
+  { return false;
+}   
 }
