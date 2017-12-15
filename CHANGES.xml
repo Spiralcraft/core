@@ -12,6 +12,45 @@
      
 
     <detail> 
+      <scm:Change>
+        <revision>-dev144
+        </revision>
+        
+        <notes>
+          <scm:Note>Empty-string support for .@empty meta-property
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/members/MetaEmptyMember.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev144
+        </revision>
+        
+        <notes>
+          <scm:Note>Support resultX property to define task result
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Branch.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev144
+        </revision>
+        
+        <notes>
+          <scm:Note>Edit.chainAfterSave runs child task after auto-save so defaulted
+            values such as generated keys and timestamps are visible to child tasks.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Edit.java
+        </path>
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev144
