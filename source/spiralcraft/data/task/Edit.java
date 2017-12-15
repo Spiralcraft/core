@@ -73,6 +73,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   private boolean forceSave;
   private DataSessionFocus localDataSessionFocus;
   private ThreadLocalChannel<DataSession> localDataSessionChannel;
+  private boolean chainAfterSave;
   
   { storeResults=true;
   }
@@ -126,6 +127,16 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   { this.onInit=onInit;
   }
 
+  /**
+   * Run any chained tasks after auto-save so any data changed or added during the
+   *   buffer flush can be picked up.
+   *   
+   * @param chainAfterSave
+   */
+  public void setChainAfterSave(boolean chainAfterSave)
+  { this.chainAfterSave=chainAfterSave;
+  }
+  
   /**
    * Indicate that the specified action should always be performed and the buffer
    *   should always be saved. Equivalent to setting preSave and forceSave.
@@ -317,7 +328,9 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
         try
         {
           editor.initBuffer();
-          super.work();
+          if (!chainAfterSave)
+          { super.work();
+          }
           if (autoSave)
           { 
             if (debug)
@@ -329,6 +342,9 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
             catch (DataException x)
             { addException(x);
             }
+          }
+          if (chainAfterSave)
+          { super.work();
           }
           addResult(editor.getBuffer());
         }
