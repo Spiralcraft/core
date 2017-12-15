@@ -25,8 +25,6 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.ContextualName;
-import spiralcraft.data.DataException;
-import spiralcraft.data.Type;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.ChainableContext;
