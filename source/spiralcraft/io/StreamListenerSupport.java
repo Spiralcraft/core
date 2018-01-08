@@ -27,13 +27,36 @@ public class StreamListenerSupport
 
   public void add(StreamListener listener)
   { 
-    if (!listeners.contains(listener))
+    if (!contains(listener))
     { listeners.add(new WeakReference<StreamListener>(listener));
     }
   }
 
   public void remove(StreamListener listener)
-  { listeners.remove(listener);
+  { 
+    WeakReference<StreamListener> target=null;
+    for (WeakReference<StreamListener> ref: listeners)
+    {
+      if (ref.get()==listener)
+      { 
+        target=ref;
+        break;
+      }
+    }
+    if (target!=null)
+    { listeners.remove(target);
+    }
+  }
+  
+  public boolean contains(StreamListener listener)
+  {
+    for (WeakReference<StreamListener> ref: listeners)
+    {
+      if (ref.get()==listener)
+      { return true;
+      }
+    }
+    return false;
   }
 
   @Override
