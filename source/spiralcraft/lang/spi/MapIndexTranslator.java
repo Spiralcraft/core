@@ -36,7 +36,7 @@ public class MapIndexTranslator<I,T>
   }
 
   @Override
-  @SuppressWarnings("unchecked") // Upcast for expected modifiers
+  @SuppressWarnings({ "unchecked", "unlikely-arg-type"}) // Upcast for expected modifiers
   public T translateForGet(Map<I,T> source,Channel<?>[] modifiers)
   { 
     if (modifiers==null || modifiers.length==0)
