@@ -24,7 +24,6 @@ import java.lang.ref.WeakReference;
 
 
 import spiralcraft.util.ClassLoaderLocal;
-import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 

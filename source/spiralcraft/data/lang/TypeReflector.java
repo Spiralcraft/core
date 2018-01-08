@@ -20,7 +20,7 @@ import spiralcraft.data.Type;
 public class TypeReflector<Z>
   extends GenericReflector<Type<Z>>
 {
-
+  @SuppressWarnings("unused")
   private static final ClassLog log
     =ClassLog.getInstance(TypeReflector.class);
   private final Type<Z> type;
