@@ -51,6 +51,7 @@ public class Switch<T>
   private Binding<T> x;
   private T[] constants;
   private boolean[] emptyMask;
+  private boolean[] defaultMask;
   private final HashMap<T,boolean[]> maskMap=new HashMap<>();
   
   public void setX(Binding<T> x)
@@ -93,13 +94,17 @@ public class Switch<T>
   {
     Component[] children=getChildren();
     emptyMask=new boolean[children.length];
+    defaultMask=new boolean[children.length];
     
     constants=(T[]) Array.newInstance(x.getContentType(),children.length);
     StringConverter<T> converter=x.getReflector().getStringConverter();
     for (int i=0;i<children.length;i++)
     {
+      boolean deflt=false;
       if (children[i] instanceof Case)
-      { constants[i]=((Case<T>) children[i]).getConstant();
+      { 
+        constants[i]=((Case<T>) children[i]).getConstant();
+        deflt=((Case<T>) children[i]).isDefault();
       }
       else
       { 
@@ -120,8 +125,11 @@ public class Switch<T>
         mask=new boolean[children.length];
         maskMap.put(constant,mask);
       }
-      mask[i]=true;
       
+      mask[i]=true;
+      if (deflt)
+      { defaultMask[i]=true;
+      }
     }
     
 
@@ -163,7 +171,7 @@ public class Switch<T>
         state.setValue(val);
         boolean[] mask=maskMap.get(val);
         if (mask==null)
-        { mask=emptyMask;
+        { mask=defaultMask;
         }
         state.setMask(mask);
       }

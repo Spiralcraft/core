@@ -33,6 +33,7 @@ public class Case<T>
 
   private Binding<T> constantX;
   private T constant;
+  private boolean deflt;
   
   void setConstantX(Binding<T> constantX)
   { 
@@ -51,6 +52,14 @@ public class Case<T>
     else
     { constant=(T) getId();
     }
+  }
+  
+  public void setDefault(boolean deflt)
+  { this.deflt=deflt;
+  }
+
+  boolean isDefault()
+  { return this.deflt;
   }
   
   public T getConstant()
