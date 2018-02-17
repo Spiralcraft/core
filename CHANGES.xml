@@ -17,6 +17,30 @@
         </revision>
         
         <notes>
+          <scm:Note>Support derived return types for methods
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Method.java
+          </URI>
+          <URI>core/AbstractTaskMethod.java
+          </URI>
+          <URI>core/MethodImpl.java
+          </URI>
+          <URI>lang/TupleReflector.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev145
+        </revision>
+        
+        <notes>
           <scm:Note>Provide for default case in Switch construct.
           </scm:Note>
         </notes>
