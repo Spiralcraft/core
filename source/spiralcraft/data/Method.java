@@ -104,5 +104,12 @@ public interface Method
    * @return
    */
   boolean isGeneric();
-  
+
+  /**
+   * Indicates that the method doesn't have a declared return type because it
+   *   is determined at binding time.
+   * 
+   * @return
+   */
+  boolean isReturnTypeDerived();
 }

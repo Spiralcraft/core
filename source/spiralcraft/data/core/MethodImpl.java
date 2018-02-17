@@ -29,6 +29,7 @@ public abstract class MethodImpl
   
   private Type<?> dataType;
   protected Type<?> returnType;
+  protected boolean derivedReturnType;
   protected boolean staticMethod;
   private String name;
   private Type<?>[] parameterTypes;
@@ -144,6 +145,10 @@ public abstract class MethodImpl
   { this.staticMethod=staticMethod;
   }
   
+  @Override
+  public boolean isReturnTypeDerived()
+  { return derivedReturnType;
+  }  
 
   private void lock()
   { locked=true;
@@ -156,7 +161,7 @@ public abstract class MethodImpl
       if (returnType==null)
       { resolveTypes();
       }
-      if (returnType==null)
+      if (returnType==null && !derivedReturnType)
       { throw new RuntimeException("Method return type is null for "+qualifiedName);
       }
     }

@@ -18,7 +18,6 @@ package spiralcraft.data.core;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
@@ -115,13 +114,26 @@ public abstract class AbstractTaskMethod<T,C,R>
     }
     
     if (this.returnType==null && !generic)
-    { 
-      log.warning("Method "+getURI()+" has no return type. This usage is"
-        +" no longer supported"
-        );
-      this.returnType=ReflectionType.canonicalType(TaskCommand.class);
-      this.returnCommand=true;
+    { this.returnType=deriveReturnType();
     }
+    
+    if (this.returnType==null && !generic)
+    { 
+      derivedReturnType=true;
+      log.fine
+        ("Return type for Method "+getURI()
+        +" was not declared and could not be derived. Deferring to binding."
+        );
+    }
+  }
+
+  /**
+   * Derive a return type based on specific info
+   * 
+   * @return
+   */
+  protected Type<R> deriveReturnType()
+  { return null;
   }
   
   /**

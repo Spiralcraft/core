@@ -523,6 +523,10 @@ public class TupleReflector<T extends Tuple>
               (method.getURI()+" is not static and must be accessed from an instance");
           }
           Channel boundMethod=method.bind(source, paramChannels);
+          if (method.getReturnType()==null && method.isReturnTypeDerived())
+          { return boundMethod;
+          }
+          
           if (method.getReturnType().getNativeClass()==TaskCommand.class // Method as a functor
               || method.getReturnType().getNativeClass()==Void.class // Ignore result
               ||
