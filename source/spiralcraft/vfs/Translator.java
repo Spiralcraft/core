@@ -37,4 +37,7 @@ public interface Translator
 {
   Resource translate(Resource original,URI translatedURI)
     throws IOException,TranslationException;
+
+  Resource translate(Resource original,URI translatedURI,Resource previousTranslation)
+      throws IOException,TranslationException;
 }

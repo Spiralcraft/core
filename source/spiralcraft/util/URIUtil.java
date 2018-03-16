@@ -93,6 +93,23 @@ public class URIUtil
   }
   
   /**
+   * Return the portion of the URI path beginning with the last dot
+   * 
+   * @param source
+   * @return
+   */
+  public static final String getPathExtension(URI source)
+  { 
+    int index=source.getPath().lastIndexOf(".");
+    if (index>-1)
+    { return source.getPath().substring(index);
+    }
+    else
+    { return null;
+    }
+  }
+  
+  /**
    * <p>Add a pre-encoded path segment to the specified URI
    * </p>
    * 
