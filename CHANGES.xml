@@ -13,6 +13,29 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev147
+        </revision>
+        
+        <notes>
+          <scm:Note>Incremental support for asset pipelines via vfs.Translator
+            starting with a utility to concatenate dir contents with specific 
+            extension into a virtual resource.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        <resources>
+          <URI>vfs/Translator.java
+          </URI>
+          <URI>vfs/util/ConcatTranslator.java
+          </URI>
+          <URI>util/URIUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev145
         </revision>
         
