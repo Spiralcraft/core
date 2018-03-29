@@ -82,6 +82,7 @@ public abstract class AbstractChannel<T>
   protected Focus<?> context;
   protected Channel<?> origin;
   protected DeclarationInfo declarationInfo;
+  protected boolean detectPropertyChange=true;
   
   
 
@@ -263,20 +264,31 @@ public abstract class AbstractChannel<T>
     }
     else
     {
-      Object oldValue=retrieve();
-      if (store(value))
+      if (detectPropertyChange && _propertyChangeSupport!=null)
       {
-        if (_propertyChangeSupport!=null)
-        { _propertyChangeSupport.firePropertyChange("",oldValue,value);
+        T oldValue=retrieve();
+        if (store(value))
+        { 
+          propertyChangeDetected(oldValue,value);
+          return true;
         }
-        return true;
+        else
+        { return false;
+        }
       }
-      else
-      { return false;
+      else 
+      { return store(value);
       }
     }
   }
 
+  protected void propertyChangeDetected(T oldValue, T newValue)
+  {        
+    if (_propertyChangeSupport!=null)
+    { _propertyChangeSupport.firePropertyChange("",oldValue,newValue);
+    }
+  }
+  
   /**
    * Return the Reflector ("type" model/name resolver) for this Channel
    */

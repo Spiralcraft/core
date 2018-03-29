@@ -68,6 +68,7 @@ public class SimpleChannel<T>
     // super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isConstant);    
     super(isConstant?reflect(val):TypeModel.reflect(val),isConstant);
     _object=val;
+    detectPropertyChange=!isConstant;
 
     // System.out.println("SimpleBinding- noclass:"+super.toString()+":["+val+"]");
   }
@@ -77,6 +78,7 @@ public class SimpleChannel<T>
      
     super(BeanReflector.<T>getInstance(clazz),isConstant);
     _object=val; 
+    detectPropertyChange=!isConstant;
 
     //System.out.println("SimpleBinding- with class:"+super.toString()+":["+val+"]");
   }
@@ -85,6 +87,7 @@ public class SimpleChannel<T>
   { 
     super(reflector,isConstant);
     _object=val;
+    detectPropertyChange=!isConstant;
   }
   
   @Override
@@ -103,7 +106,7 @@ public class SimpleChannel<T>
   
   @Override
   public boolean isWritable()
-  { return true;
+  { return !isConstant();
   }
 
 }
