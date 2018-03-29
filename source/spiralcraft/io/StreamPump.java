@@ -252,7 +252,9 @@ public class StreamPump
           catch (IOException x)
           { }
           try
-          { out.close();
+          { 
+            out.flush();
+            out.close();
           }
           catch (IOException x)
           { }

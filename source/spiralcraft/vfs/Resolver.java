@@ -148,7 +148,7 @@ public class Resolver
         
         @Override
         public String toString(Resource resource)
-        { return resource.getURI().toString();
+        { return resource!=null?resource.getURI().toString():null;
         }
       }
       );

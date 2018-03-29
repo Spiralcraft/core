@@ -16,7 +16,13 @@ package spiralcraft.service;
 
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.util.Date;
+import java.util.Properties;
 
 import spiralcraft.app.CallContext;
 import spiralcraft.app.CallMessage;
@@ -31,7 +37,8 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.Disposable;
 import spiralcraft.common.DisposableContext;
 import spiralcraft.common.LifecycleException;
-
+import spiralcraft.exec.ExecutionContext;
+import spiralcraft.io.MuxOutputStream;
 import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
@@ -41,8 +48,15 @@ import spiralcraft.command.SimpleCall;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
 import spiralcraft.util.Path;
+import spiralcraft.util.Property;
+import spiralcraft.util.refpool.URIPool;
+import spiralcraft.util.string.DateToString;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 
 /**
@@ -66,9 +80,61 @@ public class Application
   private State rootState;
   private CallContext callContext=new CallContext();
   private PlaceContext placeContext;
+  private DateToString logFormat=new DateToString("yyyy-MM-dd HH:mm:ss.SSS");
+  private MuxOutputStream out
+    =new MuxOutputStream(ExecutionContext.getInstance().out(),true);
+  private MuxOutputStream err
+    =new MuxOutputStream(ExecutionContext.getInstance().err(),true);
+  private Properties properties = new Properties();
+  private URI[] propertySearchURIs=new URI[0];
   
   { 
     this.chainOuterContext(callContext);
+  }
+  
+  public void addOutputMonitorStream(OutputStream out)
+  { this.out.addMux(out);
+  }
+  
+  public void addErrorMonitorStream(OutputStream out)
+  { this.err.addMux(out);
+  }
+
+  public void setPropertySearchURIs(URI[] propertySearchURIs)
+  { this.propertySearchURIs=propertySearchURIs;
+  }
+  
+  public void setProperties(Property[] properties)
+  { 
+    for (Property property: properties)
+    { this.properties.setProperty(property.getKey(),property.getValue());
+    }
+  }
+  
+  public String getProperty(String name)
+  { return properties.getProperty(name);
+  }
+  
+  public void log(String message)
+  { 
+    String line=logFormat.toString(new Date())+": "+message+"\r\n";
+    try
+    { out.write(line.getBytes());
+    }
+    catch (IOException x)
+    { }
+    log.log(Level.INFO,message,null,1);
+  }
+  
+  public void logError(String message)
+  { 
+    String line=logFormat.toString(new Date())+": "+message+"\r\n";
+    try
+    { err.write(line.getBytes());
+    }
+    catch (IOException x)
+    { }
+    log.log(Level.WARNING,message,null,1);
   }
   
   public final CommandFactory<Void,Void,Void> terminate
@@ -125,6 +191,7 @@ public class Application
   public void start()
     throws LifecycleException
   {
+    loadProperties();
     if (placeContext!=null)
     { placeContext.start();
     }
@@ -232,6 +299,56 @@ public class Application
     { throw new RuntimeException(call.getException());
     }
     return call.getResult();
+  }
+  
+  private void loadProperties()
+  {
+    for (URI uri: propertySearchURIs)
+    { loadProperties(uri);
+    }
+  }
+  
+  
+  private void loadProperties(URI uri)
+  {
+    if (!uri.isAbsolute())
+    { 
+      loadProperties(URIPool.create("context:/").resolve(uri));
+      loadProperties(URIPool.create("context://data/").resolve(uri));
+    }
+    else
+    { 
+      try
+      {
+        Resource resource=Resolver.getInstance().resolve(uri);
+        if (resource!=null)
+        { loadProperties(resource);
+        }
+      }
+      catch (UnresolvableURIException x)
+      {
+      }
+      
+    }
+  }
+  
+  private void loadProperties(Resource resource)
+  {
+    log.fine("Looking for properties in "+resource.getURI());
+    try
+    {
+      if (resource.exists())
+      { 
+        Properties newProps=new Properties(properties);
+        InputStream in =resource.getInputStream();
+        newProps.load(in);
+        in.close();
+        properties=newProps;
+      }
+    }
+    catch (IOException x)
+    { log.log(Level.WARNING,"Exception looking for properties in "+resource.getURI(),x);
+    }
   }
   
   private void handleEvents()

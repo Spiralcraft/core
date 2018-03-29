@@ -120,4 +120,8 @@ public class ByteArrayResource
     this.lastModified=lastModified;
     return true;
   }
+  
+  public String asString()
+  { return new String(_bytes);
+  }
 }

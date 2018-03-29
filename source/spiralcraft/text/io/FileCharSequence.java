@@ -15,6 +15,8 @@
 package spiralcraft.text.io;
 
 import java.io.IOException;
+import java.io.File;
+
 import java.io.FileInputStream;
 
 /**
@@ -36,5 +38,12 @@ public class FileCharSequence
     in.close();
   }
   
+  public FileCharSequence(File file)
+    throws IOException
+  {
+    FileInputStream in=new FileInputStream(file);
+    load(in);
+    in.close();
+  }
   
 }

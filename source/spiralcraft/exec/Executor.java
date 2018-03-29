@@ -37,7 +37,7 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.context.ContextResourceMap;
-
+import spiralcraft.vfs.file.FileResource;
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ConsoleHandler;
 import spiralcraft.log.EventHandler;
@@ -571,6 +571,28 @@ public class Executor
           { 
             RotatingFileHandler handler=new RotatingFileHandler();
             handler.setPath(new Path(nextArgument(),'/'));
+            Executor.this.logHandler=handler;
+          }
+          else if (option.equals("-logURI"))
+          {
+            String logURI=nextArgument();
+            Path path=null;
+            try
+            {            
+              Resource res=Resolver.getInstance().resolve(logURI);
+              if (res!=null)
+              { res=res.unwrap(FileResource.class);
+              }
+              if (res==null)
+              { throw new IllegalArgumentException("Not a file "+logURI);
+              }
+              path=new Path( ((FileResource) res).getURI().getPath(),'/');
+            }
+            catch (IOException x)
+            { throw new IllegalArgumentException("Error resolving "+logURI,x);
+            }
+            RotatingFileHandler handler=new RotatingFileHandler();
+            handler.setPath(path);
             Executor.this.logHandler=handler;
           }
           else if (option.equals("-consoleLog"))

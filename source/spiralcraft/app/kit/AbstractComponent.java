@@ -16,6 +16,7 @@ package spiralcraft.app.kit;
 
 
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,6 +38,7 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.declare.DeclarationInfo;
+import spiralcraft.common.namespace.ContextualName;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Context;
@@ -71,6 +73,7 @@ public class AbstractComponent
   
   private MessageHandler[] messageHandlers;
   private Context[] outerContexts;
+  private URI alias;
   
   protected Parent parent;
   protected boolean bound=false;
@@ -112,6 +115,15 @@ public class AbstractComponent
   @Override
   public Parent getParent()
   { return parent;
+  }
+  
+  /**
+   * A unique name to differentiate components of the same type in the Focus chain
+   * 
+   * @param alias
+   */
+  public void setAlias(ContextualName alias)
+  { this.alias=alias.getQName().toURIPath();
   }
   
   @Override
@@ -519,6 +531,8 @@ public class AbstractComponent
     { throw new RuntimeException
         ("Messaging "+getClass()+" #"+getId()+" "
           +dispatcher.getState().getPath()
+          +" with message "+message
+          +" using dispatcher "+dispatcher
         ,x
         );
     }
@@ -652,6 +666,9 @@ public class AbstractComponent
     { 
       selfFocus=focusChain.chain
         (LangUtil.constantChannel(AbstractComponent.this));
+      if (alias!=null)
+      { selfFocus.addAlias(alias);
+      }
       bindContextuals(selfFocus,selfContextuals);
       if (peerSet!=null)
       { peerSet.bind(selfFocus);

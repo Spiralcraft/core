@@ -28,11 +28,13 @@ public class TappedOutputStream
 
   private final OutputStream out;
   private final OutputStream tap;
+  private final boolean closeTap;
   
   public TappedOutputStream(OutputStream out,OutputStream tap)
   { 
     this.out=out;
     this.tap=tap;
+    closeTap=true;
   }
   
   @Override
@@ -60,4 +62,14 @@ public class TappedOutputStream
     tap.write(bytes,start,len);
     
   }  
+  
+  @Override
+  public void close()
+    throws IOException
+  {
+    out.close();
+    if (closeTap)
+    { tap.close();
+    }
+  }
 }

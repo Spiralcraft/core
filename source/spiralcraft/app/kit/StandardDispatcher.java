@@ -60,7 +60,9 @@ public class StandardDispatcher
   private State state;
   private Component component;
   
-  
+  public String toString()
+  { return super.toString()+" path:"+path+"  reversePath:"+reversePath+"  component:"+component;
+  }
   /**
    * <p>Create a Dispatcher that does not refer to any ancestors
    * </p>
@@ -240,12 +242,7 @@ public class StandardDispatcher
     else
     { component=lastComponent;
     }
-  }  
-  
-  
-
-
-  
+  }
 
   @Override
   public final Integer getNextRoute()

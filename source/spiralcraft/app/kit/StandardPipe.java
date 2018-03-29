@@ -50,7 +50,14 @@ public class StandardPipe
     
   @Override
   public void message(Message message)
-  { newDispatcher().dispatch(message,root,rootState,path);    
+  { 
+    try
+    { newDispatcher().dispatch(message,root,rootState,path);    
+    }
+    catch (RuntimeException x)
+    { throw new RuntimeException
+       ("Pipe error: message="+message+"  root="+root+"   rootState="+rootState+"   path="+path,x);
+    }
   }
 
   @Override

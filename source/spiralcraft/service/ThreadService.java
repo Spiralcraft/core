@@ -17,6 +17,7 @@ package spiralcraft.service;
 
 import spiralcraft.app.kit.AbstractComponent;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.lang.Binding;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.time.Clock;
@@ -36,13 +37,71 @@ public abstract class ThreadService
 
   
   protected Thread thread;
-  private volatile boolean stop=true;
+  private volatile boolean stopping=true;
   private boolean stopOnError;
   private int runIntervalMs=1000;
   private long lastRun;
+  private boolean autoStart=true;
+  private boolean startRequested;
   
-  
-  
+  private Binding<Void> beforeStart;
+  private Binding<Void> afterStart;
+  private Binding<Void> beforeStop;
+  private Binding<Void> afterStop;
+
+  /**
+   * Invoke before starting the component
+   * 
+   * @param binding
+   */
+  public void setBeforeStart(Binding<Void> binding)
+  {
+    this.removeExportContextual(beforeStart);
+    this.beforeStart=binding;
+    this.addExportContextual(beforeStart);
+  }
+
+  /**
+   * Invoke after starting the component
+   * 
+   * @param binding
+   */
+  public void setAfterStart(Binding<Void> binding)
+  {
+    this.removeExportContextual(afterStart);
+    this.afterStart=binding;
+    this.addExportContextual(afterStart);
+  }
+
+  /**
+   * Invoke before stopping the component
+   * 
+   * @param binding
+   */
+  public void setBeforeStop(Binding<Void> binding)
+  {
+    this.removeExportContextual(beforeStop);
+    this.beforeStop=binding;
+    this.addExportContextual(beforeStop);
+  }
+
+  /**
+   * Invoke after stopping the component
+   * 
+   * @param binding
+   */
+  public void setAfterStop(Binding<Void> binding)
+  {
+    this.removeExportContextual(afterStop);
+    this.afterStop=binding;
+    this.addExportContextual(afterStop);
+  }
+
+  /**
+   * Stop the service when an error is encountered
+   * 
+   * @param stopOnError
+   */
   public void setStopOnError(boolean stopOnError)
   { this.stopOnError=stopOnError;
   }
@@ -59,31 +118,74 @@ public abstract class ThreadService
   public void setRunIntervalMs(int runIntervalMs)
   { this.runIntervalMs=runIntervalMs;
   }
+
+  /**
+   * When autoStart is true, the service will start when the Lifecycle method is
+   *   invoked by parent componenents. When false, the service will only start
+   *   when the startService() method is invoked.
+   * 
+   * @param autoStart
+   */
+  public void setAutoStart(boolean autoStart)
+  { this.autoStart=autoStart;
+  }
+  
+  /**
+   * Start service on demand outside the Lifecycle pattern when 
+   *   autoStart is false
+   */
+  public synchronized void startService()
+    throws LifecycleException
+  { 
+    this.startRequested=true;
+    this.start();
+  }
+  
+  /**
+   * Stop the service on demands outside the Lifecycle pattern
+   *    
+   * @throws LifecycleException
+   */
+  public synchronized void stopService()
+      throws LifecycleException
+  {
+    this.startRequested=false;
+    this.stop();
+  }
+   
     
   @Override
   public synchronized void start()
     throws LifecycleException
   {
-    if (thread!=null)
-    { throw new IllegalStateException("Already started");
+    if (autoStart || startRequested)
+    {
+      if (thread!=null)
+      { throw new IllegalStateException("Already started");
+      }
+      
+      if (beforeStart!=null) { if (!safeGet(beforeStart)) { return;} }   
+      stopping=false;
+      thread=new Thread(this);
+      thread.start();
+      log.log(Level.FINE,("started"));
+      super.start();
+      startRequested=false;
+      if (afterStart!=null) { safeGet(afterStart); }   
     }
-       
-    stop=false;
-    thread=new Thread(this);
-    thread.start();
-    log.log(Level.FINE,("started"));
-    super.start();
   }
 
   @Override
   public synchronized void stop()
     throws LifecycleException
   {
-    if (stop)
+    if (stopping)
     { return;
     }
+    
     log.log(Level.FINE,"stopping");
-    stop=true;
+    stopping=true;
+    if (beforeStop!=null) { safeGet(beforeStop); }   
     this.notify();
     try
     { this.wait();
@@ -93,13 +195,14 @@ public abstract class ThreadService
     }
     thread=null;
     log.log(Level.FINE,"stopped");
+    if (afterStop!=null) { safeGet(afterStop); }   
 
   }
   
   @Override
   public final void run()
   { 
-    while (!stop)
+    while (!stopping)
     { 
       try
       { 
@@ -126,7 +229,7 @@ public abstract class ThreadService
       
       long elapsedTime
         =(Clock.instance().approxTimeMillis()-lastRun);
-      if (!stop && elapsedTime<runIntervalMs)
+      if (!stopping && elapsedTime<runIntervalMs)
       { 
         try
         { 
@@ -155,6 +258,18 @@ public abstract class ThreadService
     }
   }
   
+  private boolean safeGet(Binding<?> binding)
+  {
+    try
+    { binding.get();
+    }
+    catch (Exception x)
+    { 
+      log.log(Level.SEVERE,x.getMessage(),x);
+      return false;
+    }
+    return true;
+  }
   protected abstract void runOnce();
 
 }
