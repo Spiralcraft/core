@@ -13,6 +13,105 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev148
+        </revision>
+        
+        <notes>
+          <scm:Note>Various enhancements to support GUI front ends
+            local process control.
+          </scm:Note>
+          <scm:Note>AbstractComponent and all subclasses accept an "alias" property
+            for referencing by children.
+          </scm:Note>
+          <scm:Note>Application component supports search for and loading of 
+            property files
+          </scm:Note>
+          <scm:Note>Application component supports a logging facility for 
+            user-directed status reporting that is redirectable to a console 
+          </scm:Note>
+          <scm:Note>ThreadService supports a manual start/stop mode and 
+            WorkerService concrete subclass allows for a configurable action to be 
+            performed every cycle.
+          </scm:Note>
+          <scm:Note>New ProcessService assists in launching, tracking and 
+            terminating long running external processes managed by the application.
+          </scm:Note>
+          <scm:Note>ProcessCapture captures the out and err streams of a process
+            for later use.
+          </scm:Note>
+          <scm:Note>MuxOutputStream sends output to multiple output streams.
+          </scm:Note>
+          <scm:Note>FileAppender appends text to a file.
+          </scm:Note>
+          <scm:Note>ByteArrayResource.asString() to facilitate IO interchange of
+            smallish blocks of text.
+          </scm:Note>
+          <scm:Note>Executor supports a vfs URI as --logURI parameter to avoid 
+            ambiguity in file paths.
+          </scm:Note>
+          <scm:Note>StreamPump flushes before closing output
+          </scm:Note>
+          <scm:Note>TappedOutputStream makes closing tap optional (on by default)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        <resources>
+          <URI>app/kit/AbstractComponent.java
+          </URI>
+          <URI>lank/spi/SimpleChannel.java
+          </URI>
+          <URI>service/Application.java
+          </URI>
+          <URI>service/ThreadService.java
+          </URI>
+          <URI>service/WorkerService.java
+          </URI>
+          <URI>service/ProcessService.java
+          </URI>
+          <URI>service/ProcessTracker.java
+          </URI>
+          <URI>io/ProcessTracker.java
+          </URI>
+          <URI>io/ProcessCapture.java
+          </URI>
+          <URI>io/MuxOutputStream.java
+          </URI>
+          <URI>io/StreamPump.java
+          </URI>
+          <URI>io/TappedOutputStream.java
+          </URI>
+          <URI>text/io/FileAppender.java
+          </URI>
+          <URI>vfs/util/ByteArrayResource.java
+          </URI>
+          <URI>exec/Executor.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev148
+        </revision>
+        
+        <notes>
+          <scm:Note>Remove call to retrieve() before calling store() unless we need
+            it to compose a PropertyChange message.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        <resources>
+          <URI>kit/AbstractChannel.java
+          </URI>
+          <URI>spi/SimpleChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev147
         </revision>
         
