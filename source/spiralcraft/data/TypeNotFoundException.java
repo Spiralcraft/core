@@ -35,4 +35,18 @@ public class TypeNotFoundException
   public TypeNotFoundException(String dependencyMessage,TypeNotFoundException reason)
   { super(dependencyMessage,reason);
   }
+
+  /**
+   * 
+   * @return A cause that is not a TypeNotFoundException, such as an error processing
+   *   a Type definition, or null for the typical case where a Type definition was not
+   *   found where expected.
+   */
+  public Throwable getExternalCause()
+  { 
+    if (getCause()!=null && getCause() instanceof TypeNotFoundException)
+    { return ((TypeNotFoundException) getCause()).getExternalCause();
+    }
+    return null;
+  }
 }
