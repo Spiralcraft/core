@@ -469,7 +469,7 @@ public class PropertyBinding
       }
       
       _converter=_target.getReflector().getStringConverter();
-      if (_converter==null)
+      if (_converter==null && _target.getContentType()!=Object.class)
       { 
         throwBuildException
           ("No StringConverter registered for "
@@ -480,7 +480,7 @@ public class PropertyBinding
       NamespaceContext.push(_specifier.getPrefixResolver());
       try
       {
-        Object value=_converter.fromString(text);
+        Object value=_converter!=null?_converter.fromString(text):text;
         apply(value);
       }
       finally
