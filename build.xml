@@ -3,7 +3,7 @@
   <property name="classpath" value=""/>
   <property name="organization" value="spiralcraft"/>
   <property name="module" value="core"/>
-	<property file="version.properties"/>
+  <property file="version.properties"/>
 
   <property name="spiralcraft.javac.target" value="1.8"/>
   <property name="spiralcraft.javac.source" value="1.8"/>

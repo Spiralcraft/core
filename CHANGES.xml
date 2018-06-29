@@ -10,8 +10,20 @@
     </authorId>
     
      
-
     <detail> 
+      <scm:Change>
+        <revision>-dev150
+        </revision>
+        
+        <notes>
+          <scm:Note>Properties of type "Object" can be supplied with the String
+            value directly.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/PropertyBinding.java
+        </path>
+      </scm:Change>
       <scm:Change>
         <revision>-dev148
         </revision>
