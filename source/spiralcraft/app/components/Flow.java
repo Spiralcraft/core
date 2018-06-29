@@ -41,6 +41,9 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 public class Flow<T>
   extends AbstractController<FlowState<T>>
 {
+  { addPublishedType(FlowStateChangedMessage.TYPE);
+  }
+  
   private final StateMachine fsm=new StateMachine();
   protected ThreadLocalChannel<T> modelChannel;
 
@@ -96,11 +99,29 @@ public class Flow<T>
   }
   
   public void setFlowState(spiralcraft.fsm.State state)
-  { getState().setCurrentState(state);
+  { 
+    FlowState<T> cstate=getState();
+    spiralcraft.fsm.State ostate=cstate.getCurrentState();
+    cstate.setCurrentState(state);
+    if (state!=ostate)
+    { stateChangeDetected(state,ostate);
+    }
   }
 
   public void restart()
-  { fsm.restart();
+  {
+    FlowState<T> cstate=getState();
+    spiralcraft.fsm.State ostate=cstate.getCurrentState();
+    fsm.restart();
+    spiralcraft.fsm.State state=cstate.getCurrentState();
+    stateChangeDetected(ostate,state);
+  }
+  
+  protected void stateChangeDetected
+    (spiralcraft.fsm.State state
+    ,spiralcraft.fsm.State ostate
+    )
+  { notify(getState(),new FlowStateChangedMessage());
   }
   
   @Override
@@ -109,6 +130,7 @@ public class Flow<T>
     super.addHandlers();
     addHandler(new ModelInitHandler());
     addHandler(new ModelHandler());
+    
   }
   
   @Override
