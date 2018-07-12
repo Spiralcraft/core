@@ -11,6 +11,20 @@
     
      
     <detail> 
+    <detail> 
+      <scm:Change>
+        <revision>-dev151
+        </revision>
+        
+        <notes>
+          <scm:Note>HtmlEncoder to escape plain text while preserving basic
+            formatting for insertion into HTML.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/PropertyBinding.java
+        </path>
+      </scm:Change>
       <scm:Change>
         <revision>-dev150
         </revision>
