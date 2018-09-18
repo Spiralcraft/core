@@ -118,6 +118,7 @@ public abstract class Scenario<Tcontext,Tresult>
   
   protected boolean debug;
   protected boolean verbose;
+  protected Level logLevel=Level.INFO;
   protected boolean logTaskResults;
   protected boolean storeResults;
   
@@ -561,10 +562,21 @@ public abstract class Scenario<Tcontext,Tresult>
   { 
     this.debug=debug;
     if (debug)
-    { this.verbose=true;
+    { 
+      this.verbose=true;
+      if (!this.logLevel.canLog(Level.DEBUG)) this.logLevel=Level.DEBUG;
+    }
+    if (!debug)
+    { if (this.logLevel.canLog(Level.DEBUG)) this.logLevel=Level.INFO;
     }
   }
 
+  public void setLogLevel(Level logLevel)
+  {
+    this.logLevel=logLevel;
+    this.debug=this.logLevel.canLog(Level.DEBUG);
+  }
+  
   /**
    * Indicate that the scenario should write data to the contextual
    *   OutputStream, if any.
