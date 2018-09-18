@@ -72,7 +72,7 @@ public final class DateToString
   { newFormat(formatString);
   }
   
-  private void setFormatString(String formatString)
+  public void setFormatString(String formatString)
   { 
     this.formatString=formatString;
     newFormat(formatString);
@@ -142,5 +142,9 @@ public final class DateToString
       }
     }
 
+  }
+  
+  public String toString()
+  { return super.toString()+": format="+formatString;
   }
 }
