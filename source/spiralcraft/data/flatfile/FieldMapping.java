@@ -136,6 +136,7 @@ public class FieldMapping<T>
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
   { 
+    channel.setDebug(debug);
     channel.bind(focusChain);
     if (this.inputFilter!=null)
     { this.inputFilter.bind(focusChain);

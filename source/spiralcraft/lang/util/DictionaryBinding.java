@@ -27,7 +27,7 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.parser.AssignmentNode;
-
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -42,11 +42,13 @@ import spiralcraft.util.string.StringConverter;
  */
 public class DictionaryBinding<T>
 {
+  private static final ClassLog log=ClassLog.getInstance(DictionaryBinding.class);
   private Expression<T> target;
   private Channel<T> targetChannel;
   private StringConverter<T> converter;
   private StringConverter<Object> unitConverter;
   private Reflector<Object> unitReflector;
+  private boolean debug;
   
   private String name;
   
@@ -121,6 +123,10 @@ public class DictionaryBinding<T>
   { this.name=name;
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   /**
    * Specify a Map to use during the binding process to resolve the
    *   appropriate non-default converter for the target data type.
@@ -203,6 +209,10 @@ public class DictionaryBinding<T>
             )
           ,targetChannel.getReflector()
           );
+      
+      if (debug)
+      { log.fine("name:"+name+" target: "+targetChannel+" converter:"+converter);
+      }          
     }
     else
     {
@@ -214,8 +224,9 @@ public class DictionaryBinding<T>
       if (converter==null)
       { converter=StringConverter.getInstance(targetChannel.getContentType());
       }
-      
-      
+      if (debug)
+      { log.fine("name:"+name+" target: "+targetChannel+" converter:"+converter);
+      }
       decorator
         =targetChannel.<IterationDecorator>decorate(IterationDecorator.class);
       
