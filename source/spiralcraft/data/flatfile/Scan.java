@@ -46,6 +46,7 @@ public class Scan<C,R>
 {
 
   protected URI resourceURI;
+  protected Binding<URI> sourceX;
   protected RecordFormat format;
   protected Type<List<Tuple>> aggregateType;
   protected String recordSeparator="\r\n";
@@ -60,7 +61,10 @@ public class Scan<C,R>
   private IterationDecorator<?,Resource> resourceIter;
   private int progressInterval;
   private int skipHeaderLines=0;
+  
+  /** The maximum number of rows to scan */
   private int limit=0;
+
   private Binding<?> afterParseRecord;
 
   
@@ -114,8 +118,11 @@ public class Scan<C,R>
       int count=0;
       try
       {
-        if (resourceURI==null && resourceIter!=null)
+        if (resourceURI==null && sourceX==null && resourceIter!=null)
         {
+          if (logLevel.isDebug())
+          { log.log(Level.DEBUG,"Iterating resources from "+resourceIter);
+          }
           Iterator<Resource> it=resourceIter.iterator();
           while (it.hasNext() && (limit==0 || count<limit))
           { 
@@ -126,21 +133,30 @@ public class Scan<C,R>
             count+=workOne(resource,limit>0?limit-count:0);
           }
         }
-        else if (resourceURI!=null)
+        else if (resourceURI!=null || sourceX!=null)
         { 
+          URI uri=sourceX!=null?sourceX.get():resourceURI;
           try
-          { count+=workOne(Resolver.getInstance().resolve(resourceURI),limit);
+          { 
+            Resource res=Resolver.getInstance().resolve(uri);
+            if (logLevel.isDebug())
+            { log.log(Level.DEBUG,"Reading "+res.getURI());
+            }
+            count+=workOne(res,limit);
           }
           catch (UnresolvableURIException x)
           {
             ContextualException ex
               =new ContextualException
-                ("Error scanning flatfile "+resourceURI,x);
+                ("Error scanning flatfile "+uri,getDeclarationInfo(),x);
             if (debug)
             { log.log(Level.WARNING,"Threw",ex);
             }
             addException(ex);
           }
+        }
+        else
+        { log.log(Level.WARNING,"No resources to read");
         }
         
         if (computation!=null)
@@ -174,7 +190,9 @@ public class Scan<C,R>
             (new BufferedInputStream(resource.getInputStream(),bufferSize)
             ,recordSeparator.getBytes()
             );
-            
+        if (logLevel.isDebug())
+        { log.log(Level.DEBUG,"Starting "+resource.getURI());
+        }    
         for (int i=0;i<skipHeaderLines;i++)
         { 
           if (!iterator.isEOF())
@@ -259,7 +277,7 @@ public class Scan<C,R>
         ContextualException ex
           =new ContextualException
             ("Error scanning flatfile "+resource.getURI(),x);
-        if (debug)
+        if (Scan.this.logLevel.canLog(Level.WARNING))
         { log.log(Level.WARNING,"Threw",ex);
         }
         addException(ex);
@@ -269,7 +287,7 @@ public class Scan<C,R>
         ContextualException ex
           =new ContextualException
             ("Error scanning flatfile "+resource.getURI(),x);
-        if (debug)
+        if (Scan.this.logLevel.canLog(Level.WARNING))
         { log.log(Level.WARNING,"Threw",ex);
         }
         addException(ex);
@@ -339,6 +357,14 @@ public class Scan<C,R>
   }
   
   /**
+   * A binding that provides the URI to scan
+   * @param sourceX
+   */
+  public void setSourceX(Binding<URI> sourceX)
+  { this.sourceX=sourceX;
+  }
+  
+  /**
    * Stop scanning after reading the specified number of rows
    * 
    * @param limit
@@ -357,6 +383,15 @@ public class Scan<C,R>
         ("contextX not permitted for Scan. Context is a Resource[] ");
     }
     this.contextReflector=BeanReflector.getInstance(Resource[].class);
+    if (sourceX!=null)
+    { 
+      if (resourceURI!=null)
+      { 
+        throw new BindException
+          ("Cannot specify both URI and sourceX",getDeclarationInfo());
+      }
+      sourceX.bind(focusChain);
+    }
     return super.bindImports(focusChain);
   }
   
