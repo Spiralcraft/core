@@ -11,7 +11,70 @@
     
      
     <detail> 
-    <detail> 
+      <scm:Change>
+        <revision>-dev152
+        </revision>
+        
+        <notes>
+          <scm:Note>Allow resource URIs to be specified dynamically.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/flatfile/Scan.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev152
+        </revision>
+        
+        <notes>
+          <scm:Note>Provide access to the pre-existing data item within the 
+            editor pre-save logic.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/StoredCopy.java
+        </path>
+
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev152
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix regression where non-writable format string broke use
+            of converter in setter-based construction scenario.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/string/DateToString.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev152
+        </revision>
+        
+        <notes>
+          <scm:Note>Add debug logging to FieldMappings
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/flatfile/FieldMapping.java
+          </URI>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev151
         </revision>
