@@ -34,7 +34,11 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflectable;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.Contextual;
+import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
@@ -61,7 +65,7 @@ import spiralcraft.util.ArrayUtil;
  * @param <Tsource>
  */
 public class StoredCopy
-  implements ChannelFactory<Tuple,Tuple>,Contextual
+  implements ChannelFactory<Tuple,Tuple>,Contextual,Reflectable<StoredCopy>
 {
 //  private static final ClassLog log
 //    =ClassLog.getInstance(RelationalMap.class);
@@ -72,6 +76,11 @@ public class StoredCopy
 
   private ThreadLocalChannel<Tuple> inputChannel;
   private ThreadLocalChannel<Tuple> storeChannel;
+  
+  protected final GenericReflector<StoredCopy> reflector
+    =new GenericReflector<StoredCopy>
+      (BeanReflector.<StoredCopy>getInstance(StoredCopy.class));
+  private Channel<StoredCopy> selfChannel;
   private TupleEditor editor;
   private Binding<?> preSave;
   private String[] keyFields;
@@ -125,6 +134,11 @@ public class StoredCopy
   }
 
   @Override
+  public Reflector<StoredCopy> reflect()
+  { return reflector;
+  }
+  
+  @Override
   public Focus<?> bind(
     Focus<?> focusChain)
     throws ContextualException
@@ -167,6 +181,9 @@ public class StoredCopy
       if (preSave!=null)
       { editor.setPreSave(preSave);
       }
+      reflector.enhance("original",null,storeChannel.getReflector());
+      selfChannel=LangUtil.constantChannel(this);
+      focusChain=focusChain.chain(selfChannel);
       editor.bind(focusChain.chain(storeChannel));
       
     }
@@ -174,6 +191,10 @@ public class StoredCopy
     { throw new BindException("Error resolving query",x);
     }
     return focusChain;
+  }
+
+  public Tuple getOriginal()
+  { return storeChannel.get();
   }
   
   @Override
