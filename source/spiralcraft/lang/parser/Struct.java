@@ -109,6 +109,16 @@ public class Struct
   public Object get(int index)
   { return data[index];
   }
+  
+  /**
+   * Obtain a field value by name programmatically
+   * 
+   * @param fieldName
+   * @return
+   */
+  public Object getValue(String fieldName)
+  { return reflector.getValue(this,fieldName);
+  }
     
   @SuppressWarnings("unchecked")
   @Override

@@ -211,6 +211,8 @@ public class StructNode
   { return fields.values();
   }
   
+
+  
   public void setTypeQName(String qname)
     throws UnresolvedPrefixException
   {     
@@ -537,6 +539,29 @@ public class StructNode
       return false;
     }
     
+    public StructField getField(String name)
+    { return fields.get(name);
+    }
+    
+    public Object getValue(Struct struct,String name)
+    { 
+      StructField field=getField(name);
+      try
+      { 
+        thisChannel.push(struct);
+        if (field==null)
+        { 
+          throw new IllegalArgumentException
+            ("No field '"+name+"' in struct");
+        }
+        return struct.get(field.index);        
+      }
+      finally
+      { thisChannel.pop();
+      }
+      
+    }
+        
     /**
      * <p>Determine if a value described by the specified Reflector
      *   can be assigned to a location described by this Reflector.
