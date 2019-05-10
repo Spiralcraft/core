@@ -53,6 +53,8 @@ public class Expression<T>
   private static final ReferencePool<Expression<?>> POOL
     =new ReferencePool<Expression<?>>();
 
+  private static final Focus<Void> intrinsicFocus = new SimpleFocus<Void>();
+  
   static
   { 
 //    POOL.setMatchSink
@@ -243,6 +245,38 @@ public class Expression<T>
     return _root.equals( ((Expression<?>) o)._root);
   }
 
+  /**
+   * Create a Channel that evaluates the expression, where the expression is
+   *   self contained and does not reference any context. 
+   *   
+   * @throws An IllegalArgumentException if a BindException is thrown.
+   *    
+   */
+  public static Channel<?> bindStatic(String expression)
+  { 
+    try
+    {    
+      Expression<?> x=parse(expression);
+      return intrinsicFocus.bind(x);
+    }
+    catch (ParseException x)
+    { throw new IllegalArgumentException(x);
+    }
+    catch (BindException x)
+    { throw new IllegalArgumentException(x);
+    }
+  }
+  
+  /**
+   * Create a Channel that evaluates the expression, where the expression is
+   *   self contained and does not reference any context.
+   *    
+   * @return
+   */
+  public Channel<T> bind()
+    throws BindException
+  { return intrinsicFocus.bind(this);
+  }
   
   /**
    * Create a Channel by binding this Expression to a Focus. This method
@@ -255,6 +289,10 @@ public class Expression<T>
   Channel<T> bind(Focus<?> focus)
     throws BindException
   { 
+    if (focus==null)
+    { focus=intrinsicFocus;
+    }
+    
     if (_root==null)
     { throw new BindException("No way to bind expression '"+_text+"'");
     }
