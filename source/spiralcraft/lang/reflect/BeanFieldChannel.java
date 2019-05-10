@@ -62,6 +62,10 @@ class BeanFieldChannel<Tprop,Tbean>
   {
     try
     { 
+      Object source=getSourceValue();
+      if (source==null)
+      { return false;
+      }
       _field.set(getSourceValue(),val);
       return true;
     }
