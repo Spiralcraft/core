@@ -33,6 +33,9 @@ public class URIUtil
   @SuppressWarnings("unused")
   private static final ClassLog log
     =ClassLog.getInstance(URIUtil.class);
+    
+  private static final String DUMMY_ROOT_STR="tmp:/";
+  private static final URI DUMMY_ROOT_URI=URI.create(DUMMY_ROOT_STR);
 
   /**
    * Creates a new URI, adding the specified pre-encoded String to the
@@ -117,16 +120,19 @@ public class URIUtil
    */
   public static final URI addPathSegment(URI in,String segment)
   {
+    URI segmentURI=DUMMY_ROOT_URI.relativize(URI.create(DUMMY_ROOT_STR+segment));
     if (in.getPath().endsWith("/"))
-    { return in.resolve(segment);
+    { 
+      return URIPool.get(in.resolve(segmentURI));
+      // return in.resolve(segment);
     }
     else
-    { return replaceUnencodedPath(in,in.getPath()+"/").resolve(segment);
+    { return replaceUnencodedPath(in,in.getPath()+"/").resolve(segmentURI);
     }
   }
   
   /**
-   * <p>Add a pre-encoded path segment to the specified URI
+   * <p>Add an unencoded path segment to the specified URI
    * </p>
    * 
    * @return
@@ -200,6 +206,31 @@ public class URIUtil
     
   }
   
+  /**
+   * Add an additional pre-encoded query string to
+   *   the existing query string, added an '&' separator if
+   *   necessary
+   * 
+   * @return
+   */
+  public static final URI addRawQueryParams
+    (URI source
+    ,String rawQueryParams
+    )
+  {
+    return URIPool.create
+      (trimToPath(source).toString()
+        +"?"
+        +source.getRawQuery()
+        +(source.getRawQuery()!=null && !rawQueryParams.isEmpty()?"&":"")
+        +rawQueryParams
+        +(source.getRawFragment()!=null
+         ?"#"+source.getRawFragment()
+         :""
+         )
+      );
+  }
+
   /**
    * Replace the query part of the specified URI with the 
    *   specified pre-encoded query string
