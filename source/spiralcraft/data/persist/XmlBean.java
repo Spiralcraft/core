@@ -18,6 +18,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import spiralcraft.data.Type;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.data.DataException;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayTuple;
@@ -61,6 +63,11 @@ public class XmlBean<T>
   {
     super(clazz!=null?ReflectionType.canonicalURI(clazz):null,instanceURI);
     load();
+    if (instance instanceof Declarable)
+    { 
+      ((Declarable) instance).setDeclarationInfo
+        (new DeclarationInfo(((Declarable) instance).getDeclarationInfo(),null,instanceURI));
+    }
   }
   
   /**
@@ -88,6 +95,11 @@ public class XmlBean<T>
   { 
     super(typeURI,instanceURI);
     load();
+    if (instance instanceof Declarable)
+    { 
+      ((Declarable) instance).setDeclarationInfo
+        (new DeclarationInfo(((Declarable) instance).getDeclarationInfo(),null,instanceURI));
+    }
   }
   
 
