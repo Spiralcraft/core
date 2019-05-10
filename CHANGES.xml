@@ -12,6 +12,88 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev153
+        </revision>
+        
+        <notes>
+          <scm:Note>Objects instantiated from XML representations via XmlBean now
+            receive appropriate DeclarationInfo referencing the source 
+            URI if they are Declarable
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/persist/XmlBean.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev153
+        </revision>
+        
+        <notes>
+          <scm:Note>addPathSegment() now works when segment has a ":"
+          </scm:Note>
+          <scm:Note>New method to add raw query parameter string to existing query
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+
+      </scm:Change>
+        
+      <scm:Change>
+        <revision>-dev153
+        </revision>
+        
+        <notes>
+          <scm:Note>Provide access to struct field values from Java code
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>Struct.java
+          </URI>
+          <URI>StructNode.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev153
+        </revision>
+        
+        <notes>
+          <scm:Note>Allow non-contextual expressions to bind without an external focus
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/Expression.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev153
+        </revision>
+        
+        <notes>
+          <scm:Note>When assigning a field value to a null object, return false
+            from BeanFieldChannel.set()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/BeanFieldChannel.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev152
         </revision>
         
