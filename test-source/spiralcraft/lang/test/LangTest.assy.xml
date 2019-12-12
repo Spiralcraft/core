@@ -1217,6 +1217,32 @@
     </test:Assertion>     
 
     <test:Assertion>
+      <name>Property autobox primitive to object
+      </name>
+      
+      <subjectX>
+        [@langtest:Bar].(){ .theObject=1.intValue(), .theObject }
+      </subjectX>
+      
+      <testX>.==1
+      </testX>
+    
+    </test:Assertion>     
+
+    <test:Assertion>
+      <name>Method sig autobox primitive to object
+      </name>
+      
+      <subjectX>
+        [@langtest:Bar].(){ .setTheObject(1.intValue()), .getTheObject() }
+      </subjectX>
+      
+      <testX>.==1
+      </testX>
+    
+    </test:Assertion>     
+
+    <test:Assertion>
       <name>Array to string in concat
       </name>
       

@@ -10,6 +10,8 @@ public class Bar
   public String[] stringArray
     ={"one","two","three"};
   
+  private Object object;
+  
   public String getTheField()
   { return publicField;
   }
@@ -24,6 +26,14 @@ public class Bar
 
   public void setTheArray(String[] theArray)
   { this.stringArray=theArray;
+  }
+
+  public Object getTheObject()
+  { return this.object;
+  }
+  
+  public void setTheObject(Object object)
+  { this.object=object;
   }
   
   @Override

@@ -186,7 +186,7 @@ final class ClassUtilities {
         }
       }
 
-      if (! lhs[i].isAssignableFrom(rhs[i]))
+      if (! lhs[i].isAssignableFrom(rhs[i]) && !lhs[i].equals(Object.class))
       {
         // System.err.println(lhs[i]+" is not assignable from "+rhs[i]);
         Class<?> lhsPrimEquiv = primitiveEquivalentOf(lhs[i]);
