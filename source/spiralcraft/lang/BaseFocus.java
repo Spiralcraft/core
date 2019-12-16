@@ -287,15 +287,21 @@ public abstract class BaseFocus<T>
       URI maskedURI=null;
       for (URI uri:findCache.keySet())
       {
-        if (facet.isFocus(uri))
+        if (facet.isFocus(uri) 
+            && findCache.get(uri).getSubject()
+                != facet.getSubject()
+            )
         { maskedURI=uri;
         }
       }
       if (maskedURI!=null)
       { 
-        log.info("Facet added to focus masking cached result for "
+        log.info("Facet added to focus conflicts with cached result for "
                   +maskedURI+": "+this+" facet="+facet
                 );
+        // XXX We may change some behavior if we
+        //   do this- wait for analysis of effects
+        //findCache.clear();        
       }
     }
   }
