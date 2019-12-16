@@ -15,7 +15,6 @@
 package spiralcraft.service;
 
 import spiralcraft.app.Component;
-import spiralcraft.app.kit.AbstractComponent;
 import spiralcraft.app.kit.StandardContainer;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
@@ -28,8 +27,7 @@ import spiralcraft.lang.Focus;
  *
  */
 public class ServiceGroup
-  extends AbstractComponent
-  implements Service
+  extends AbstractService
 {
 
   public void setServices(final Service[] services)
