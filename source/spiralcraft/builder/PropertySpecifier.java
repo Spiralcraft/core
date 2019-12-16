@@ -84,6 +84,7 @@ public class PropertySpecifier
   private URI declarationLocation;
   
   private boolean replaceCollection;
+  private boolean prepend;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -153,6 +154,16 @@ public class PropertySpecifier
    */
   public void setReplaceCollection(boolean replaceCollection)
   { this.replaceCollection=replaceCollection;
+  }
+  
+  /**
+   * Specify that the collection values should be prepended to the base values
+   *   instead of appended. 
+   * 
+   * @param replace
+   */
+  public void setPrepend(boolean prepend)
+  { this.prepend=prepend;
   }
   
   /**
@@ -834,7 +845,7 @@ public class PropertySpecifier
   public List<AssemblyClass> getCombinedContents()
   { 
     List<AssemblyClass> ret=new ArrayList<AssemblyClass>();
-    if (_baseMember!=null && !replaceCollection)
+    if (_baseMember!=null && !replaceCollection && !prepend)
     { 
       ret.addAll(_baseMember.getCombinedContents());
       if (debugLevel.isDebug())
@@ -881,6 +892,21 @@ public class PropertySpecifier
       { ret.addAll(_contents);
       }
     }
+    if (_baseMember!=null && !replaceCollection && prepend)
+    { 
+      ret.addAll(_baseMember.getCombinedContents());
+      if (debugLevel.isDebug())
+      { 
+        log.debug
+          ("Property "+_targetName+" in "
+          +_container.getSourceURI()
+          +" inherited "+ret.size()+" assemblies "
+          +" from "+_baseMember._targetName+" in "
+          +_baseMember._container.getSourceURI()
+          );
+      }
+    }
+    
     return ret;
   }
   
