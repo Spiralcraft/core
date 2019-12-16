@@ -94,6 +94,7 @@ public class Executor
   private boolean consoleLog;
   private URI altContextURI;
   private URI configURI;
+  private URI logURI;
   private URI dataURI;
   
   protected ExecutionContext context
@@ -210,7 +211,7 @@ public class Executor
     { 
       
       processArguments(args);
-
+      resolveLogLocation(contextResourceMap);
       if (logHandler!=null)
       {
         try
@@ -334,6 +335,47 @@ public class Executor
     }
   }
 
+  /**
+   * Resolve the location referenced by the log authority where we can create logs
+   * 
+   * @param contextResourceMap
+   */
+  private void resolveLogLocation(ContextResourceMap contextResourceMap)
+  {
+    if (logURI==null)
+    {
+      String logDir=properties.find("spiralcraft.log.uri");
+      if (logDir==null)
+      { 
+        logDir="log";
+      }
+      logURI=URIPool.create(logDir);
+    }
+    
+    if (!logURI.isAbsolute())
+    {
+      contextResourceMap.put
+        ("log"
+        ,URIUtil.ensureTrailingSlash
+          (URIUtil.addPathSegment
+            (contextResourceMap.get("")
+            ,logURI.getPath()
+            )
+          )
+        );
+      
+    }
+    else
+    { 
+      contextResourceMap.put
+        ("log"
+        ,URIUtil.ensureTrailingSlash(logURI)
+        );
+
+    }
+          
+    
+  }
 
   /**
    * Resolve the config authority where we reference the assembly package
