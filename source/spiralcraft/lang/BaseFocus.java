@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang;
 
-import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,12 +23,15 @@ import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.PrefixResolver;
 
 import spiralcraft.lang.util.LangUtil;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.URIUtil;
 
 
 public abstract class BaseFocus<T>
   implements Focus<T>
 {
+  private static final ClassLog log=ClassLog.getInstance(BaseFocus.class);
+  
   private volatile Channel<Focus<T>> selfChannel;
   
   protected Channel<T> subject;
@@ -37,9 +39,7 @@ public abstract class BaseFocus<T>
   protected PrefixResolver namespaceResolver;
   protected LinkedList<Focus<?>> facets;
   protected LinkedList<URI> aliases;
-  protected boolean cacheChannels=false;
 
-  private HashMap<Expression<?>,WeakReference<Channel<?>>> channels; 
   private final HashMap<URI,Focus<?>> findCache=new HashMap<URI,Focus<?>>();
 
   public BaseFocus()
@@ -68,7 +68,6 @@ public abstract class BaseFocus<T>
     if (subject!=null && subject.getContext()==null)
     { subject.setContext(parent);
     }
-    channels=null;
   }
   
   
@@ -120,7 +119,6 @@ public abstract class BaseFocus<T>
   }
 
   @Override
-  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous hash map
   public synchronized <X> Channel<X> bind(Expression<X> expression)
     throws BindException
   { 
@@ -129,28 +127,8 @@ public abstract class BaseFocus<T>
     }
     Channel<X> channel=null;
     
-    if (cacheChannels)
-    {
-      if (channels==null)
-      { channels=new HashMap<Expression<?>,WeakReference<Channel<?>>>();
-      }
-      else
-      {  
-        WeakReference<Channel<?>> ref=channels.get(expression);
-        if (ref!=null)
-        { channel=(Channel<X>) ref.get();
-        }
-      }
-    
-      if (channel==null)
-      { 
-        channel=expression.bind(this);
-        channels.put(expression,new WeakReference(channel));
-      }
-    }
-    else
-    { channel=expression.bind(this);
-    }
+
+    channel=expression.bind(this);
     
     if (channel.getContext()==null)
     { channel.setContext(this);
@@ -304,6 +282,22 @@ public abstract class BaseFocus<T>
     { facets=new LinkedList<Focus<?>>();
     }
     facets.add(facet);
+    if (!findCache.isEmpty())
+    { 
+      URI maskedURI=null;
+      for (URI uri:findCache.keySet())
+      {
+        if (facet.isFocus(uri))
+        { maskedURI=uri;
+        }
+      }
+      if (maskedURI!=null)
+      { 
+        log.info("Facet added to focus masking cached result for "
+                  +maskedURI+": "+this+" facet="+facet
+                );
+      }
+    }
   }
   
   @Override
