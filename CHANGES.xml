@@ -12,6 +12,112 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev154
+        </revision>
+        
+        <notes>
+          <scm:Note>New metering framework records system metrics
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>service/AbstractService
+          </URI>
+          <URI>service/ServiceGroup.java
+          </URI>
+          <URI>meter/Meter.java
+          </URI>
+          <URI>meter/MeterContext.java
+          </URI>
+          <URI>meter/MeterService.java
+          </URI>
+          <URI>meter/Register.java
+          </URI>
+        </resources>
+        
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev154
+        </revision>
+        
+        <notes>
+          <scm:Note>Added logging service to support multiple format-agnosic logs.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>exec/Executor.java
+          </URI>
+          <URI>log/LogService.java
+          </URI>
+          <URI>log/LogSink.java
+          </URI>
+          <URI>log/RotatingFileSink.java
+          </URI>
+        </resources>
+        
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev154
+        </revision>
+        
+        <notes>
+          <scm:Note>Detect with an new Focus facet conflicts with a prior resolution
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/BaseFocus.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev154
+        </revision>
+        
+        <notes>
+          <scm:Note>A property specifier can prepend values to its base set 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder
+        </path>
+        
+        <resources>
+          <URI>AssemblyLoader.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev154
+        </revision>
+        
+        <notes>
+          <scm:Note>A primitive concrete argument will always match a declared
+            argument of type Object
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/lang/ClassUtilities.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev153
         </revision>
         
