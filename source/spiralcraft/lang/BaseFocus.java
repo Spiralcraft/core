@@ -288,6 +288,7 @@ public abstract class BaseFocus<T>
       for (URI uri:findCache.keySet())
       {
         if (facet.isFocus(uri) 
+            && findCache.get(uri)!=null
             && findCache.get(uri).getSubject()
                 != facet.getSubject()
             )
