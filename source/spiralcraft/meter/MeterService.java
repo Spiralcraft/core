@@ -27,7 +27,7 @@ public class MeterService
   private LogService logService;
   private final MeterContext rootContext=new MeterContext(null,null);
 
-  private DateToString dateConverter=new DateToString("yyyy-MM-dd'T'hh:mm:ss");
+  private DateToString dateConverter=new DateToString("yyyy-MM-dd'T'HH:mm:ss");
   private long fullReportIntervalMs=600000;
   private long lastFullReport=0;
   
