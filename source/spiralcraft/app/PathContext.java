@@ -312,14 +312,27 @@ public class PathContext
   public Resource resolveCode(String relativePath)
     throws IOException
   { 
+    URI relativeURI=URI.create(relativePath);
+    if (relativeURI.isAbsolute() 
+         || ( relativeURI.getPath()!=null 
+              && relativeURI.getPath().startsWith("/")
+            )
+       )
+    { throw new IllegalArgumentException("Path must be relative "+relativeURI);
+    }
+    return resolveCode(relativeURI);
+  }
   
+  protected Resource resolveCode(URI relativeURI)
+      throws IOException
+  {
     Resource ret=null;
 
     URI effectiveCodeBaseURI=getEffectiveCodeBaseURI();
     if (effectiveCodeBaseURI!=null)
     {
       ret=Resolver.getInstance().resolve
-        (getEffectiveCodeBaseURI().resolve(relativePath));
+        (getEffectiveCodeBaseURI().resolve(relativeURI));
       if (!ret.exists())
       {
         try
@@ -345,7 +358,7 @@ public class PathContext
     
     
     if (ret==null && baseContext!=null)
-    { ret=baseContext.resolveCode(relativePath);
+    { ret=baseContext.resolveCode(relativeURI);
     }
     
     if (ret==null && codeX!=null)
