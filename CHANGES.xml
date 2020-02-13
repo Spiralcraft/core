@@ -12,6 +12,20 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev157
+        </revision>
+
+        <notes>
+          <scm:Note>Sanitize code relative path for PathContext.resolveCode
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PathContext.java
+        </path>
+        
+      </scm:Change>
+        
+      <scm:Change>
         <revision>-dev154
         </revision>
         
