@@ -9,6 +9,7 @@
   xmlns:util="class:/spiralcraft/util/"
   xmlns:sutil="class:/spiralcraft/util/string/"
   xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsu="class:/spiralcraft/vfs/util/"
   xmlns:vfsm="class:/spiralcraft/vfs/meta/"
   xmlns:vfsc="class:/spiralcraft/vfs/context/"
   xmlns:vfst="class:/spiralcraft/vfs/test/"
@@ -248,7 +249,37 @@
       </subjectX>
       <testX>.URI.path.endsWith("file name.txt")
       </testX>
-    </test:Assertion>   
-
+    </test:Assertion>
+    
+    <test:Assertion>
+      <name>readToEol
+      </name>
+    
+      <subjectX>
+        [@vfs:StreamUtil].@readUntilEOL
+          ([@vfsu:ByteArrayResource].("hello\r\n".bytes).inputStream
+          ,null
+          ,8192
+          ,null
+          )
+      </subjectX>
+      <testX>.=="hello"
+      </testX>
+    </test:Assertion> 
+    <test:Assertion>
+      <name>readToEol
+      </name>
+    
+      <subjectX>
+        [@vfs:StreamUtil].@readUntilEOL
+          ([@vfsu:ByteArrayResource].("\n".bytes).inputStream
+          ,null
+          ,8192
+          ,null
+          )
+      </subjectX>
+      <testX>.==""
+      </testX>
+    </test:Assertion> 
   </sequence>
 </test:TestGroup>

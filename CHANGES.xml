@@ -12,6 +12,19 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev158
+        </revision>
+
+        <notes>
+          <scm:Note>Fix corner case of empty line in readToEOL
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/StreamUtil.java
+        </path>
+        
+      </scm:Change>
+      <scm:Change>
         <revision>-dev157
         </revision>
 
