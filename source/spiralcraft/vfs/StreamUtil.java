@@ -168,6 +168,9 @@ public class StreamUtil
     if (buffer==null)
     { buffer=new byte[8192];
     }
+    if (encoding==null)
+    { encoding="UTF-8";
+    }
     int totalCount=0;
 
     String ret=null;
@@ -188,15 +191,23 @@ public class StreamUtil
       totalCount+=count;
       
 
-      if (buffer[count-1]=='\n')
+      if (count==0)
       { 
-        // Deal with possibility of just a \n as a line term 
-        final int trim=(count==1||buffer[count-2]!='\r')?1:2;
-        ret=new String(buffer,0,count-trim,encoding);
+        ret=new String(buffer,0,0,encoding);
         break;
       }
       else
-      { ret=new String(buffer,0,count,encoding);
+      {
+        if (buffer[count-1]=='\n')
+        { 
+          // Deal with possibility of just a \n as a line term 
+          final int trim=(count==1||buffer[count-2]!='\r')?1:2;
+          ret=new String(buffer,0,count-trim,encoding);
+          break;
+        }
+        else
+        { ret=new String(buffer,0,count,encoding);
+        }
       }
     }
     return ret;
