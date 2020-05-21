@@ -21,11 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogRecord;
 
-import spiralcraft.log.jul.DefaultFormatter;
-
-
-
-
 public class ClassLogger
   extends Logger
 {
