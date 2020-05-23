@@ -102,25 +102,32 @@ public class SelectorContext<Toptions,Toption,Tkey>
   
   protected void computeSelection(SelectorState state)
   {
-    state.options=optionsC.get();
-    if (state.selectedKey==null && selectedKeyX!=null)
-    { state.selectedKey=selectedKeyX.get();
-    }
-    
-    if (lookupX!=null)
-    { state.selectedOption=lookupX.get();
-    }
-    else if (keyX!=null)
-    { 
-      for (Toption option : optionsIter)
+    profileEnter("computeSelection");
+    try
+    {
+      state.options=optionsC.get();
+      if (state.selectedKey==null && selectedKeyX!=null)
+      { state.selectedKey=selectedKeyX.get();
+      }
+      
+      if (lookupX!=null)
+      { state.selectedOption=lookupX.get();
+      }
+      else if (keyX!=null)
       { 
-        Tkey localKey=keyFunction.evaluate(option);
-        if (localKey==state.selectedKey
-            || (localKey!=null && localKey.equals(state.selectedKey))
-           )
-        { state.selectedOption=option;
+        for (Toption option : optionsIter)
+        { 
+          Tkey localKey=keyFunction.evaluate(option);
+          if (localKey==state.selectedKey
+              || (localKey!=null && localKey.equals(state.selectedKey))
+             )
+          { state.selectedOption=option;
+          }
         }
       }
+    }
+    finally
+    { profileExit("computeSelection",null);
     }
     
   }

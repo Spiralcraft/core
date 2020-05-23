@@ -19,11 +19,14 @@ import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.ChainableContext;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.profiler.ProfilerAgent;
 
 /**
  * <p>Provides support for implementing ChainableContext
@@ -57,6 +60,7 @@ public class AbstractChainableContext
   private boolean context;
   private boolean chainable;
   protected DeclarationInfo declarationInfo;
+  private Channel<ProfilerAgent> profilerChannel;
   
   public AbstractChainableContext()
   {
@@ -114,7 +118,9 @@ public class AbstractChainableContext
    */
   protected Focus<?> bindImports(Focus<?> focusChain)
     throws ContextualException
-  { return focusChain;
+  { 
+    profilerChannel=LangUtil.findChannel(ProfilerAgent.class, focusChain);
+    return focusChain;
   }
   
   /**
@@ -281,5 +287,28 @@ public class AbstractChainableContext
   { return declarationInfo;
   }
 
+  protected void profileEnter(String actionId)
+  {
+    final ProfilerAgent profilerAgent
+      =profilerChannel!=null
+      ?profilerChannel.get()
+      :null;
+      
+    if (profilerAgent!=null)  
+    { profilerAgent.enter(getClass().getName()+"#"+actionId,declarationInfo);
+    }
+  }
+
+  protected void profileExit(String actionId,Throwable error)
+  {
+    final ProfilerAgent profilerAgent
+      =profilerChannel!=null
+      ?profilerChannel.get()
+      :null;
+    
+    if (profilerAgent!=null)  
+    { profilerAgent.exit(getClass().getName()+"#"+actionId,declarationInfo,error);
+    }
+  }
 }
 
