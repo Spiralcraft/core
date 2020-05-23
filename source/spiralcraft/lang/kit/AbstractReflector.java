@@ -39,6 +39,7 @@ import spiralcraft.lang.kit.members.MetaSubtypeMember;
 import spiralcraft.lang.kit.members.MetaTopMember;
 import spiralcraft.lang.kit.members.MetaTuneMember;
 import spiralcraft.lang.kit.members.MetaTypeMember;
+import spiralcraft.lang.kit.members.MetaConstantMember;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -122,6 +123,7 @@ public abstract class AbstractReflector<T>
         , new MetaEmptyMember()
         , new MetaListMember()
         , new MetaSelfMember()
+        , new MetaConstantMember()
         }
       );
 
