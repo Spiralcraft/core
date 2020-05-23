@@ -12,6 +12,48 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev159
+        </revision>
+
+        <notes>
+          <scm:Note>Instrument basic contexts for profiling
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit
+        </path>
+        
+        <resources>
+          <URI>AbstractChainableContext.java
+          </URI>
+          <URI>SelectorContext.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      <scm:Change>
+        <revision>-dev159
+        </revision>
+
+        <notes>
+          <scm:Note>Added a Profiler framework to provide visibility into the 
+            structure of component call trees and their timing.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/profiler
+        </path>
+        
+        <resources>
+          <URI>Call.java
+          </URI>
+          <URI>ProfilerAgent.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev158
         </revision>
 
