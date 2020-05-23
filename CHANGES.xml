@@ -16,6 +16,28 @@
         </revision>
 
         <notes>
+          <scm:Note>Added a @constant meta-member to cause bind-time evaluation
+            and caching of the result of the expression.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit
+        </path>
+        
+        <resources>
+          <URI>AbstractReflector.java
+          </URI>
+          <URI>members/MetaConstantMember.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+        
+      <scm:Change>
+        <revision>-dev159
+        </revision>
+
+        <notes>
           <scm:Note>Instrument basic contexts for profiling
           </scm:Note>
         </notes>
