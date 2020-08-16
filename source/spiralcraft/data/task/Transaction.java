@@ -19,8 +19,9 @@ package spiralcraft.data.task;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.WorkException;
 import spiralcraft.data.transaction.WorkUnit;
-
+import spiralcraft.lang.Expression;
 import spiralcraft.task.Chain;
+import spiralcraft.task.Eval;
 import spiralcraft.task.Task;
 
 import spiralcraft.data.transaction.Transaction.Nesting;
@@ -45,6 +46,16 @@ public class Transaction
   protected Requirement requirement
     =Requirement.REQUIRED;
   
+  public Transaction()
+  { super();
+  }
+  
+  public <X> Transaction(Expression<X> x)
+  { 
+    this.setChain(new Eval<X,X>(x));
+    this.setAddChainResult(true);
+  }
+
   class TransactionTask
     extends ChainTask
   {
