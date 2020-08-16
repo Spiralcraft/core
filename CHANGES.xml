@@ -12,6 +12,20 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev160
+        </revision>
+
+        <notes>
+          <scm:Note>Add constructor param to evaluate an expression inside a 
+            transaction.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Transaction.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev159
         </revision>
 

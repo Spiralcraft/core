@@ -275,6 +275,20 @@
             -.offsetMillis &lt; 1000
           </testX>
         </test:Assertion> 
+
+        <test:Assertion>
+          <name>TransactionalExpression
+          </name>
+        
+          <subjectX>
+            [*dtask:Transaction{
+              `[*dtask:Fetch{ [@example:Customer], `.id==1` }].()`
+            }].()
+          </subjectX>
+        
+          <testX>.id==1
+          </testX>
+        </test:Assertion> 
 <!--
         <task:Eval>
         
