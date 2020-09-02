@@ -16,9 +16,17 @@ package spiralcraft.service;
 
 
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+
+import spiralcraft.log.Level;
+
 import spiralcraft.cli.BeanArguments;
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.Executable;
+import spiralcraft.exec.ExecutionContext;
 import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.SimpleFocus;
@@ -37,7 +45,35 @@ public class Daemon
   implements Executable
 {
 
+  private boolean consoleControl;
+  private ConsoleController consoleController;
   
+  public void setConsoleControl(boolean consoleControl)
+  { this.consoleControl=consoleControl;
+  }
+  
+  @Override
+  public void start()
+    throws LifecycleException
+  {
+    super.start();
+    if (consoleControl)
+    { 
+      consoleController=new ConsoleController();
+      consoleController.start();
+    }
+  }
+    
+  @Override
+  public void stop()
+    throws LifecycleException
+  {
+    if (consoleController!=null)
+    { consoleController.stop();
+    }
+    super.stop();
+  }
+
   @Override
   public final void execute(String ... args)
     throws ExecutionException
@@ -68,4 +104,66 @@ public class Daemon
     
   }
 
+  class ConsoleController
+    implements Runnable
+  {
+    private Thread consoleThread;
+    private boolean done;
+    
+    public void start()
+    { 
+      consoleThread=new Thread(this);
+      consoleThread.start();
+    }
+    
+    public void run()
+    {
+      LineNumberReader consoleLines
+        =new LineNumberReader
+          (new InputStreamReader
+            (ExecutionContext.getInstance().in())
+          );
+      while (!done)
+      {
+        String line=null;
+        try
+        { 
+          line=consoleLines.readLine();
+          if (line==null)
+          {
+            done=true;
+            log.fine("End of console input reached");
+            break;
+          }
+          if (logLevel.isFine())
+          { log.fine("Received console command: "+line);
+          }
+          if (line.equals("quit"))
+          {
+            log.info("Quitting on console command");
+            done=true;
+            Daemon.this.terminate();
+            break;
+          }
+        }
+        catch (IOException x)
+        { 
+          log.log(Level.WARNING,"IOException reading console input",x);
+          break;
+        }
+      }
+    }
+    
+    public synchronized void stop()
+    { 
+      this.done=true;
+      try
+      { ExecutionContext.getInstance().in().close();
+      }
+      catch (IOException x)
+      { log.log(Level.INFO,"Caught exception closing console input",x);
+      }
+      consoleThread.interrupt();
+    }
+  }
 }
