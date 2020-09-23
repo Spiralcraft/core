@@ -117,7 +117,7 @@ public class Package
     }
     return null;
   }
-  
+
   /**
    * Search for the closest containing package in the specified container
    *   or any of its ancestors.
@@ -127,6 +127,19 @@ public class Package
    * @throws ContextualException
    */
   public static final synchronized Package fromContainer(Resource container)
+      throws ContextualException
+  { return fromContainer(container,true);
+  }
+  
+  /**
+   * Search for the closest containing package in the specified container
+   *   or any of its ancestors (if searchParents = true)
+   * 
+   * @param container
+   * @return
+   * @throws ContextualException
+   */
+  public static final synchronized Package fromContainer(Resource container,boolean searchParents)
     throws ContextualException
   {
     if (staticLogLevel.isFine())
@@ -142,10 +155,13 @@ public class Package
       {        
         if (!container.exists())
         { 
-          // A subdirectory that does not exist is implicitly part of its
-          //   parent directory's package
-          // log.fine("NX Redirecting to "+container.getParent());
-          ret=fromContainer(container.getParent());
+          if (searchParents)
+          {
+            // A subdirectory that does not exist is implicitly part of its
+            //   parent directory's package
+            // log.fine("NX Redirecting to "+container.getParent());
+            ret=fromContainer(container.getParent());
+          }
         }
         else
         {
@@ -171,7 +187,10 @@ public class Package
               }
             }
             else
-            { ret=fromContainer(container.getParent());
+            { 
+              if (searchParents)
+              { ret=fromContainer(container.getParent());
+              }
             }
           }
           else
