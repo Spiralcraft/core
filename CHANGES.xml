@@ -16,6 +16,19 @@
         </revision>
 
         <notes>
+          <scm:Note>Allow checking for a package mount without searching parent tree
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/Package.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev161
+        </revision>
+
+        <notes>
           <scm:Note>Provide Daemon with access to stdin to facilitate secure control
           </scm:Note>
         </notes>
