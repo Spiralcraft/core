@@ -204,12 +204,16 @@ public class AssemblyLoader
       if (pkg!=null)
       {    
         if (logLevel.isFine())
-        { log.fine("Checking package for "+resource.getURI());
+        { log.fine("Checking package "+pkg+" for "+resource.getURI());
         }
         return pkg.searchForBaseResource(resource);
       }
       else
-      { return null;
+      { 
+        if (logLevel.isFine())
+        { log.fine("No package mapped to "+resource.getParent());
+        }
+        return null;
       }
     }
     else
