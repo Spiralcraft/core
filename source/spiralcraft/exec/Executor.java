@@ -47,9 +47,11 @@ import spiralcraft.log.RotatingFileHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.ServiceLoader;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>The Executor is the standard "Main" class for invoking coarse grained
@@ -560,6 +562,38 @@ public class Executor
     return wrapper.get();
   }
   
+  private void loadProperties(URI propsFile)
+  { 
+    try
+    {
+      Resource res=Resolver.getInstance().resolve(propsFile);
+      if (res!=null)
+      {
+        try (InputStream in = res.getInputStream())
+        {
+          Properties props=new Properties();
+          props.load(in);
+          for (Object k: props.keySet())
+          { properties.set((String) k,props.getProperty((String) k));
+          }
+        }
+        catch (IOException x)
+        { 
+          throw new IllegalArgumentException
+            ("Error processing properties.",x);
+        }
+      }
+      else
+      { 
+        throw new IllegalArgumentException
+          ("Error processing properties.",new IOException("Unable to resolve resource: "+uri));
+      }
+    }
+    catch (UnresolvableURIException x)
+    { throw new IllegalArgumentException("Error processing properties",x);
+    }
+  }
+  
   /**
    * Process arguments. The first non-option argument is the Type URI. If there
    *   is more than one argument, the second non-option argument is either
@@ -659,6 +693,9 @@ public class Executor
           { 
             instanceURI=URIPool.create(nextArgument());
             persistOnCompletion=true;
+          }
+          else if (option.equals("-props"))
+          { loadProperties(URIPool.create(nextArgument()));
           }
           else 
           { 
