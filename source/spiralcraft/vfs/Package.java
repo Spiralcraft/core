@@ -14,18 +14,17 @@ import spiralcraft.log.Level;
 import spiralcraft.util.URIUtil;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.thread.CycleDetector;
+import spiralcraft.vfs.ovl.OverlayResource;
 
 /**
- * <p>A Package defines an extensible collection of resources 
+ * <p>A VFS Package identifies a directory node in a virtual filesystem that
+ *   imports and extends a base filesystem.
  * </p>
  * 
- * <p>A Package may overlay a base Package and provide customized 
- *   versions of some or all of the base Package's resource.
- * <p>
- *   
  * <p>The scope of a Package consists of the resources in the directory
  *   tree rooted at the directory that contains the package.xml file 
  * </p>
+ * 
  * @author mike
  */
 public class Package
@@ -119,6 +118,17 @@ public class Package
   }
 
   /**
+   * Get a reference to the package defined in this container, if any
+   * 
+   * @param container
+   * @return
+   */
+  public static final synchronized Package fromThisContainer(Resource container)
+    throws ContextualException
+  { return fromContainer(container,false);
+  }
+  
+  /**
    * Search for the closest containing package in the specified container
    *   or any of its ancestors.
    * 
@@ -142,6 +152,11 @@ public class Package
   public static final synchronized Package fromContainer(Resource container,boolean searchParents)
     throws ContextualException
   {
+    while (container instanceof OverlayResource)
+    { 
+      log.fine("Unpacking overlay "+container);
+      container=((OverlayResource) container).getOverlay();
+    }
     if (staticLogLevel.isFine())
     { log.fine("Checking for package in "+container);
     }
@@ -150,7 +165,7 @@ public class Package
     }
     Package ret=map.get(container.getURI());
     if (ret==null && !map.containsKey(container.getURI()))
-    {
+    { 
       try
       {        
         if (!container.exists())
@@ -160,7 +175,7 @@ public class Package
             // A subdirectory that does not exist is implicitly part of its
             //   parent directory's package
             // log.fine("NX Redirecting to "+container.getParent());
-            ret=fromContainer(container.getParent());
+            ret=fromContainer(container.getParent(),true);
           }
         }
         else
@@ -174,22 +189,13 @@ public class Package
             }
             if (packageXml.exists())
             { 
-              ret=ReflectionType.canonicalType(Package.class)
-                .fromXmlResource(packageXml);
-              ret.uri=container.getURI();
-              if (!ret.base.isAbsolute())
-              { ret.base=URIUtil.ensureTrailingSlash(ret.uri).resolve(ret.base);
-              }
-              ret.base=URIUtil.ensureTrailingSlash
-                (Resolver.getInstance().resolve(ret.base).getURI());
-              if (staticLogLevel.isConfig())
-              { log.fine("Loaded package "+ret.uri+" base="+ret.base);
-              }
+              ret=loadPackage(container,packageXml);
             }
             else
             { 
               if (searchParents)
-              { ret=fromContainer(container.getParent());
+              { 
+                ret=fromContainer(container.getParent(),true);
               }
             }
           }
@@ -197,7 +203,10 @@ public class Package
           { log.warning("Resource "+container.getURI()+" is not a container");
           }
         }
-        map.put(container.getURI(),ret);
+        // Don't map a null if we didn't search parents
+        if (searchParents || ret!=null)
+        {  map.put(container.getURI(),ret);
+        }
       }
       catch (IOException x)
       { throw new ContextualException("Error reading package",x);
@@ -206,6 +215,23 @@ public class Package
       { throw new ContextualException("Error reading package",x);
       }
     }
+    return ret;
+  }
+  
+  private static Package loadPackage(Resource container,Resource packageXml)
+    throws IOException,ContextualException
+  {
+    Package ret=ReflectionType.canonicalType(Package.class)
+        .fromXmlResource(packageXml);
+      ret.uri=container.getURI();
+      if (!ret.base.isAbsolute())
+      { ret.base=URIUtil.ensureTrailingSlash(ret.uri).resolve(ret.base);
+      }
+      ret.base=URIUtil.ensureTrailingSlash
+        (Resolver.getInstance().resolve(ret.base).getURI());
+      if (staticLogLevel.isConfig())
+      { log.fine("Loaded package "+ret.uri+" base="+ret.base);
+      }
     return ret;
   }
   
