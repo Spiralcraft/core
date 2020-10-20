@@ -16,7 +16,23 @@
         </revision>
 
         <notes>
+          <scm:Note>Add command line option to load global properties from a file
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/exec/Executor.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev161
+        </revision>
+
+        <notes>
           <scm:Note>Allow checking for a package mount without searching parent tree
+          </scm:Note>
+          <scm:Note>Unpack overlays when looking for packages. Only use resource
+            at top of overlay stack.
           </scm:Note>
         </notes>
         
