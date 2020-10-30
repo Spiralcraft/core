@@ -57,6 +57,7 @@ public class Path
   private final String[] _elements;
   private final int _hashCode;
   private char _delimiter;
+  private String _defaultString;
   
   /**
    * Construct an empty Path
@@ -463,7 +464,17 @@ public class Path
   
   @Override
   public String toString()
-  { return format(new String(new char[] {_delimiter}));
+  { 
+    if (_defaultString==null)
+    {
+      synchronized(this)
+      {
+        if (_defaultString==null)
+        { _defaultString=StringPool.INSTANCE.get(format(Character.toString(_delimiter)));
+        }
+      }
+    }
+    return _defaultString;
   }
   
   public URI toURI()
