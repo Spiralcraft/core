@@ -12,6 +12,26 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev162
+        </revision>
+
+        <notes>
+          <scm:Note>Cache jar entries to avoid redundant scanning of jar file
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/jar
+        </path>
+        
+        <resources>
+          <URI>JarCache.java
+          </URI>
+          <URI>JarFileResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev161
         </revision>
 
