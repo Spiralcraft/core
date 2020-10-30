@@ -14,7 +14,6 @@
 //
 package spiralcraft.vfs.jar;
 
-import spiralcraft.io.InputStreamWrapper;
 //import spiralcraft.log.ClassLog;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
@@ -45,6 +43,7 @@ public class JarFileResource
   private File file;
   private Path path;
   private Resource[] _contents;
+  private final JarCache jarCache;
 
   public JarFileResource(File jarFile,Path path)
   { 
@@ -57,6 +56,7 @@ public class JarFileResource
       );
     this.file=jarFile;
     this.path=path.subPath(0);
+    this.jarCache=JarCache.get(file);
     
   }
   
@@ -67,6 +67,7 @@ public class JarFileResource
     
     this.file=new File(URIPool.create(uriParts[0]));
     this.path=new Path(URIUtil.decodeURIPath(uriParts[1].substring(1)),'/');
+    this.jarCache=JarCache.get(file);
   }
   
   @Override
@@ -84,24 +85,8 @@ public class JarFileResource
   public InputStream getInputStream()
     throws IOException
   { 
-    final JarFile jar=new JarFile(file);
-    
-    JarEntry entry=jar.getJarEntry(path.toString());
-    
-    return new InputStreamWrapper(jar.getInputStream(entry))
-    {
-      @Override
-      public void close()
-        throws IOException
-      { 
-        try
-        { super.close();
-        }
-        finally
-        { jar.close();
-        }
-      } 
-    };
+    JarEntry entry=jarCache.getJarEntry(path.toString());
+    return jarCache.getInputStream(entry);
   }
 
   @Override
@@ -172,16 +157,8 @@ public class JarFileResource
   public long getLastModified()
     throws IOException
   { 
-    final JarFile jar=new JarFile(file);
-    try
-    { 
-      JarEntry entry=jar.getJarEntry(path.toString());
-      return entry.getTime();
-    }
-    finally
-    { jar.close();
-    }
-
+    JarEntry entry=jarCache.getJarEntry(path.toString());
+    return entry.getTime();
   }
   
   @Override
@@ -226,91 +203,62 @@ public class JarFileResource
   private void makeContents()
     throws IOException
   { 
-    final JarFile jar=new JarFile(file);
-    try
+    Enumeration<JarEntry> entries=jarCache.entries();
+    String pathString=path.format("/");
+    if (!pathString.endsWith("/"))
     { 
-      Enumeration<JarEntry> entries=jar.entries();
-      String pathString=path.format("/");
-      if (!pathString.endsWith("/"))
-      { 
-        if (pathString.length()>0)
-        { pathString=pathString+"/";
-        }
+      if (pathString.length()>0)
+      { pathString=pathString+"/";
       }
-      else
-      { 
-        if (pathString.length()==1)
-        { pathString="";
-        }
+    }
+    else
+    { 
+      if (pathString.length()==1)
+      { pathString="";
       }
-      List<Resource> children=new ArrayList<Resource>();
-      while (entries.hasMoreElements())
-      {
-        JarEntry entry=entries.nextElement();
-        if (entry.getName().startsWith(pathString)
-            && entry.getName().length()>pathString.length()
-            )
+    }
+    List<Resource> children=new ArrayList<Resource>();
+    while (entries.hasMoreElements())
+    {
+      JarEntry entry=entries.nextElement();
+      String entryName=entry.getName();
+      if (entryName.startsWith(pathString)
+          && entryName.length()>pathString.length()
+          )
+      { 
+        int slash=entryName.indexOf('/',pathString.length());
+        if (slash<0 || slash==entryName.length()-1)
         { 
-          int slash=entry.getName().indexOf('/',pathString.length());
-          if (slash<0 || slash==entry.getName().length()-1)
-          { 
-            //log.fine("Added "+entry.getName());
-            // Only add immediate children
-            children.add
-              (new JarFileResource(file,new Path(entry.getName(),'/')));
-          }
+          //log.fine("Added "+entry.getName());
+          // Only add immediate children
+          children.add
+            (new JarFileResource(file,new Path(entryName,'/')));
         }
       }
-      
-      if (children.size()>0)
-      { _contents=children.toArray(new Resource[children.size()]);
-      }
-      else
-      { _contents=null;
-      }
-      
     }
-    finally
-    { 
-      try
-      { jar.close();
-      }
-      catch (IOException x)
-      { }
+    
+    if (children.size()>0)
+    { _contents=children.toArray(new Resource[children.size()]);
     }
-
-
+    else
+    { _contents=null;
+    }
   }
   
   @Override
   public boolean exists()
     throws IOException
   { 
-    final JarFile jar=new JarFile(file);
-    try
-    { 
-      JarEntry entry=jar.getJarEntry(path.toString());
-      return entry!=null;
-    }
-    finally
-    { jar.close();
-    }
-
+    JarEntry entry=jarCache.getJarEntry(path.toString());
+    return entry!=null;
   }
   
   @Override
   public long getSize()
     throws IOException
   { 
-    final JarFile jar=new JarFile(file);
-    try
-    { 
-      JarEntry entry=jar.getJarEntry(path.toString());
-      return entry.getSize();
-    }
-    finally
-    { jar.close();
-    }
+    JarEntry entry=jarCache.getJarEntry(path.toString());
+    return entry.getSize();
   }
   
   @Override
