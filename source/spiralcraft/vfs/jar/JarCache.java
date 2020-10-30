@@ -105,7 +105,7 @@ public class JarCache
     // log.fine(file+" openCount="+openCount);
     if (openCount==0)
     { 
-      log.fine("Opening "+file);
+      // log.fine("Opening "+file);
       jarFile=new JarFile(file);
     }
     openCount++;
