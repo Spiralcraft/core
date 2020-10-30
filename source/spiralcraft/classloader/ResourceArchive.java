@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-//import spiralcraft.log.ClassLog;
+import spiralcraft.log.ClassLog;
 //import spiralcraft.log.Level;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
@@ -37,7 +37,7 @@ public class ResourceArchive
   extends Archive
 {
   
-//  private static final ClassLog log=ClassLog.getInstance(ResourceArchive.class);
+  private static final ClassLog log=ClassLog.getInstance(ResourceArchive.class);
   
   private Resource rootResource;
 
@@ -76,7 +76,9 @@ public class ResourceArchive
     throws IOException
   {
     if (!rootResource.exists())
-    { throw new IOException("Resource not found "+rootResource.getURI());
+    { 
+      log.fine(rootResource+" does not exist");
+      throw new IOException("Resource not found "+rootResource.getURI());
     }
     
     if (rootResource.asContainer()==null)

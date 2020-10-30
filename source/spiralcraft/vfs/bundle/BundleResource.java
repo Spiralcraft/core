@@ -170,7 +170,7 @@ public class BundleResource
  
   @Override
   public String toString()
-  { return getURI().toString();
+  { return getURI().toString()+" -> "+bundleResource.toString();
   }
  
   @Override
