@@ -160,6 +160,11 @@ public class XmlStore
       { throw new BindException("Error resolving schema ",x);
       }
       
+      EntityBinding sequenceBinding
+        =createEntityBinding(new Entity(sequenceType));
+      sequenceBinding.setAccessor(sequenceQueryable);
+      addEntityBinding(sequenceBinding);
+      
       for (Entity entity: schema.getEntities())
       {
         if (!entity.isAbstract())
