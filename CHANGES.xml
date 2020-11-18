@@ -12,6 +12,42 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev164
+        </revision>
+
+        <notes>
+          <scm:Note>Make XmlStore sequences visible in global query
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlStore.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev164
+        </revision>
+
+        <notes>
+          <scm:Note>Add method to reset a sequence
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access
+        </path>
+        
+        <resources>
+          <URI>Store.java
+          </URI>
+          <URI>kit/AbstractStore.java
+          </URI>
+          <URI>kit/AbstractStoreSequence.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev162
         </revision>
 
