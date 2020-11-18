@@ -95,6 +95,7 @@ public abstract class AbstractStore
   protected final Type<?> sequenceType;  
   protected final EquiJoin sequenceQuery;
   
+  protected final Type<?> anyType=AnyType.resolve();
   
   protected Schema schema;
   
@@ -230,6 +231,25 @@ public abstract class AbstractStore
     }
     return sequence;
   }  
+  
+  @Override
+  public void resetSequence(URI uri,long next)
+    throws DataException
+  { 
+    AbstractStoreSequence sequence
+      =sequences!=null
+      ?(AbstractStoreSequence) sequences.get(uri)
+      :null
+      ;
+      
+    if (sequence!=null)
+    { sequence.reset(next);
+    }
+    else
+    { throw new DataException("No sequence in store with uri: "+uri);
+    }
+    
+  }
 
   @Override
   public Type<?>[] getTypes()
@@ -725,7 +745,7 @@ public abstract class AbstractStore
 
 
     private EditableArrayListAggregate<DeltaTuple> deltaList
-      =new EditableArrayListAggregate<DeltaTuple>(AnyType.resolve());
+      =new EditableArrayListAggregate<DeltaTuple>(anyType);
 
     private State state=State.STARTED;
     private final Set<Long> txOpen;

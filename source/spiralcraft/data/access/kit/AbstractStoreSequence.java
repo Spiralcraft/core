@@ -141,6 +141,86 @@ public abstract class AbstractStoreSequence
 
   }
     
+  public void reset(long nextValue)
+    throws DataException
+  {
+    synchronized(synchronizer)
+    {
+
+      Transaction.startContextTransaction(Nesting.ISOLATE);
+      try
+      {
+        SerialCursor<Tuple> result=boundQuery.execute();
+
+        EditableTuple row=null;
+        Tuple oldRow=null;
+        
+        long newNext;
+        long newStop;
+        int newIncrement;
+        
+        try
+        {
+          if (!result.next())
+          {
+            row=new EditableArrayTuple(store.sequenceType);
+            
+            row.set("uri",uri);
+            row.set("nextValue",nextValue+100);
+            row.set("increment",100);
+
+            newNext=nextValue;
+            newStop=nextValue+100;
+            newIncrement=100;
+
+          }
+          else
+          {
+            oldRow=result.getTuple().snapshot();
+            row=new EditableArrayTuple(oldRow);
+            
+            newIncrement=(Integer) row.get("increment");
+            newNext=nextValue;
+          
+            newStop=newNext+increment;
+            row.set("nextValue",newNext+newIncrement);
+          
+            if (result.next())
+            {
+              throw new DataException
+                ("Cardinality violation in Sequence store- non unique URI "+uri); 
+            }
+          }
+        
+        }
+        finally
+        { result.close();
+        }
+      
+
+        DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
+        if (oldRow!=null)
+        { updateInTx(dt);   
+        }
+        else
+        { insertInTx(dt);   
+        }
+        Transaction.getContextTransaction().commit();
+        
+        next=newNext;
+        stop=newStop;
+        increment=newIncrement;
+        allocated=true;
+      }
+      finally
+      { Transaction.getContextTransaction().complete();
+      }
+      
+    }
+  
+  }
+  
+  
   public void allocate()
     throws DataException
   {

@@ -90,6 +90,18 @@ public interface Store
     throws DataException;
 
   /**
+   * <p>Reset the next value for the specified sequence
+   * </p>
+   * 
+   * @param uri
+   * @param next
+   * @throws DataException
+   */
+  void resetSequence(URI uri,long next)
+    throws DataException;
+  
+  
+  /**
    * <p>Indicate whether this Store contains authoritative data for the 
    *   specified Type. If so, the store can generate IDs and process data
    *   updates for the Type.
