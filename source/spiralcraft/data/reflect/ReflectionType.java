@@ -55,6 +55,7 @@ import java.util.regex.Pattern;
 import spiralcraft.time.Instant;
 
 import java.net.URI;
+import java.net.URL;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
@@ -93,6 +94,7 @@ public class ReflectionType<T>
       ,ArrayList.class
       ,Collection.class
       ,URI.class
+      ,URL.class
       ,spiralcraft.lang.Expression.class
       ,spiralcraft.lang.Binding.class
       ,Date.class
