@@ -872,13 +872,27 @@ public class AssemblyClass
       try
       { resolveExternalBaseClass();
       }
-      catch (Exception x)
+      catch (AssemblyNotFoundException x)
       { 
-        throw new BuildException
+        if (getDeclarationLocation()==null)
+        { throw x;
+        }
+        else 
+        {
+          throw new BuildException
           ("Error resolving base AssemblyClass"
           ,getDeclarationLocation()
           ,x
           );
+        }
+      }
+      catch (Exception x)
+      { 
+        throw new BuildException
+        ("Error resolving base AssemblyClass"
+        ,getDeclarationLocation()
+        ,x
+        );
       }
     }
     resolveDeclarable();
@@ -1051,6 +1065,13 @@ public class AssemblyClass
   { return _declarationName!=null && _baseName.equals(_declarationName);
   }
   
+  private boolean hasDeclarationInfo()
+  { 
+    return this.getSourceURI()!=null 
+     || this.getContainingProperty()!=null
+     || this.getDeclarationName()!=null;
+  }
+  
   /**
    * <p>Resolve the external base class for this AssemblyClass. Called during
    *   resolution when the assembly hasn't been constructed with an existing
@@ -1195,18 +1216,45 @@ public class AssemblyClass
           
           if (_javaClass==null)
           {
-            throw newBuildException
-              ("Base AssemblyClass not found for AssemblyClass in "
-              +this.getSourceURI()+" "+this.getContainingProperty()+" "
-              + this.getDeclarationName()
-              +": Could not resolve "+baseResource+" to an assy.xml or a" 
-              +" Java class. "
-              +(canonicalBaseUri==null
-                ?""
-                :canonicalBaseUri+" does not exist"
-                )
-              ,null
-              );
+            if (this.hasDeclarationInfo())
+            {
+              throw new AssemblyNotFoundException
+                  ("Base AssemblyClass not found for AssemblyClass in "
+                  +this.getSourceURI()+" "+this.getContainingProperty()+" "
+                  + this.getDeclarationName()
+                  +": Could not resolve "+baseResource+" to an assy.xml or a" 
+                  +" Java class. "
+                  +(canonicalBaseUri==null
+                    ?""
+                    :canonicalBaseUri+" does not exist"
+                    )
+                  ,baseResource
+                  );
+            }
+            else
+            { 
+              if (baseResource!=null && !baseResource.equals(canonicalBaseUri))
+              {
+                throw new AssemblyNotFoundException
+                  ("Could not resolve "+baseResource+" to an assy.xml or a" 
+                   +" Java class. "
+                   +(canonicalBaseUri==null
+                     ?""
+                     :canonicalBaseUri+" does not exist"
+                     )
+                   ,baseResource
+                  );
+              }
+              else if (baseResource!=null)
+              { 
+                throw new AssemblyNotFoundException
+                  ("Could not resolve "+baseResource+" to an assy.xml or a" 
+                   +" Java class. "
+                  ,baseResource
+                  );
+                  
+              }
+            }
           }
         }
       }
