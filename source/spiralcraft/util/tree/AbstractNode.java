@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 
 import spiralcraft.util.EmptyIterator;
-import spiralcraft.util.tree.Tree;
 
 /**
  * A node in a tree
