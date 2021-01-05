@@ -12,6 +12,41 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev165
+        </revision>
+
+        <notes>
+          <scm:Note>Make URL a standard primitive data type
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>reflect/ReflectionType.java
+          </URI>
+          <URI>types/standard/URLType.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev165
+        </revision>
+
+        <notes>
+          <scm:Note>Add utility class for working with Iterators
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/IteratorUtil.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev164
         </revision>
 
