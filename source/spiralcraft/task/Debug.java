@@ -19,7 +19,6 @@ import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.log.Level;
-import spiralcraft.task.Task;
 import spiralcraft.util.ArrayUtil;
 
 /**

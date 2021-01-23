@@ -17,7 +17,6 @@ package spiralcraft.lang.spi;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.spi.Translator;
 
 /**
  * <p>A Translator used as a means for accessing an array index. Translates

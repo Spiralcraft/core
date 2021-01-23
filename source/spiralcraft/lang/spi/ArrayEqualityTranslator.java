@@ -18,7 +18,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.lang.spi.Translator;
 
 /**
  * <p>A Translator used to compare arrays.

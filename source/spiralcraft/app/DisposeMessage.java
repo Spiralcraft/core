@@ -14,8 +14,6 @@
 //
 package spiralcraft.app;
 
-import spiralcraft.app.Message;
-
 public class DisposeMessage
   extends Message
 {

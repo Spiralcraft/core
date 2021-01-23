@@ -22,9 +22,6 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
-import spiralcraft.data.core.RelativeField;
-import spiralcraft.data.core.TypeImpl;
-import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.types.standard.ObjectType;
 
 import java.net.URI;

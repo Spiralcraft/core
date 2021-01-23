@@ -19,7 +19,6 @@ import spiralcraft.lang.Assignment;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.log.Level;
-import spiralcraft.task.Task;
 
 /**
  * Perform a set of Assignments 

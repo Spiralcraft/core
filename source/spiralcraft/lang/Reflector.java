@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.Channel;
 import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;

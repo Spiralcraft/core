@@ -24,7 +24,6 @@ import spiralcraft.lang.BindException;
 import spiralcraft.data.Tuple;
 
 
-import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.lang.CursorChannel;
 

@@ -33,8 +33,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
 
-import spiralcraft.data.core.FieldImpl;
-
 import spiralcraft.data.lang.DataReflector;
 
 import spiralcraft.data.query.BoundQuery;

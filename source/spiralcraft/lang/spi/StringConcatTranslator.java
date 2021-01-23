@@ -17,8 +17,6 @@ package spiralcraft.lang.spi;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.spi.Translator;
-
 public class StringConcatTranslator
   implements Translator<String,String>
 {

@@ -16,7 +16,6 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DeltaTuple;
 
-import spiralcraft.data.core.FieldImpl;
 
 
 public class DeltaField

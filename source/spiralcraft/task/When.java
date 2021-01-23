@@ -20,7 +20,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
-import spiralcraft.task.Task;
 
 /**
  * Conditionally executes another Scenario 

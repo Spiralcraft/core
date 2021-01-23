@@ -17,8 +17,6 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.core.FieldImpl;
-
 
 public class SequenceField<X>
   extends FieldImpl<X>

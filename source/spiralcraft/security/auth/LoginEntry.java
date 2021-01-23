@@ -17,11 +17,6 @@ package spiralcraft.security.auth;
 import java.util.ArrayList;
 
 import spiralcraft.lang.Channel;
-import spiralcraft.security.auth.AuthSession;
-import spiralcraft.security.auth.Credential;
-import spiralcraft.security.auth.PasswordCleartextCredential;
-import spiralcraft.security.auth.UsernameCredential;
-import spiralcraft.security.auth.ChallengeCredential;
 
 /**
  * <p>Convenience class for supplying login credentials from a user interface

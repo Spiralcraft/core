@@ -19,10 +19,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 
-
-import spiralcraft.io.StreamEvent;
-import spiralcraft.io.StreamListener;
-import spiralcraft.io.StreamListenerSupport;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 

@@ -19,7 +19,6 @@ import java.util.Map;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.spi.Translator;
 
 public class MapIndexTranslator<I,T>
   implements Translator<T,Map<I,T>>
