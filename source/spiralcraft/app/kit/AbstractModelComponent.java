@@ -24,7 +24,6 @@ import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.State;
-import spiralcraft.app.kit.ValueState;
 import spiralcraft.common.ContextualException;
 
 /**
