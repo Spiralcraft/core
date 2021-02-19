@@ -114,7 +114,9 @@ public class Flow<T>
     spiralcraft.fsm.State ostate=cstate.getCurrentState();
     fsm.restart();
     spiralcraft.fsm.State state=cstate.getCurrentState();
-    stateChangeDetected(ostate,state);
+    if (state!=ostate)
+    { stateChangeDetected(ostate,state);
+    }
   }
   
   protected void stateChangeDetected
