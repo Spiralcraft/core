@@ -12,6 +12,19 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev166
+        </revision>
+
+        <notes>
+          <scm:Note>Fix loop when app calls restart from state change
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/components/Flow.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev165
         </revision>
 
