@@ -21,7 +21,6 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.attributes.AbstractAttributeContext;
 import spiralcraft.data.Field;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 

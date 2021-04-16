@@ -2,14 +2,12 @@ package spiralcraft.codec.text;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 
 public class CrockfordBase32Codec
 {
-  private static final ClassLog log=ClassLog.getInstance(CrockfordBase32Codec.class);
+//  private static final ClassLog log=ClassLog.getInstance(CrockfordBase32Codec.class);
   
   private static final char[] encoding = 
       {'0','1','2','3','4','5','6','7'

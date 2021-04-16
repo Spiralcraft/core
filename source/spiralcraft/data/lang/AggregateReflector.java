@@ -415,6 +415,7 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public T add(
     T collection,
@@ -424,6 +425,7 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     return collection;
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public T addAll(T collection,Iterator<I> items)
   {
@@ -431,6 +433,7 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     return collection;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public T addAll(T collection,T items)
   {
