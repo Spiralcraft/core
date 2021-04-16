@@ -237,6 +237,86 @@
 
     <test:Assertion>
     
+      <name>crockfordBase32Encode1
+      </name>
+      
+      <subjectX>
+        [@ct:CrockfordBase32Codec].@encodeNumber([@jm:BigInteger].@valueOf(973113317))
+      </subjectX>
+      
+      <testX>
+        .=="X011Z5"
+        
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>crockfordBase32Encode2
+      </name>
+      
+      <subjectX>
+        [@ct:CrockfordBase32Codec].@encodeNumber([@jm:BigInteger].@valueOf(1618543298698L))
+      </subjectX>
+      
+      <testX>
+        .=="1F3CB5J4A"
+        
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>crockfordBase32Encode3
+      </name>
+      
+      <subjectX>
+        [@ct:CrockfordBase32Codec].@encodeNumber([@jm:BigInteger].@valueOf(1618543298L))
+      </subjectX>
+      
+      <testX>
+        .=="1G7J0P2"
+        
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>crockfordBase32Encode4
+      </name>
+      
+      <subjectX>
+        [@ct:CrockfordBase32Codec].@encodeNumber([@jm:BigInteger].@valueOf(161854329L))
+      </subjectX>
+      
+      <testX>
+        .=="4TBCVS"
+        
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>crockfordBase32Decode1
+      </name>
+      
+      <subjectX>
+        [@ct:CrockfordBase32Codec].@decodeNumber("X011Z5")
+      </subjectX>
+      
+      <testX>
+        .==973113317
+        
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
       <name>implode1
       </name>
       
