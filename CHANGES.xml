@@ -12,6 +12,19 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev167
+        </revision>
+
+        <notes>
+          <scm:Note>Added Crockford base32 number encoding
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/codec/text/CrockfordBase32Codec.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev166
         </revision>
 
