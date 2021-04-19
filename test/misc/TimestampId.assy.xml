@@ -1,0 +1,25 @@
+<task:Eval
+  xmlns:task="class:/spiralcraft/task"
+  xmlns:du="class:/spiralcraft/data/util"
+  xmlns:j="class:/java/lang"
+  xmlns:ju="class:/java/util"
+  xmlns:su="class:/spiralcraft/util/string"
+  >
+  <contextX>
+    [#p] {
+      origin:=[*su:DateToString{"yyyy-MM-dd HH:mm:ss.S Z"}]
+              .fromString("2021-01-01 00:09:00.000 UTC")
+    }
+  </contextX>
+  <x>.{ [@du:TimestampIdGenerator].(3,8,0).nextId().@log(.)
+      , [@du:TimestampIdGenerator].(3,8,[p].origin.getTime()).nextId().@log(.)
+      , [@du:TimestampIdGenerator].(3,8,[p].origin.getTime()).timestampOf("0008Z1HZ").@log([@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(3,8,[p].origin.getTime()).timestampOf("ZZZZZZZZ").@log([@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(3,7,[p].origin.getTime()).timestampOf("ZZZZZZZ").@log([@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(3,6,[p].origin.getTime()).timestampOf("ZZZZZZ").@log([@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(2,7,[p].origin.getTime()).timestampOf("ZZZZZZZ").@log("7 digits, 10/sec: "+[@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(2,8,[p].origin.getTime()).timestampOf("ZZZZZZZZ").@log("8 digits, 10/sec: "+[@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(2,7,[p].origin.getTime()).nextId().@log(.)
+      }
+  </x>
+</task:Eval>
