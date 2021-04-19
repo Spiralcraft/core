@@ -17,8 +17,8 @@
       , [@du:TimestampIdGenerator].(3,8,[p].origin.getTime()).timestampOf("ZZZZZZZZ").@log([@ju:Date].(.))
       , [@du:TimestampIdGenerator].(3,7,[p].origin.getTime()).timestampOf("ZZZZZZZ").@log([@ju:Date].(.))
       , [@du:TimestampIdGenerator].(3,6,[p].origin.getTime()).timestampOf("ZZZZZZ").@log([@ju:Date].(.))
-      , [@du:TimestampIdGenerator].(2,7,[p].origin.getTime()).timestampOf("ZZZZZZZ").@log("7 digits, 10/sec: "+[@ju:Date].(.))
       , [@du:TimestampIdGenerator].(2,8,[p].origin.getTime()).timestampOf("ZZZZZZZZ").@log("8 digits, 10/sec: "+[@ju:Date].(.))
+      , [@du:TimestampIdGenerator].(2,7,[p].origin.getTime()).timestampOf("ZZZZZZZ").@log("7 digits, 10/sec: "+[@ju:Date].(.))
       , [@du:TimestampIdGenerator].(2,7,[p].origin.getTime()).nextId().@log(.)
       }
   </x>
