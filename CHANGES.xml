@@ -16,6 +16,19 @@
         </revision>
 
         <notes>
+          <scm:Note>Add a timestamp-based alphanumeric locally unique ID generator
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/TimestampIdGenerator.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev167
+        </revision>
+
+        <notes>
           <scm:Note>Added Crockford base32 number encoding
           </scm:Note>
         </notes>
