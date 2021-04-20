@@ -12,6 +12,20 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev169
+        </revision>
+
+        <notes>
+          <scm:Note>Fix issue where data sequence would reallocate after system
+             restart, causing a gap in the id sequence equal to the allocation amount.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access/kit/AbstractStoreSequence.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev168
         </revision>
 
