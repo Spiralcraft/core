@@ -25,7 +25,7 @@ public abstract class AbstractStoreSequence
   implements Sequence,Lifecycle
 {
 
-  private int increment;
+  private volatile int increment;
   private volatile long next;
   private volatile long stop;  
   protected final Focus<URI> uriFocus;
@@ -262,7 +262,7 @@ public abstract class AbstractStoreSequence
             newNext=(Long) row.get("nextValue");
             newIncrement=(Integer) row.get("increment");
           
-            newStop=newNext+increment;
+            newStop=newNext+newIncrement;
             row.set("nextValue",newNext+newIncrement);            
           
             if (result.next())
