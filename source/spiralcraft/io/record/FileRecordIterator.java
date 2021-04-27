@@ -56,7 +56,7 @@ public class FileRecordIterator
     this.file=file;
     this.delimiter=delimiter;
     forwardMatcher=new BytePatternMatcher(delimiter);
-    reverseMatcher=new BytePatternMatcher((byte[]) ArrayUtil.reverse(delimiter));
+    reverseMatcher=new BytePatternMatcher(ArrayUtil.reverse(delimiter));
     file.seek(0);
   }
   

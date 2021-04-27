@@ -659,6 +659,17 @@ public class ArrayUtil
     };
   }
   
+  public static final byte[] reverse(byte[] array)
+  { 
+    int len=Array.getLength(array);
+    byte[] ret=new byte[len];
+    for (int i=0;i<len;i++)
+    { ret[len-i-1]=array[i];
+    }
+    return ret;
+  
+  }
+  
   public static final Object reverse(Object array)
   {
     int len=Array.getLength(array);
