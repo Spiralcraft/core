@@ -12,6 +12,26 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev170
+        </revision>
+
+        <notes>
+          <scm:Note>Add ArrayUtil.reverse(byte[])
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/ArrayUtil.java
+          </URI>
+          <URI>io/record/FileRecordIterator.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev169
         </revision>
 
