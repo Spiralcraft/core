@@ -255,6 +255,9 @@ public abstract class MethodImpl
     else
     { paramR=new Reflector<?>[0];
     }
+    if (getReturnType()==null)
+    { throw new BindException("Method "+getURI()+" does not specify a return type");
+    }
     return new Signature
              (getName()
              ,DataReflector.getInstance(getReturnType())
