@@ -1632,6 +1632,8 @@ public class ExpressionParser
       numberString=numberString.substring(0,numberString.length()-1);
       switch (typeIndicator)
       {
+        case 'B':
+          return LiteralNode.get(Byte.valueOf(numberString));
         case 'L':
           return LiteralNode.get(Long.parseLong(numberString));
         case 'D':
