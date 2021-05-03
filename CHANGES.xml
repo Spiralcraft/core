@@ -12,6 +12,20 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev171
+        </revision>
+
+        <notes>
+          <scm:Note>Add byte literal syntax with 'B' number suffix
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev170
         </revision>
 
