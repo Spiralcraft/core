@@ -12,6 +12,31 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev172
+        </revision>
+
+        <notes>
+          <scm:Note>Enhance support for operators on autoboxed primitives
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/parser/BinaryOpNode.java
+          </URI>
+          <URI>lang/parser/EqualityNode.java
+          </URI>
+          <URI>lang/parser/LogicalNode.java
+          </URI>
+          <URI>util/lang/NumericCoercion.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev171
         </revision>
 
