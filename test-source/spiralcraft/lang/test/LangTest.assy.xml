@@ -1547,6 +1547,50 @@
         }]
       </testX>
     </test:Assertion>
+    
+    <test:Assertion>
+      <name>Byte equality 1</name>
+      <subjectX>
+        "A".bytes[0]
+      </subjectX>
+      <testX>
+        .==65B
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Byte equality 2</name>
+      <subjectX>
+        "A".bytes[0]
+      </subjectX>
+      <testX>
+        .==65
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Byte bitwise mask 1</name>
+      <subjectX>
+        "A".bytes
+      </subjectX>
+      <testX>
+        ([.][0] &amp; 1) == 1
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Byte bitwise mask 2</name>
+      <subjectX>
+        "A".bytes
+      </subjectX>
+      <testX>
+        ([.][0] &amp; 64) == 64
+      </testX>
+    
+    </test:Assertion>
 
   </sequence>
         

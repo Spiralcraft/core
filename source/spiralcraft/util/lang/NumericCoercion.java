@@ -15,6 +15,9 @@ public abstract class NumericCoercion<T>
   
   public static final NumericCoercion<?> instance(Class<?> target)
   {
+    if (target.isPrimitive())
+    { target=ClassUtil.boxedEquivalent(target);
+    }
     NumericCoercion<?> coercion=map.get(target);
     if (coercion==null)
     { coercion=makeCoercion(target);

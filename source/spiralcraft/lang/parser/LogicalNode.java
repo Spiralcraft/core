@@ -22,7 +22,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Reflector;
-
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.util.ArrayUtil;
@@ -175,6 +175,12 @@ public abstract class LogicalNode<T1,T2>
     protected RelationalTranslator(Reflector<T1> r1, Reflector<T2> r2)
       throws BindException
     {
+      if (r1.getContentType().isPrimitive())
+      { r1=BeanReflector.getInstance(ClassUtil.boxedEquivalent(r1.getContentType()));
+      }
+      if (r2.getContentType().isPrimitive())
+      { r2=BeanReflector.getInstance(ClassUtil.boxedEquivalent(r2.getContentType()));
+      }
       if (r1.getContentType()!=r2.getContentType())
       {
         if (Number.class.isAssignableFrom(r1.getContentType())

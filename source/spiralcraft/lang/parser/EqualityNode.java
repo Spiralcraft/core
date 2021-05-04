@@ -19,6 +19,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 //import spiralcraft.log.ClassLogger;
 import spiralcraft.lang.Reflector;
+import spiralcraft.util.lang.ClassUtil;
 
 
 public class EqualityNode<X>
@@ -62,9 +63,12 @@ public class EqualityNode<X>
     
     return new RelationalTranslator(r1,r2)
     {  
+      Class<X> c1=r1.getContentType();
+      Class<X> c2=r2.getContentType();
+      
       boolean number
-        =Number.class.isAssignableFrom(r1.getContentType())
-        && Number.class.isAssignableFrom(r2.getContentType());
+        =Number.class.isAssignableFrom(c1.isPrimitive()?ClassUtil.boxedEquivalent(c1):c1)
+        && Number.class.isAssignableFrom(c2.isPrimitive()?ClassUtil.boxedEquivalent(c2):c2);
       
       @Override
       protected void checkTypes()

@@ -125,11 +125,11 @@ public class BinaryOpNode<T1 extends Comparable<T1>,T2>
       if (channel==null)
       { 
         throw new BindException
-          ("Incompatible types "
+          ("Incompatible types or unsupported operation ["
           +op1.getContentType().getName()
-          +" and "
+          +"] op '"+_op+"' ["
           +op2.getContentType().getName()
-          +": "+reconstruct()
+          +"]: "+reconstruct()
           );
       
       }
@@ -509,6 +509,9 @@ class NumberBindingHelper
   private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapModulus
     =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
   
+  private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapBitwiseAnd
+    =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
+
   private static StringConverter<BigDecimal> bigDecimalConverter
     = StringConverter.getInstance(BigDecimal.class);
 
@@ -547,6 +550,9 @@ class NumberBindingHelper
         break;
       case '%':
         translatorMap=_translatorMapModulus;
+        break;
+      case '&':
+        translatorMap=_translatorMapBitwiseAnd;
         break;
     }
     
@@ -589,6 +595,48 @@ class NumberBindingHelper
                 return box(n1.intValue()/n2.intValue());
               case '%':
                 return box(n1.intValue()%n2.intValue());
+              case '&':
+                return box(n1.intValue()&n2.intValue());
+              default:
+                return null;                
+            }
+          }
+        };
+      }
+      else if (clazz==Byte.class || clazz==byte.class)
+      {
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
+        {
+            
+          // Arithmetic ops in java convert to int. We need to convert back.
+          private Tret box(int prim)
+          { return (Tret) Byte.valueOf(Integer.valueOf(prim).byteValue());
+          }
+          
+          @Override
+          public Tret get(T1 val1,T2 val2)
+          { 
+            if (val1==null || val2==null)
+            { return null;
+            }
+            
+            Number n1= val1;
+            Number n2= val2;
+            
+            switch (oper)
+            {
+              case '+':
+                return box(n1.byteValue()+n2.byteValue());
+              case '-':
+                return box(n1.byteValue()-n2.byteValue());
+              case '*':
+                return box(n1.byteValue()*n2.byteValue());
+              case '/':
+                return box(n1.byteValue()/n2.byteValue());
+              case '%':
+                return box(n1.byteValue()%n2.byteValue());
+              case '&':
+                return box(n1.byteValue()&n2.byteValue());
               default:
                 return null;                
             }
@@ -661,6 +709,8 @@ class NumberBindingHelper
                 return box(n1.longValue()/n2.longValue());
               case '%':
                 return box(n1.longValue()%n2.longValue());
+              case '&':
+                return box(n1.longValue()&n2.longValue());
               default:
                 return null;                
             }
@@ -746,6 +796,8 @@ class NumberBindingHelper
                 return (Tret) num1.divide(num2);
               case '%':
                 return (Tret) num1.remainder(num2);
+              case '&':
+                return (Tret) num1.and(num2);
               default:
                 return null;                
             }
@@ -850,6 +902,30 @@ class NumberBindingHelper
     }
     else if (cl1==Byte.class)
     {
+      if (cl2==Integer.class)
+      { return Integer.class;
+      }
+      else if (cl2==Byte.class)
+      { return Byte.class;
+      }
+      else if (cl2==Short.class)
+      { return Short.class;
+      }
+      else if (cl2==Float.class)
+      { return Float.class;
+      }
+      else if (cl2==Long.class)
+      { return Long.class;
+      }
+      else if (cl2==Double.class)
+      { return Double.class;
+      }
+      else if (cl2==BigInteger.class)
+      { return BigInteger.class;
+      }
+      else if (cl2==BigDecimal.class)
+      { return BigDecimal.class;
+      }    
     }
     else if (cl1==Short.class)
     {
