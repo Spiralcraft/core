@@ -64,9 +64,11 @@ import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.types.standard.AnyType;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.meter.MeterContext;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -347,7 +349,8 @@ public abstract class AbstractStore
   
   
   protected void preBind(Focus<?> focusChain)
-  { space=LangUtil.findInstance(Space.class,focusChain);
+  { 
+    space=LangUtil.findInstance(Space.class,focusChain);
   }
   
   @Override
@@ -355,6 +358,19 @@ public abstract class AbstractStore
     throws ContextualException
   { 
     focus=focusChain.chain(LangUtil.constantChannel(this));
+
+    MeterContext meterContext
+      =LangUtil.findInstance(MeterContext.class, focusChain);
+    if (meterContext!=null)
+    { 
+      meterContext=meterContext.subcontext(name);
+      focusChain.addFacet
+        (focusChain.chain
+          (new SimpleChannel<>(meterContext,true))
+        );
+      installMeter(meterContext);
+    }
+
     
     bindServices(focus);
     
@@ -367,7 +383,13 @@ public abstract class AbstractStore
     }
 
     sequences.put(URIPool.create("_TXID"),txIdSequence);
+
+    
     return focus;
+  }
+
+  protected void installMeter(MeterContext meterContext)
+  { 
   }
   
   private void bindServices(Focus<?> focusChain)

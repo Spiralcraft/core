@@ -27,7 +27,9 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.callable.Sink;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-
+import spiralcraft.meter.Meter;
+import spiralcraft.meter.MeterContext;
+import spiralcraft.meter.Register;
 import spiralcraft.time.Clock;
 
 
@@ -80,6 +82,18 @@ public class Pool<T>
 
   private final HashSet<Ticket> waiters
     =new HashSet<Ticket>();
+  
+  private Meter meter;
+  private Register checkedInRegister;
+  private Register checkedOutRegister;
+  private Register checkInsRegister;
+  private Register checkOutsRegister;
+  private Register clientDiscardsRegister;
+  private Register waitsRegister;
+  private Register waitingRegister;
+  private Register overdueDiscardsRegister;
+  private Register addsRegister;
+  private Register removesRegister;
   
   /**
    * Conserve resources by not discarding them when demand drops,
@@ -245,6 +259,21 @@ public class Pool<T>
   { this.onCheckin=onCheckin;
   }
   
+  public void installMeter(MeterContext meterContext)
+  { 
+    meter=meterContext.meter("pool");
+    checkedInRegister=meter.register("checkedIn");
+    checkedOutRegister=meter.register("checkedOut");
+    checkInsRegister=meter.register("checkIns");
+    checkOutsRegister=meter.register("checkOuts");
+    clientDiscardsRegister=meter.register("clientDiscards");
+    waitsRegister=meter.register("waits");
+    waitingRegister=meter.register("waiting");
+    overdueDiscardsRegister=meter.register("overdueDiscards");
+    addsRegister=meter.register("adds");
+    removesRegister=meter.register("removes");
+  }
+  
   /**
    * Checkout an object from the pool of
    *   available object.
@@ -281,6 +310,12 @@ public class Pool<T>
           { 
             _waitsCount++;
             _waitingCount++;
+            if (meter!=null)
+            { 
+              waitsRegister.inc();
+              waitingRegister.inc();
+            }
+
             ticket=new Ticket();
             waiters.add(ticket);
             waitOnMonitor();
@@ -296,7 +331,11 @@ public class Pool<T>
             throw x;
           }
           finally
-          { _waitingCount--;
+          { 
+            _waitingCount--;
+            if (meter!=null)
+            { waitingRegister.dec();
+            }
           }
         }
       }
@@ -308,6 +347,9 @@ public class Pool<T>
         ref.checkOutStack=new Exception();
         putOut(ref);
         _checkOutsCount++;
+        if (meter!=null)
+        { checkOutsRegister.inc();
+        }
 
         if (logLevel.isFine())
         { log.fine("Checkout complete");
@@ -383,6 +425,10 @@ public class Pool<T>
     
     _lastUse=Clock.instance().approxTimeMillis();
     _checkInsCount++;
+    if (meter!=null)
+    { checkInsRegister.inc();
+    }
+
     synchronized (_monitor)
     {
       Reference<T> ref=removeOut(resource);
@@ -418,6 +464,10 @@ public class Pool<T>
     { removeOut(resource);
     }
     _clientDiscardsCount++;
+    if (meter!=null)
+    { clientDiscardsRegister.inc();
+    }
+
     _factory.discardResource(resource);
   }
 
@@ -566,13 +616,22 @@ public class Pool<T>
   { 
     _out.put(ref.resource,ref);
     _checkedOutCount++;
+    if (meter!=null)
+    { checkedOutRegister.inc();
+    }
+
   }
 
   private Reference<T> removeOut(Object res)
   { 
     Reference<T> ref=_out.remove(res);
     if (ref!=null)
-    { _checkedOutCount--;
+    { 
+      _checkedOutCount--;
+      if (meter!=null)
+      { checkedOutRegister.dec();
+      }
+
     }
     return ref;
   }
@@ -649,6 +708,10 @@ public class Pool<T>
       while (it.hasNext())
       { 
         _overdueDiscardsCount++;
+        if (meter!=null)
+        { overdueDiscardsRegister.inc();
+        }
+
         _factory.discardResource(it.next()); 
       }
     }
@@ -673,6 +736,10 @@ public class Pool<T>
         _monitor.notify();
       }
       _addsCount++;
+      if (meter!=null)
+      { addsRegister.inc();
+      }
+      
 
       if (logLevel.isDebug())
       { log.fine("Added resource "+ref.resource.getClass().getName());
@@ -684,6 +751,9 @@ public class Pool<T>
   {
     Reference<T> ret=_available.pop();
     _checkedInCount--;
+    if (meter!=null)
+    { checkedInRegister.dec();
+    }
     return ret;
   }
 
@@ -691,6 +761,9 @@ public class Pool<T>
   {
     _available.push(ref);
     _checkedInCount++;
+    if (meter!=null)
+    { checkedInRegister.inc();
+    }
   }
 
   private void remove()
@@ -713,6 +786,10 @@ public class Pool<T>
       { log.log(Level.WARNING,"Exception discarding pooled resource. ",x);
       }
       _removesCount++;
+      if (meter!=null)
+      { removesRegister.inc();
+      }
+      
     }
   }
 }

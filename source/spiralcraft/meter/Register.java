@@ -36,11 +36,19 @@ public class Register
       this.hasChanged=true;
     }
   }
+
+  public synchronized void inc()
+  { incrementValue();
+  }
   
   public synchronized void incrementValue()
   { 
     value++;
     hasChanged=true;
+  }
+
+  public synchronized void dec()
+  { decrementValue();
   }
 
   public synchronized void decrementValue()
@@ -49,6 +57,10 @@ public class Register
     hasChanged=true;
   }
 
+  public synchronized void adj(long increment)
+  { adjustValue(increment);
+  }
+  
   public synchronized void adjustValue(long increment)
   { 
     if (increment!=0)

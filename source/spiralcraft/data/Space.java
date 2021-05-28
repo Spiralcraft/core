@@ -41,10 +41,12 @@ import spiralcraft.data.session.DataSession;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 //import spiralcraft.lang.util.LangUtil;
-
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
+import spiralcraft.meter.MeterContext;
 import spiralcraft.service.Service;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ListMap;
@@ -184,6 +186,13 @@ public class Space
     throws ContextualException
   { 
     
+    MeterContext meterContext=LangUtil.findInstance(MeterContext.class, focusChain);
+    if (meterContext!=null)
+    { 
+      meterContext=meterContext.subcontext("space");
+      installMeter(meterContext);
+    }
+
     // parent=LangUtil.findInstance(Space.class,focusChain);
     dataSessionChannel
       =new ThreadLocalChannel<DataSession>
@@ -197,6 +206,12 @@ public class Space
     //   internal binding of data ops.
     storeFocus.addFacet
       (new SimpleFocus<DataSession>(selfFocus,dataSessionChannel));
+    if (meterContext!=null)
+    { 
+      storeFocus.addFacet
+        (storeFocus.chain(new SimpleChannel<MeterContext>(meterContext,true)));
+    }
+    
     for (Store store: stores)
     { 
       store.bind(storeFocus);
@@ -204,6 +219,10 @@ public class Space
     }
     computeTypes();
     return focusChain;
+  }
+
+  void installMeter(MeterContext meterContext)
+  {
   }
   
   @Override
