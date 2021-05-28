@@ -12,6 +12,31 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev174
+        </revision>
+
+        <notes>
+          <scm:Note>Add metering to data store subsystem and resource pools
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/access/kit/AbstractStore.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>meter/Register.java
+          </URI>
+          <URI>pool/Pool.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev172
         </revision>
 
