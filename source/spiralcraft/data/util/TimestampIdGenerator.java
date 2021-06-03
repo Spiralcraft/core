@@ -56,7 +56,7 @@ public class TimestampIdGenerator
   public TimestampIdGenerator(long coarseness,int timestampDigits,long offset)
   { 
     this.coarseness=coarseness;
-    this.timeDiv=Double.valueOf(Math.pow(10,coarseness)).longValue();
+    this.timeDiv=Double.valueOf(Math.pow(10,this.coarseness)).longValue();
     this.timestampDigits=timestampDigits;
     this.offset=offset;
 
