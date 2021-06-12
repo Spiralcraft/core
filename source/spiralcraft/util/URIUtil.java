@@ -37,6 +37,7 @@ public class URIUtil
   private static final String DUMMY_ROOT_STR="tmp:/";
   private static final URI DUMMY_ROOT_URI=URI.create(DUMMY_ROOT_STR);
 
+  public static final URI EMPTY_URI=URI.create("");
   /**
    * Creates a new URI, adding the specified pre-encoded String to the
    *   end of the path String.
