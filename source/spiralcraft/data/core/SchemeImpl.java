@@ -374,8 +374,18 @@ public class SchemeImpl
     {
       if (key.isPrimary())
       { 
-        if (getInheritedPrimaryKey()!=null)
+        Key<?> inheritedPrimaryKey=getInheritedPrimaryKey();
+        
+        if (inheritedPrimaryKey!=null)
         {
+          // Don't trip ourselves up here with a automatic copying 
+          //   and not a duplicate definition
+          log.warning("Inherited primary key of "+getType().getURI()+" is "+getInheritedPrimaryKey());
+          log.warning("Primary key of "+getType().getURI()+" is "+primaryKey);
+          log.warning("Type is "+getType());
+          log.warning("BaseType is "+getType().getBaseType());
+          log.warning("Archetype is "+getType().getArchetype());
+          log.warning("this.keys:"+ArrayUtil.format(this.keys.toArray(), ",",""));
           throw new DataException
             ("Duplicate primary key: "+key+" in scheme "+toString());
         }
@@ -447,7 +457,8 @@ public class SchemeImpl
       (new RelativeField(key));
   }
   
-  private <X> void addFieldPostResolve(FieldImpl<X> field)
+  
+  <X> void addFieldPostResolve(FieldImpl<X> field)
     throws DataException
   { 
     field.setIndex(fields.size());

@@ -60,6 +60,7 @@ public class RelativeField<T extends DataComposite>
   private String referencedKeyName;
   private boolean child;
   private DeletionConstraint deletionConstraint;
+  private boolean importKey;
   
   { this.setTransient(true);
   }
@@ -81,6 +82,16 @@ public class RelativeField<T extends DataComposite>
   
   public void setKey(KeyImpl<Tuple> key)
   { this.key=key;
+  }
+  
+  /**
+   * If true, will import the primary key of the target type into 
+   *   an automatically generated field.
+   *   
+   * @param importKey
+   */
+  public void setImportKey(Boolean importKey)
+  { this.importKey=importKey;
   }
   
   public void setFieldList(String fieldList)
@@ -199,6 +210,56 @@ public class RelativeField<T extends DataComposite>
         }
         throw new DataException("Field type cannot be null: "+getURI());
       }
+      
+      if (importKey)
+      { 
+        Key fk = getType().getPrimaryKey();
+        if (fk==null)
+        { throw new DataException(getType().getURI()
+          +" has no primary key to import into "+getURI());
+        }
+        
+        if (fk.getFieldCount()>1)
+        { throw new DataException("Can't import compound key from "+getType().getURI()
+            +" into "+getURI());
+        }
+        Field ff = fk.getFieldByIndex(0);
+        String fieldName=this.getName()+"Id";
+        
+        
+        Field existingImport=getScheme().getType().getField(fieldName);
+        if (existingImport!=null)
+        {
+          // Use the existing field if compatible
+          if (!ff.getType().isAssignableFrom(existingImport.getType()))
+          { 
+            throw new DataException(getType().getURI()
+              +" already has a field "+fieldName
+              +" of incompatible type "+existingImport.getType().getURI()
+              );
+          }
+        }
+        else
+        {
+          FieldImpl lf = new FieldImpl();
+          lf.setName(fieldName);
+          lf.setType(ff.getType());
+          
+          this.getScheme().addFieldPostResolve(lf);
+        }
+        if (fieldNames==null)
+        { fieldNames = new String[] {fieldName};
+        }
+        if (referencedFieldNames==null)
+        { referencedFieldNames = new String[] {ff.getName()};
+        }
+      }
+      else if (fieldNames==null && referencedFieldNames==null)
+      {
+        // TODO the target type may import our primary key. Find the relativeField
+        //   and use its fieldNames for our referenceFieldNames.
+      }
+      
       // Generate the key
       if (key==null)
       { key=new KeyImpl(this);
