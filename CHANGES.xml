@@ -12,6 +12,27 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
+          <scm:Note>Automatically configure RelativeField when importKey is specified
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core
+        </path>
+        
+        <resources>
+          <URI>RelativeField.java
+          </URI>
+          <URI>SchemeImpl.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev174
         </revision>
 
