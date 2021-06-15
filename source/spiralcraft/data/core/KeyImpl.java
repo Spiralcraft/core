@@ -665,4 +665,20 @@ public class KeyImpl<T extends DataComposite>
     return specialized;
     
   }
+  
+  public String toString()
+  {
+    StringBuilder builder=new StringBuilder();
+    if (this.scheme!=null)
+    { builder.append(this.scheme.getType().getURI()); 
+    }
+    builder.append("#");
+    builder.append("[")
+           .append(ArrayUtil.format(getFieldNames(),",",""))
+           .append("]");
+    if (primary)
+    { builder.append("-primary");
+    }
+    return builder.toString();
+  }
 }
