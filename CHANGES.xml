@@ -16,6 +16,21 @@
         </revision>
 
         <notes>
+          <scm:Note>Permit dangling commas at the end of expression lists to
+            simplify code formatting.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Automatically configure RelativeField when importKey is specified
           </scm:Note>
         </notes>
