@@ -1239,7 +1239,7 @@ public class ExpressionParser
 
   
   /**
-   * ExpressionList -> Expression ("," Expression)*
+   * ExpressionList -> Expression ("," (ExpressionList))*
    */
   private List<Node> parseExpressionList()
     throws ParseException
@@ -1262,11 +1262,14 @@ public class ExpressionParser
     {
       consumeToken();
       Node node=parseBindingExpression();
-      if (node==null)
-      { throwUnexpected();
+      
+      // Accept a dangling ',' 
+      if (node!=null)
+      {
+        list.add(node);
+        parseExpressionListRest(list);
       }
-      list.add(node);
-      parseExpressionListRest(list);
+      
     }
     return;
   }
