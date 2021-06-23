@@ -48,7 +48,7 @@ public abstract class AbstractTaskMethod<T,C,R>
 
   private boolean returnCommand;
   private Expression<Type<R>> returnTypeX;
-  private boolean throwException;
+  private boolean throwException=true;
   
   
   public void setReturnTypeX(Expression<Type<R>> returnTypeX)
