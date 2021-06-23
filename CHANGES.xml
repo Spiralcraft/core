@@ -16,8 +16,31 @@
         </revision>
 
         <notes>
-          <scm:Note>Permit dangling commas at the end of expression lists to
-            simplify code formatting.
+          <scm:Note>Enhance support for data-related exception management
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/core/AbstractTaskMethod.java
+          </URI>
+          <URI>data/InvalidValueException.java
+          </URI>
+          <URI>lang/functions/Throw.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
+          <scm:Note>Permit dangling commas at the end of expression lists and
+            struct field lists to simplify code formatting.
           </scm:Note>
         </notes>
         
