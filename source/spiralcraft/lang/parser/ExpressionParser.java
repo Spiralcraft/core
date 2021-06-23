@@ -1537,7 +1537,15 @@ public class ExpressionParser
     else
     {
       // Plain expression case
-      field.source=parseExpression();
+      Node exprNode=parseExpression();
+      if (exprNode!=null)
+      { field.source=exprNode;
+      }
+      else
+      {
+        // Support dangling comma
+        return;
+      }
     }
     
     struct.addField(field);
