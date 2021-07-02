@@ -176,8 +176,174 @@ public class RelativeField<T extends DataComposite>
     copy.fieldNames=fieldNames;
     copy.referencedFieldNames=referencedFieldNames;
   }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
+  private void resolveGenerated()
+    throws DataException
+  {
+    this.child=key.isChild();
+    // This field was generated from the key
+    setName(key.getName());
+  
+    if (key.getForeignType()==null)
+    { throw new DataException("Foreign type is null Key "+key);
+    }
+  
+    if (key.getImportedKey().isUnique())
+    { setType((Type) key.getForeignType());
+    }
+    else
+    { setType((Type) Type.getAggregateType(key.getForeignType()));
+    }
+  }
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
+  private void resolveNonGenerated()
+    throws DataException
+  {
+    if (getType()==null || typeX!=null)
+    { 
+      Type newType=resolveType();
+      if (newType!=null)
+      { setType(resolveType());
+      }
+    }
+    if (getType()==null)
+    { 
+      if (template)
+      { 
+        // Ok to leave field partially resolved if no type and it's a
+        //  a template
+        super.resolve();
+        return;
+      }
+      throw new DataException("Field type cannot be null: "+getURI());
+    }
+    
+    if (importKey)
+    { 
+      Key fk = getType().getPrimaryKey();
+      if (fk==null)
+      { throw new DataException(getType().getURI()
+        +" has no primary key to import into "+getURI());
+      }
+      
+      if (fk.getFieldCount()>1)
+      { throw new DataException("Can't import compound key from "+getType().getURI()
+          +" into "+getURI());
+      }
+      Field ff = fk.getFieldByIndex(0);
+      String fieldName=this.getName()+"Id";
+      
+      
+      Field existingImport=getScheme().getType().getField(fieldName);
+      if (existingImport!=null)
+      {
+        // Use the existing field if compatible
+        if (!ff.getType().isAssignableFrom(existingImport.getType()))
+        { 
+          throw new DataException(getType().getURI()
+            +" already has a field "+fieldName
+            +" of incompatible type "+existingImport.getType().getURI()
+            );
+        }
+      }
+      else
+      {
+        FieldImpl lf = new FieldImpl();
+        lf.setName(fieldName);
+        lf.setType(ff.getType());
+        
+        this.getScheme().addFieldPostResolve(lf);
+      }
+      if (fieldNames==null)
+      { fieldNames = new String[] {fieldName};
+      }
+      if (referencedFieldNames==null)
+      { 
+        referencedFieldNames = new String[] {ff.getName()};
+//        log.fine("AutoImport "+getURI()+" referencing "+fieldName+" -> "+ff.getName());
+      }
+    }
+    else if (fieldNames==null && referencedFieldNames==null)
+    {
+      // TODO the target type may import our primary key. Find the relativeField
+      //   and use its fieldNames for our referenceFieldNames.
+    }
+    
+    // Generate the key
+    if (key==null)
+    { key=new KeyImpl(this);
+    }
+    
+    if (key.getFieldNames()==null)
+    { 
+      Key primaryKey=getScheme().getType().getPrimaryKey();
+      if (primaryKey==null)
+      { 
+        throw new DataException
+          ("Relative Field "+getScheme().getType().getURI()+"#"+getName()
+          +" with no relational fieldList"
+          +" requires that a primary key be defined in the containing type"
+          ); 
+      }
+
+      if (isUniqueValue())
+      {
+        // We just use the primary key
+        key.setFieldNames(primaryKey.getFieldNames());
+      }
+      else
+      {
+        if (referencedFieldNames!=null)
+        { 
+          // Use the part of our primary key that corresponds to the
+          //   specified set of foreign fields
+          String[] fieldNames=new String[referencedFieldNames.length];
+          for (int i=0;i<fieldNames.length;i++)
+          { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
+          }
+          key.setFieldNames(fieldNames);
+          
+        }
+        else
+        {
+          // Use the part of our primary key that corresponds to the
+          //   parent's primary key
+          Key foreignKey=getType().getPrimaryKey();
+          if (foreignKey==null)
+          {
+            throw new DataException
+              ("Relative Field "+getURI()+" containing non unique value "
+              +" requires that a primary key be defined in the referenced"
+              +" type "+getType().getURI()
+              ); 
+          }
+          
+          if (foreignKey.getFieldCount()>primaryKey.getFieldCount())
+          { 
+//            log.fine("Foreign key="+foreignKey+", primaryKey="+primaryKey);
+            throw new DataException
+              ("Relative Field "+getURI()+" containing non unique value "
+              +" requires that the primary key defined in the referenced"
+              +" type "+getType().getURI()+" be a subset of the primary "
+              +" key defined in this type"
+              ); 
+            
+          }
+          String[] fieldNames=new String[foreignKey.getFieldCount()];
+          for (int i=0;i<fieldNames.length;i++)
+          { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
+          }
+          key.setFieldNames(fieldNames);
+        }
+      }
+    }
+    getScheme().addKey(key);
+    
+
+  }
+  
   @Override
   public void resolve()
     throws DataException
@@ -190,163 +356,11 @@ public class RelativeField<T extends DataComposite>
     
     
     if (!generated)
-    { 
-      
-      if (getType()==null || typeX!=null)
-      { 
-        Type newType=resolveType();
-        if (newType!=null)
-        { setType(resolveType());
-        }
-      }
-      if (getType()==null)
-      { 
-        if (template)
-        { 
-          // Ok to leave field partially resolved if no type and it's a
-          //  a template
-          super.resolve();
-          return;
-        }
-        throw new DataException("Field type cannot be null: "+getURI());
-      }
-      
-      if (importKey)
-      { 
-        Key fk = getType().getPrimaryKey();
-        if (fk==null)
-        { throw new DataException(getType().getURI()
-          +" has no primary key to import into "+getURI());
-        }
-        
-        if (fk.getFieldCount()>1)
-        { throw new DataException("Can't import compound key from "+getType().getURI()
-            +" into "+getURI());
-        }
-        Field ff = fk.getFieldByIndex(0);
-        String fieldName=this.getName()+"Id";
-        
-        
-        Field existingImport=getScheme().getType().getField(fieldName);
-        if (existingImport!=null)
-        {
-          // Use the existing field if compatible
-          if (!ff.getType().isAssignableFrom(existingImport.getType()))
-          { 
-            throw new DataException(getType().getURI()
-              +" already has a field "+fieldName
-              +" of incompatible type "+existingImport.getType().getURI()
-              );
-          }
-        }
-        else
-        {
-          FieldImpl lf = new FieldImpl();
-          lf.setName(fieldName);
-          lf.setType(ff.getType());
-          
-          this.getScheme().addFieldPostResolve(lf);
-        }
-        if (fieldNames==null)
-        { fieldNames = new String[] {fieldName};
-        }
-        if (referencedFieldNames==null)
-        { referencedFieldNames = new String[] {ff.getName()};
-        }
-      }
-      else if (fieldNames==null && referencedFieldNames==null)
-      {
-        // TODO the target type may import our primary key. Find the relativeField
-        //   and use its fieldNames for our referenceFieldNames.
-      }
-      
-      // Generate the key
-      if (key==null)
-      { key=new KeyImpl(this);
-      }
-      
-      if (key.getFieldNames()==null)
-      { 
-        Key primaryKey=getScheme().getType().getPrimaryKey();
-        if (primaryKey==null)
-        { 
-          throw new DataException
-            ("Relative Field "+getScheme().getType().getURI()+"#"+getName()
-            +" with no relational fieldList"
-            +" requires that a primary key be defined in the containing type"
-            ); 
-        }
-
-        if (isUniqueValue())
-        {
-          // We just use the primary key
-          key.setFieldNames(primaryKey.getFieldNames());
-        }
-        else
-        {
-          if (referencedFieldNames!=null)
-          { 
-            // Use the part of our primary key that corresponds to the
-            //   specified set of foreign fields
-            String[] fieldNames=new String[referencedFieldNames.length];
-            for (int i=0;i<fieldNames.length;i++)
-            { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
-            }
-            key.setFieldNames(fieldNames);
-            
-          }
-          else
-          {
-            // Use the part of our primary key that corresponds to the
-            //   parent's primary key
-            Key foreignKey=getType().getPrimaryKey();
-            if (foreignKey==null)
-            {
-              throw new DataException
-                ("Relative Field "+getURI()+" containing non unique value "
-                +" requires that a primary key be defined in the referenced"
-                +" type "+getType().getURI()
-                ); 
-            }
-            
-            if (foreignKey.getFieldCount()>primaryKey.getFieldCount())
-            { 
-//              log.fine("Foreign key="+foreignKey+", primaryKey="+primaryKey);
-              throw new DataException
-                ("Relative Field "+getURI()+" containing non unique value "
-                +" requires that the primary key defined in the referenced"
-                +" type "+getType().getURI()+" be a subset of the primary "
-                +" key defined in this type"
-                ); 
-              
-            }
-            String[] fieldNames=new String[foreignKey.getFieldCount()];
-            for (int i=0;i<fieldNames.length;i++)
-            { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
-            }
-            key.setFieldNames(fieldNames);
-          }
-        }
-      }
-      getScheme().addKey(key);
+    { resolveNonGenerated();
       
     }
     else
-    {
-      this.child=key.isChild();
-      // This field was generated from the key
-      setName(key.getName());
-    
-      if (key.getForeignType()==null)
-      { throw new DataException("Foreign type is null Key "+key);
-      }
-    
-      if (key.getImportedKey().isUnique())
-      { setType((Type) key.getForeignType());
-      }
-      else
-      { setType((Type) Type.getAggregateType(key.getForeignType()));
-      }
+    { resolveGenerated();
     }
 
     try
