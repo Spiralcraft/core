@@ -235,6 +235,11 @@ public abstract class AbstractStore
   }  
   
   @Override
+  public Sequence getLocalSequence(URI uri)
+  { return sequences!=null?sequences.get(uri):null;
+  }
+  
+  @Override
   public void resetSequence(URI uri,long next)
     throws DataException
   { 

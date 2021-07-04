@@ -90,6 +90,16 @@ public interface Store
     throws DataException;
 
   /**
+   * Return the specified Sequence only if it is managed by this store
+   * 
+   * @param uri
+   * @return
+   * @throws DataException
+   */
+  Sequence getLocalSequence(URI uri)
+    throws DataException;
+    
+  /**
    * <p>Reset the next value for the specified sequence
    * </p>
    * 

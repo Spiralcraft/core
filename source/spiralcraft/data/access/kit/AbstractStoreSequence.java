@@ -313,4 +313,15 @@ public abstract class AbstractStoreSequence
       return next++;
     }
   }  
+  
+  public String toString()
+  {
+    return super.toString()+": {"
+    +"increment: "+increment+" "
+    +"next: "+next+" "
+    +"stop: "+stop+" "
+    +"uri: '"+uri+"'"+" "
+    +"allocated: "+allocated+" "
+    +"}";
+  }
 }

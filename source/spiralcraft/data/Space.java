@@ -438,7 +438,7 @@ public class Space
       Store store=getAuthoritativeStore(Type.resolve(typeURI));
       
       if (store!=null)
-      { return store.getSequence(uri);
+      { return store.getLocalSequence(uri);
       }
       else
       { 
