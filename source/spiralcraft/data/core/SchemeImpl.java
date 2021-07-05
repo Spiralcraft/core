@@ -242,11 +242,13 @@ public class SchemeImpl
     int fieldIndex=0;
     if (archetypeScheme!=null)
     { 
+      //log.fine(getType().getURI()+": Scanning archetype scheme "+archetypeScheme.getType().getURI());
       fieldIndex=archetypeScheme.getFieldCount();
       for (Field<?> field: archetypeScheme.fieldIterable())
       { 
         fields.add(field);
         fieldMap.put(field.getName(),field);
+        //log.fine(getType().getURI()+": field "+field.getURI());
 
         // Extend generic archetype fields so they can be specialized for
         //   this type's context
@@ -259,8 +261,8 @@ public class SchemeImpl
           FieldImpl<?> newField=(FieldImpl<?>) field.extend();
           localFields.add(newField);
           localFieldMap.put(newField.getName(),newField);
-//          log.fine("Extending "+field.getURI()+"("+(field.getType()!=null?field.getType().getURI().toString():"")+") to "
-//                  +getType().getURI()+"#"+newField.getName()+"("+(newField.getType()!=null?newField.getType().getURI().toString():"")+")");
+          // log.fine("Extending "+field.getURI()+"("+(field.getType()!=null?field.getType().getURI().toString():"")+") to "
+          //        +getType().getURI()+"#"+newField.getName()+"("+(newField.getType()!=null?newField.getType().getURI().toString():"")+")");
         }
       }
     }
