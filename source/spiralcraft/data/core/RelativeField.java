@@ -197,8 +197,15 @@ public class RelativeField<T extends DataComposite>
     }
   }
   
+  /**
+   * Resolve a field that was specified (not generated). Returns false if the
+   *   field is generic and should not be further resolved.
+   *   
+   * @return
+   * @throws DataException
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
-  private void resolveNonGenerated()
+  private boolean resolveNonGenerated()
     throws DataException
   {
     if (getType()==null || typeX!=null)
@@ -215,7 +222,7 @@ public class RelativeField<T extends DataComposite>
         // Ok to leave field partially resolved if no type and it's a
         //  a template
         super.resolve();
-        return;
+        return false;
       }
       throw new DataException("Field type cannot be null: "+getURI());
     }
@@ -341,7 +348,7 @@ public class RelativeField<T extends DataComposite>
     }
     getScheme().addKey(key);
     
-
+    return true;
   }
   
   @Override
@@ -356,13 +363,22 @@ public class RelativeField<T extends DataComposite>
     
     
     if (!generated)
-    { resolveNonGenerated();
+    { 
+      if (!resolveNonGenerated())
+      {
+        // Partial resolution ok
+        return;
+      }
       
     }
     else
     { resolveGenerated();
     }
 
+    if (key==null)
+    { throw new DataException("No key for field "+getURI()+" generated:"+generated);
+    }
+    
     try
     {
       if (key.getForeignQuery()!=null)
