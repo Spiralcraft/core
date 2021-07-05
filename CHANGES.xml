@@ -16,6 +16,31 @@
         </revision>
 
         <notes>
+          <scm:Note>Facilitate inspecting sequences from admin tools
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Space.java
+          </URI>
+          <URI>data/Store.java
+          </URI>
+          <URI>data/kit/AbstractStore.java
+          </URI>
+          <URI>data/kit/AbstractStoreSequence.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Enhance support for data-related exception management
           </scm:Note>
         </notes>
