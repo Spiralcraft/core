@@ -340,7 +340,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
             { editor.save(forceSave);
             }
             catch (DataException x)
-            { addException(x);
+            { addException(new ContextualException("Error saving data",getDeclarationInfo(),x));
             }
           }
           if (chainAfterSave)
