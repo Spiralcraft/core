@@ -16,6 +16,20 @@
         </revision>
 
         <notes>
+          <scm:Note>Add option to ignore empty strings 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/rules/PatternRule.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Facilitate inspecting sequences from admin tools
           </scm:Note>
         </notes>
