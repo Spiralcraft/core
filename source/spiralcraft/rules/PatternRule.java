@@ -23,6 +23,7 @@ public class PatternRule<C,T>
 
   private Pattern pattern;
   private boolean ignoreNull;
+  private boolean ignoreEmpty;
   private boolean reject;
   
   public PatternRule()
@@ -60,6 +61,16 @@ public class PatternRule<C,T>
   public void setIgnoreNull(boolean ignoreNull)
   { this.ignoreNull=ignoreNull;
   }
+
+  /**
+   * <p>Indicate that an empty string input will not trigger a violation
+   * </p>
+   * 
+   * @param ignoreEmpty
+   */
+  public void setIgnoreEmpty(boolean ignoreEmpty)
+  { this.ignoreEmpty=ignoreEmpty;
+  }
   
   /**
    * <p>Indicate that a matching value should be rejected.
@@ -86,6 +97,9 @@ public class PatternRule<C,T>
     {
       T value=source.get();
       if (value==null && ignoreNull)
+      { return null;
+      }
+      if ("".equals(value) && ignoreEmpty)
       { return null;
       }
       if (!reject)
