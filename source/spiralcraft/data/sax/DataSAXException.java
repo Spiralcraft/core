@@ -34,9 +34,7 @@ public class DataSAXException
   }
 
   public DataSAXException(String message,Exception cause)
-  {
-    super(message,cause);
-    initCause(cause);
+  { super(message,cause);
   }
   
   @Override
