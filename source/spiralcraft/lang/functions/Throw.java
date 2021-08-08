@@ -17,7 +17,6 @@ package spiralcraft.lang.functions;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
