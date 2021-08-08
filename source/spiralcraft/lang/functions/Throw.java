@@ -62,7 +62,6 @@ public class Throw
 
     private Channel<Throwable> thrownBinding;
     
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ThrowChannel
       (Focus<?> focus
       ,Channel<Void> source
