@@ -46,6 +46,13 @@ public class KmpMatcher
    
   }
 
+  public KmpMatcher(KmpMatcher clone)
+  { 
+    this._match=clone._match;
+    this._map=clone._map;
+    this._matchPos=-1;
+  }
+
   /**
    * Reset the matcher in preparation for new input.
    */
