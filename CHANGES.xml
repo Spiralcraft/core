@@ -16,6 +16,27 @@
         </revision>
 
         <notes>
+          <scm:Note>Utility to calculate the relevance of a text block to a set
+            of keywords.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text
+        </path>
+        
+        <resources>
+          <URI>RelevanceCalculator.java
+          </URI>
+          <URI>KmpMatcher.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Add option to ignore empty strings 
           </scm:Note>
         </notes>
