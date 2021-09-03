@@ -14,12 +14,14 @@
 //
 package spiralcraft.lang.spi;
 
+import spiralcraft.common.declare.Declarable;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.functions.ToString;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -59,9 +61,11 @@ public class LogChannel<T>
             ,null
             );
     
+    Declarable declarable = LangUtil.findInstance(Declarable.class,focus);
     log.debug
       ("#"+id
         +": channeling "+source.toString()
+        +(declarable!=null?(": "+declarable.getDeclarationInfo()):"")
       );
   }
   
