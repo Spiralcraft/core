@@ -16,6 +16,21 @@
         </revision>
 
         <notes>
+          <scm:Note>Show declarationInfo to record location of .@log
+            statement when initialized. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/LogChannel.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Utility to calculate the relevance of a text block to a set
             of keywords.
           </scm:Note>
