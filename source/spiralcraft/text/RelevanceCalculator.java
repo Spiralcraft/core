@@ -24,6 +24,10 @@ public class RelevanceCalculator
 
   public int score(CharSequence text)
   {
+    if (text==null)
+    { return 0;
+    }
+    
     KmpMatcher[] termMatchers=new KmpMatcher[masterTermMatchers.length];
     for (int i=0;i<termMatchers.length;i++)
     { termMatchers[i]=new KmpMatcher(masterTermMatchers[i]);
