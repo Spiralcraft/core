@@ -16,6 +16,50 @@
         </revision>
 
         <notes>
+          <scm:Note>Simplify common use cases around Edit and Delete data ops.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task
+        </path>
+        
+        <resources>
+          <URI>Edit.java
+          </URI>
+          <URI>Delete.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
+          <scm:Note>Add BindingLiteral construct to support the creation of 
+            bindings for use in various components in lieu of paired back-tick 
+            ExpressionLiterals.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>BindingLiteralNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Show declarationInfo to record location of .@log
             statement when initialized. 
           </scm:Note>
