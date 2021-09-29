@@ -1341,10 +1341,24 @@ public class ExpressionParser
       case '`':
         node=parseExpressionLiteral();
         break;
+      case ':':
+        node=parseBindingLiteral();
+        break;
     }
     return node;
   }
 
+  private Node parseBindingLiteral()
+    throws ParseException
+  { 
+    expect(':');
+    Node expr = parseExpression();
+    if (expr==null)
+    { this.throwUnexpected("Binding literal prefix ':' must be followed by an expression");
+    }
+    Node node=new BindingLiteralNode(expr);
+    return node;
+  }
   
   private Node parseExpressionLiteral()
     throws ParseException
