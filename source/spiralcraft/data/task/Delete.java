@@ -39,184 +39,64 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
-import spiralcraft.task.Chain;
+import spiralcraft.task.CommandTask;
+import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 
 /**
- * <p>Edits a Tuple
- * </p>
- * 
- * <p>Publishes an TupleEditor of the specified type in the FocusChain, where
- *   it can be retrieved and populated and/or accessed by subtasks.
+ * <p>Deletes a Tuple
  * </p>
  * 
  * @author mike
  *
  */
-public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
-  extends Chain<Titem,Tbuffer>
+public class Delete<Titem extends DataComposite,Tbuffer extends Buffer>
+  extends Scenario<Titem,Tbuffer>
 {
 
   private Expression<Titem> targetX;
-  private Binding<Type<?>> typeX;
   private Channel<Tbuffer> resultChannel;
   private Type<Titem> type;
   private EditorBase<Tbuffer> editor;
-  private boolean autoSave;
-  private boolean autoCreate;
-  private boolean autoKey;
   private Binding<?> onCreate;
   private Binding<?> onInit;
   private Binding<?> afterSave;
   private Binding<?> preSave;
-  private boolean forceSave;
   private DataSessionFocus localDataSessionFocus;
   private ThreadLocalChannel<DataSession> localDataSessionChannel;
-  private boolean chainAfterSave;
   
   { storeResults=true;
   }
   
-  public Edit()
+  public Delete()
   { 
   }
   
-  public Edit(DataReflector<Titem> reflector)
-  { this(reflector.getType());
-  }
-
-  public Edit(Type<Titem> type)
-  { 
-    this.type=type;
-    constructWithKnownType(type);
-  }
-
-  public Edit(Type<Titem> type,Binding<?> action)
-  { 
-    this.type=type;
-    constructWithKnownType(type);
-    setAction(action);
-  }
-  
-  @SuppressWarnings({ "unchecked", "rawtypes"})
-  public Edit(Type<Titem> type,Expression<?> action)
-  { 
-    this.type=type;
-    constructWithKnownType(type);
-    setAction(new Binding(action));
-  }
-
-  /**
-   * An Edit task that runs an action against the buffer and autoSaves the result
-   */
-  public Edit(Binding<?> action)
-  { setAction(action); 
-  }
-
-  @SuppressWarnings("unchecked")
-  private void constructWithKnownType(Type<Titem> type)
-  {
-    if (!type.isAggregate())
-    { editor=(EditorBase<Tbuffer>) new TupleEditor();
-    }
-    else
-    { editor=(EditorBase<Tbuffer>) new AggregateEditor();
-    }
-    editor.setAutoCreate(true);
-  }
-  
-  public void setType(Type<Titem> type)
-  { this.type=type;
-  }
-  
-  public void setTypeX(Binding<Type<?>> typeX)
-  { this.typeX=typeX;
-  }
-  
-  public void setAutoSave(boolean autoSave)
-  { this.autoSave=autoSave;
-  }
-  
-  public void setAutoCreate(boolean autoCreate)
-  { this.autoCreate=autoCreate;
-  }
-  
-  public void setAutoKey(boolean autoKey)
-  { this.autoKey=autoKey;
-  }
-
-  public void setOnCreate(Binding<?> onCreate)
-  { this.onCreate=onCreate;
-  }
-
   public void setOnInit(Binding<?> onInit)
   { this.onInit=onInit;
   }
 
   /**
-   * Run any chained tasks after auto-save so any data changed or added during the
-   *   buffer flush can be picked up.
-   *   
-   * @param chainAfterSave
-   */
-  public void setChainAfterSave(boolean chainAfterSave)
-  { this.chainAfterSave=chainAfterSave;
-  }
-  
-  /**
-   * Indicate that the specified action should always be performed and the buffer
-   *   should always be saved. Equivalent to setting preSave and forceSave.
-   * 
-   * @param action
-   */
-  public void setAction(Binding<?> action)
-  { 
-    this.setPreSave(action);
-    this.setForceSave(true);
-  }
-  
-  /**
-   * Use afterSave property- this is deprecated
-   * 
-   * @param onSave
-   */
-  public void setOnSave(Binding<?> onSave)
-  { this.afterSave=onSave;
-  }
-
-  /**
-   * An expression to evaluate after the buffer is saved, but before the
+   * An expression to evaluate after the buffer is deleted, but before the
    *   transaction is committed.
    * 
    * @param afterSave
    */
-  public void setAfterSave(Binding<?> afterSave)
+  public void setAfterDelete(Binding<?> afterSave)
   { this.afterSave=afterSave;
   }
 
   /**
-   * An expression to evaluated before the buffer is saved (e.g. to make additional
-   *   changes to data in the buffer.)
+   * An expression to evaluated before the buffer is deleted (e.g. to make additional
+   *   changes based on data in the buffer.)
    * 
    * @param preSave
    */
-  public void setPreSave(Binding<?> preSave)
+  public void setPreDelete(Binding<?> preSave)
   { this.preSave=preSave;
   }
   
-  /** 
-   * Push the buffer to the store even if it isn't dirty.
-   * 
-   * @param forceSave
-   */
-  public void setForceSave(boolean forceSave)
-  { 
-    this.forceSave=forceSave;
-    if (this.forceSave)
-    { this.autoSave=true;
-    }
-  }
   
   /**
    * 
@@ -253,14 +133,6 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
       focusChain.addFacet(localDataSessionFocus);
     }
       
-    if (typeX!=null)
-    { 
-      typeX.bind(focusChain);
-      if (!typeX.isConstant())
-      { throw new BindException("typeX must be constant");
-      }
-      type=(Type<Titem>) typeX.get();
-    }
     
     if (targetX!=null)
     { 
@@ -275,7 +147,6 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
           (focusChain
           ,DataReflector.<Titem>getInstance(type).createNilChannel()
           );
-      autoCreate=true;
     }
     else
     {
@@ -311,10 +182,8 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
       else
       { editor=(EditorBase<Tbuffer>) new TupleEditor();
       }
-      editor.setAutoCreate(autoCreate);
     }
 
-    editor.setAutoKey(autoKey);
     editor.setSource(resultChannel);
     editor.setDebug(this.debug);
     if (onCreate!=null)
@@ -340,9 +209,9 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   @Override
   protected Task task()
   {
-    return new ChainTask()
+    return new CommandTask()
     {
-        
+
       @Override
       public void work()
         throws InterruptedException
@@ -355,24 +224,20 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
         try
         {
           editor.initBuffer();
-          if (!chainAfterSave)
-          { super.work();
-          }
-          if (autoSave)
-          { 
-            if (debug)
-            { log.fine("Auto-saving "+editor.getBuffer());
-            }
+
+          if (editor.getBuffer()!=null)
+          { editor.getBuffer().delete();
             try
-            { editor.save(forceSave);
+            { editor.save(true);
             }
             catch (DataException x)
-            { addException(new ContextualException("Error saving data",getDeclarationInfo(),x));
+            { addException(new ContextualException("Error deleting buffer",getDeclarationInfo(),x));
             }
           }
-          if (chainAfterSave)
-          { super.work();
+          else
+          { log.warning("No buffer to delete: "+getDeclarationInfo());
           }
+          
           addResult(editor.getBuffer());
         }
         catch (DataException x)
