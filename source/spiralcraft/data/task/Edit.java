@@ -86,6 +86,10 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   { this(reflector.getType());
   }
 
+  public Edit(DataReflector<Titem> reflector,Binding<?> action)
+  { this(reflector.getType(),action);
+  }
+
   public Edit(Type<Titem> type)
   { 
     this.type=type;
