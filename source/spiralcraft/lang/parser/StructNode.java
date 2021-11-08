@@ -257,6 +257,10 @@ public class StructNode
     fields.put(field.name,field);
   }
 
+  public StructField getField(String name)
+  { return fields.get(name);
+  }
+  
   @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException

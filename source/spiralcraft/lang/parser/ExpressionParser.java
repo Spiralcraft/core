@@ -913,6 +913,8 @@ public class ExpressionParser
         {
           case '*':
             return parseObjectLiteralExpression(primary);
+          case '~':
+            return parseImportedExpression(primary);
           default:
             return parseChannelMetaExpression(primary);
         }
@@ -1005,6 +1007,9 @@ public class ExpressionParser
       else if (_tokenizer.lookahead.ttype=='#')
       { return parseNamedStruct();
       }
+      else if (_tokenizer.lookahead.ttype=='~')
+      { return parseImportedExpression(new CurrentFocusNode());
+      }
       else if (_tokenizer.lookahead.ttype==']')
       { 
         consumeToken();
@@ -1079,6 +1084,9 @@ public class ExpressionParser
             consumeToken();      
             if (_tokenizer.lookahead.ttype=='*')
             { return parseObjectLiteralExpression(focusNode);
+            }
+            else if (_tokenizer.lookahead.ttype=='~')
+            { return parseImportedExpression(focusNode);
             }
             else if (_tokenizer.lookahead.ttype=='@')
             { 
@@ -1159,6 +1167,9 @@ public class ExpressionParser
             if (_tokenizer.lookahead.ttype=='*')
             { return parseObjectLiteralExpression(parentFocusNode);
             }
+            else if (_tokenizer.lookahead.ttype=='~')
+            { return parseImportedExpression(parentFocusNode);
+            }
             else if (_tokenizer.lookahead.ttype=='@')
             { throw newException("Aspect dereference not supported yet");
             }
@@ -1207,6 +1218,30 @@ public class ExpressionParser
     catch (UnresolvedPrefixException x)
     { throw newException("Unresolved prefix",x);
     }
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private Node parseImportedExpression(Node source)
+    throws ParseException
+  {
+    expect('[');
+    expect('~');
+    String urlString=parseURIName("]{");
+    List<Node> params=null;
+    if (_tokenizer.ttype=='{')
+    { 
+      consumeToken();
+      params=parseExpressionList();
+      expect('}');
+    }
+    expect(']');
+    try
+    { return new ImportedExpressionNode(source,urlString,params);
+    }
+    catch (UnresolvedPrefixException x)
+    { throw newException("Unresolved prefix",x);
+    }
+  
   }
   
   @SuppressWarnings("rawtypes")

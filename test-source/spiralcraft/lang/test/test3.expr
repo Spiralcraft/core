@@ -1,0 +1,5 @@
+context: [#p] 
+  { name:= "default"
+  }
+
+[p].name

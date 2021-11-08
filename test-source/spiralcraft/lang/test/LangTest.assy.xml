@@ -1592,6 +1592,53 @@
     
     </test:Assertion>
 
+    <test:Assertion>
+      <name>Expression import
+      </name>
+      <subjectX>
+        [~langtest:test]
+      </subjectX>
+      <testX>
+        .==[{"one","two","three"}]
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Expression import 2
+      </name>
+      <subjectX>
+        [@langtest:Bar].().[~langtest:test2]
+      </subjectX>
+      <testX>
+        .==[{"one","two","three"}]
+      </testX>
+    
+    </test:Assertion>
+    
+    <test:Assertion>
+      <name>Expression import 3
+      </name>
+      <subjectX>
+        [~langtest:test3]
+      </subjectX>
+      <testX>
+        .=="default"
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Expression import 4
+      </name>
+      <subjectX>
+        [~langtest:test3{ name:="overridden" }]
+      </subjectX>
+      <testX>
+        .=="overridden"
+      </testX>
+    
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
