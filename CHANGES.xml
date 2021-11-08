@@ -16,6 +16,33 @@
         </revision>
 
         <notes>
+          <scm:Note>Enhance granular reusability via a facility to encapsulate 
+            spiralcraft.lang expressions into their own file format 
+            and reference them from other expressions via new language construct. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>StructNode.java
+          </URI>
+          <URI>ExpressionReader.java
+          </URI>
+          <URI>ImportedExpressionNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Simplify common use cases around Edit and Delete data ops.
           </scm:Note>
         </notes>
