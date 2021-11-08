@@ -127,6 +127,12 @@ public class ResourceUtil
     { throw new IllegalArgumentException("Resource cannot be null");
     }
     InputStream in=resource.getInputStream();
+    if (in==null)
+    { 
+      throw new IOException
+        ("Resource did not provide an InputStream "+resource.getURI());
+    }
+    
     try
     {
       return StreamUtil.readAsciiString(in,-1);
