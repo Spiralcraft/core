@@ -21,11 +21,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.kit.ConstantChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
-import spiralcraft.log.Level;
 import spiralcraft.util.refpool.ReferencePool;
 
 /**

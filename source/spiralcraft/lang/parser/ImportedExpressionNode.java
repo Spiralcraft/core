@@ -202,7 +202,7 @@ public class ImportedExpressionNode<Tobject,Treturn>
     
     try
     {
-      ExpressionReader expReader = ExpressionReader.read(uri,focus);
+      ExpressionReader expReader = ExpressionReader.read(uri);
 
       StructNode contextStruct=expReader.getContextStruct();
 

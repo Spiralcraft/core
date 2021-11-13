@@ -8,7 +8,6 @@ import java.net.URI;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.util.URIUtil;
 import spiralcraft.util.refpool.URIPool;
@@ -20,27 +19,25 @@ import spiralcraft.vfs.UnresolvableURIException;
 public class ExpressionReader
 {
 
-  public static ExpressionReader read(URI source,Focus<?> context)
+  public static ExpressionReader read(URI source)
     throws UnresolvableURIException,ParseException,IOException
   {
-    ExpressionReader ret = new ExpressionReader(source,context);
+    ExpressionReader ret = new ExpressionReader(source);
     ret.read();
     return ret;
   }
 
 
   private final URI source;
-  private final Focus<?> context;
   private final StandardPrefixResolver ns = new StandardPrefixResolver();
   private Resource resource;
   private int lineNum;
   private Expression<?> expression;
   private StructNode contextStruct;
   
-  public ExpressionReader(URI source,Focus<?> context)
+  public ExpressionReader(URI source)
   { 
     this.source=source;
-    this.context=context;
   }
 
   public Expression<?> getExpression()
