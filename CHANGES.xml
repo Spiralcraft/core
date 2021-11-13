@@ -16,6 +16,20 @@
         </revision>
 
         <notes>
+          <scm:Note>Synchronize access to an input channel.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Synchronized.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev175
+        </revision>
+
+        <notes>
           <scm:Note>Enhance granular reusability via a facility to encapsulate 
             spiralcraft.lang expressions into their own file format 
             and reference them from other expressions via new language construct. 
