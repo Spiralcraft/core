@@ -14,6 +14,10 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
+import spiralcraft.util.string.StringConverter;
+
 /**
  * Thrown when a BufferTuple is committed and the change is incompatible with
  *   changes made in another journal update.
@@ -21,6 +25,16 @@ package spiralcraft.data;
 public class UpdateConflictException
   extends DataException
 {
+  private static final StringConverter<?> objectToString=
+      new StringConverter<Object>()
+      {
+        @Override
+        public Object fromString(String val)
+        { return null;
+        }
+      };
+      
+  @SuppressWarnings({ "rawtypes", "unchecked"})
   static String formatConflict(Field<?>[] fields,DeltaTuple requested,DeltaTuple existing)
   {
     
@@ -30,18 +44,23 @@ public class UpdateConflictException
       
       buf.append("\r\n  Field Conflict: ");
       buf.append(field.getURI());
-      
+      StringConverter converter=field.getContentReflector().getStringConverter();
+      if (converter==null)
+      { converter=objectToString;
+      }
       try
       { 
         buf
           .append("\r\n    New Value: ")
-          .append(requested!=null?field.getValue(requested):"")
+          .append(requested!=null?converter.toString(field.getValue(requested)):"")
           .append ("\r\n   Existing Value: ")
-          .append(existing!=null?field.getValue(existing):"")
+          .append(existing!=null?converter.toString(field.getValue(existing)):"")
           .append("\r\n    ");
       }
       catch (DataException x)
-      {
+      { 
+        ClassLog.getInstance(UpdateConflictException.class)
+          .log(Level.WARNING,"Exception reporting UpdateConflictExcetpion ",x);
       }
     }
     return buf.toString();
