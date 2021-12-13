@@ -14,6 +14,9 @@
 //
 package spiralcraft.task;
 
+import spiralcraft.common.ContextualException;
+import spiralcraft.lang.Binding;
+import spiralcraft.lang.Focus;
 
 /**
  * <p>Cycles through chained scenarios
@@ -32,8 +35,17 @@ public class Cycle<Tcontext,Tresult>
   private long periodMs;
   private long maxCycles;
   private long maxRuntimeMs;
-  
+  private Binding<Tresult> x;
+  private boolean addResult=false;
     
+  public void setAddResult(boolean addResult)
+  { this.addResult=addResult;
+  }
+  
+  public void setX(Binding<Tresult> x)
+  { this.x=x;
+  }
+
   /**
    * Terminate after running for the specified time
    * 
@@ -61,6 +73,16 @@ public class Cycle<Tcontext,Tresult>
   { this.periodMs=periodMs;
   }
   
+  @Override
+  public Focus<?> bindExports(Focus<?> focus)
+    throws ContextualException
+  { 
+    if (x!=null)
+    { x.bind(focus);
+    }
+    return super.bindExports(focus);
+  }
+  
   protected class CycleTask
     extends ChainTask
   {
@@ -75,6 +97,13 @@ public class Cycle<Tcontext,Tresult>
       while (true)
       {
         long lastRun=System.currentTimeMillis();
+        if (x!=null)
+        { 
+          Tresult result=x.get();
+          if (addResult)
+          { addResult(result);
+          }
+        }
         super.work();
         long end=System.currentTimeMillis();
         
