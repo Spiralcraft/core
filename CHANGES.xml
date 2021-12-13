@@ -12,6 +12,119 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev176
+        </revision>
+
+        <notes>
+          <scm:Note>Add identification strings for logging purposes
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/pool
+        </path>
+        
+        <resources>
+          <URI>Pool.java
+          </URI>
+          <URI>ThreadPool.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev176
+        </revision>
+
+        <notes>
+          <scm:Note>Enhance the convenience of the Log interface
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log
+        </path>
+        
+        <resources>
+          <URI>ClassLog.java
+          </URI>
+          <URI>ContextLog.java
+          </URI>
+          <URI>Level.java
+          </URI>
+          <URI>Log.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev176
+        </revision>
+
+        <notes>
+          <scm:Note>ServiceRegistry provides a paradigm for managing service dependencies
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/service
+        </path>
+        
+        <resources>
+          <URI>RegistrationException.java
+          </URI>
+          <URI>ServiceRegistry.java
+          </URI>
+          <URI>Application.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev176
+        </revision>
+
+        <notes>
+          <scm:Note>Cycle can evaluate an expression before/instead of a
+            nested task.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Cycle.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev176
+        </revision>
+
+        <notes>
+          <scm:Note>An iterator that maps another iterator through a function
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/FunctionIterator.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev176
+        </revision>
+
+        <notes>
+          <scm:Note>Utility to display binary data in a human readable form
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/HexDump.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev175
         </revision>
 
