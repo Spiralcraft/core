@@ -46,21 +46,7 @@ public class ContextLog
   { return getInstance().canLog(level);
   }
 
-  @Override
-  public void log(
-    Level level,
-    String message)
-  { log(level,message,null,1);
-  }
 
-  @Override
-  public void log(
-    Level level,
-    String message,
-    Throwable thrown)
-  { 
-    log(level,message,thrown,1);
-  }
 
   @Override
   public void log(

@@ -39,6 +39,8 @@ package spiralcraft.log;
 public enum Level
 {
   ALL("ALL",0)
+  ,FINEST("FINE",800)
+  ,FINER("FINE",900)
   ,FINE("FINE",1000)
   ,TRACE("TRACE",2000)
   ,DEBUG("DEBUG",3000)
@@ -70,6 +72,14 @@ public enum Level
   { return value<=level.value;
   }
   
+  public boolean isFinest()
+  { return canLog(Level.FINEST);
+  }
+
+  public boolean isFiner()
+  { return canLog(Level.FINER);
+  }
+
   public boolean isFine()
   { return canLog(Level.FINE);
   }
