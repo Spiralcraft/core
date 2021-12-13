@@ -30,7 +30,7 @@ public class ThreadPool
   
   private int poolId=_POOL_ID++;
   
-  private String threadNamePrefix="pool-"+poolId;
+  private String threadNamePrefix="threadPool";
 
   { setResourceFactory(this);
   }
@@ -72,7 +72,7 @@ public class ThreadPool
 
     public PooledThread()
     { 
-      super(threadNamePrefix+"-"+_THREAD_COUNT++);
+      super(threadNamePrefix+"-"+poolId+"-"+(identifier!=null?(identifier+"-"):"")+_THREAD_COUNT++);
       setDaemon(true);
     }
     

@@ -16,7 +16,7 @@ package spiralcraft.pool;
 
 import java.util.Stack;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -38,6 +38,9 @@ public class Pool<T>
 {
 
   private static int NEXT_ID=0;
+  protected String identifier;
+  protected int id=NEXT_ID++;
+  protected String tag;
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level logLevel
     =ClassLog.getInitialDebugLevel(getClass(),null);
@@ -54,8 +57,8 @@ public class Pool<T>
   private Keeper _keeper=new Keeper();
   private Stack<Reference<T>> _available
     =new Stack<Reference<T>>();
-  private HashMap<Object,Reference<T>> _out
-    =new HashMap<Object,Reference<T>>();
+  private IdentityHashMap<Object,Reference<T>> _out
+    =new IdentityHashMap<>();
   private Object _monitor=new Object();
   private volatile boolean _started=false;
   // private Object _startLock=new Object();
@@ -94,6 +97,15 @@ public class Pool<T>
   private Register overdueDiscardsRegister;
   private Register addsRegister;
   private Register removesRegister;
+
+  /**
+   * An identifier to associate with threads and resources to facilitate monitoring
+   * 
+   * @param id
+   */
+  public void setIdentifier(String id)
+  { this.identifier=id;
+  }
   
   /**
    * Conserve resources by not discarding them when demand drops,
@@ -180,6 +192,10 @@ public class Pool<T>
   { _overdueSeconds=seconds;
   }
 
+  public void setLogLevel(Level logLevel)
+  { this.logLevel=logLevel;
+  }
+  
   /**
    * Start the pool by filling it up to the minumum size and
    *   starting the Keeper.
@@ -187,6 +203,7 @@ public class Pool<T>
   @Override
   public void start()
   {
+    tag="pool-"+(identifier!=null?(identifier+"-"):"")+id;
     synchronized (_monitor)
     {
       _stopping=false;
@@ -204,7 +221,16 @@ public class Pool<T>
     try
     {
       while (!_out.isEmpty())
-      { _monitor.wait(5000);
+      { 
+        if (logLevel.isDebug())
+        { 
+          log.debug("Waiting for "+_out.size()+" checkouts..");
+          for (Object o : _out.keySet().toArray())
+          { log.debug(o.toString());
+          }
+        }
+        
+        _monitor.wait(5000);
       }
     }
     catch (InterruptedException x)
@@ -219,6 +245,9 @@ public class Pool<T>
   @Override
   public void stop()
   {
+    if (logLevel.isFine())
+    { log.fine("Stopping...");
+    }
     synchronized (_monitor)
     {
       _stopping=true;
@@ -240,6 +269,9 @@ public class Pool<T>
         }
         _out.clear();
       }
+    }
+    if (logLevel.isFine())
+    { log.fine("Stopped.");
     }
   }
 
@@ -352,7 +384,7 @@ public class Pool<T>
         }
 
         if (logLevel.isFine())
-        { log.fine("Checkout complete");
+        { log.fine("Checkout from "+tag+" complete");
         }
         ret=ref.resource;
       }
@@ -444,7 +476,7 @@ public class Pool<T>
         _monitor.notify();
       }
       else
-      { log.log(Level.WARNING,"Unbalanced checkin: "+resource.toString()); 
+      { log.log(Level.WARNING,"Unbalanced checkin to "+tag+": "+resource.toString()); 
       }
     }
 
@@ -501,17 +533,31 @@ public class Pool<T>
   class Keeper
     implements Runnable
   {
-    private boolean _done=false;
+    private volatile boolean _done=false;
     private int _numTimes=0;
     private Object _keeperMonitor=new Object();
-    private String name="PoolKeeper-"+NEXT_ID++;
+    private String name;
     private volatile boolean _requested=false;
+    private Thread keeperThread;
 
     public void stop()
     { 
+      if (logLevel.isFine())
+      { log.fine("Keeper stopping...");
+      }
+    
       _done=true;
       synchronized (_keeperMonitor)
       { _keeperMonitor.notify();
+      }
+      try
+      { keeperThread.join();
+      }
+      catch (InterruptedException x)
+      { log.fine("Interrupted joining keeper thread",x);
+      }
+      if (logLevel.isFine())
+      { log.fine("Keeper stopped...");
       }
     }
 
@@ -575,8 +621,10 @@ public class Pool<T>
         synchronized(_keeperMonitor)
         {
           try
-          { 
-            _keeperMonitor.wait(_maintenanceInterval);
+          {
+            if (!_done)
+            { _keeperMonitor.wait(_maintenanceInterval);
+            }
           }
           catch (InterruptedException x)
           { 
@@ -593,7 +641,8 @@ public class Pool<T>
     { 
       synchronized (_keeperMonitor)
       { 
-        Thread keeperThread=new Thread(this,name);
+        this.name="PoolKeeper-"+(identifier!=null?(identifier+"-"):"")+id;      
+        keeperThread=new Thread(this,name);
         keeperThread.setDaemon(true);
         keeperThread.setPriority(keeperThread.getPriority()+1);
         keeperThread.start();
