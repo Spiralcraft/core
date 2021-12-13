@@ -47,6 +47,7 @@ import spiralcraft.command.SimpleCall;
 
 
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
@@ -69,6 +70,8 @@ public class Application
   implements Runnable
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
+
+  private final ServiceRegistry serviceRegistry=new ServiceRegistry();
   
   private Object _eventMonitor=new Object();
   private volatile boolean _running=true;
@@ -180,6 +183,9 @@ public class Application
   protected Focus<?> bindImports(Focus<?> chain)
     throws ContextualException
   { 
+    chain.addFacet
+      (chain.chain(new SimpleChannel<ServiceRegistry>(serviceRegistry,true)));
+    chain=super.bindImports(chain);
     if (afterStart!=null)
     { afterStart.bind(selfFocus);
     }
