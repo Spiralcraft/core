@@ -222,15 +222,17 @@ public class Pool<T>
     {
       while (!_out.isEmpty())
       { 
-        if (logLevel.isDebug())
+        if (logLevel.isInfo())
         { 
-          log.debug("Waiting for "+_out.size()+" checkouts..");
+          log.info("Waiting for "+_out.size()+" checkouts...");
           for (Object o : _out.keySet().toArray())
-          { log.debug(o.toString());
+          { log.info("Checked out: "+o.toString());
           }
         }
-        
         _monitor.wait(5000);
+      }
+      if (!_out.isEmpty())
+      { log.info("Timed out waiting for "+_out.size()+" checkouts");
       }
     }
     catch (InterruptedException x)
