@@ -12,6 +12,21 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev177
+        </revision>
+
+        <notes>
+          <scm:Note>Promote pool shutdown checkout wait log messages to INFO level
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/pool/Pool.java
+        </path>
+        
+        
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev176
         </revision>
 
