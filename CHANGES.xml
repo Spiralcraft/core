@@ -12,6 +12,21 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev178
+        </revision>
+
+        <notes>
+          <scm:Note>Fix issue where @log Declarable lookup may cause exception
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/LogChannel.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev177
         </revision>
 
