@@ -41,6 +41,8 @@ public class LogChannel<T>
   private final Channel<String> message;
   private final ThreadLocalChannel<T> localSource;
   private final int id=nextId++;
+  private final Channel<Declarable> declarableChannel;
+  private boolean declarableDeferred;
   
   @SuppressWarnings("unchecked")
   public LogChannel(Channel<T> source,Focus<?> focus,Expression<?> message)
@@ -61,17 +63,42 @@ public class LogChannel<T>
             ,null
             );
     
-    Declarable declarable = LangUtil.findInstance(Declarable.class,focus);
+    declarableChannel = LangUtil.findChannel(Declarable.class,focus);
+    Declarable declarable=null;
+    try 
+    {
+      declarable=declarableChannel.get();
+    }
+    catch (Exception x)
+    { declarableDeferred=true;
+    }
+    
     log.debug
       ("#"+id
         +": channeling "+source.toString()
-        +(declarable!=null?(": "+declarable.getDeclarationInfo()):"")
+        +(declarable!=null?(": "+declarable.getDeclarationInfo())
+          :declarableChannel!=null?(" decl info deferred "+declarableChannel.getReflector()):""
+         )
       );
+    
   }
   
   @Override
   protected T retrieve()
   { 
+    if (declarableDeferred)
+    { 
+      Declarable declarable = declarableChannel.get();
+      if (declarable!=null)
+      {
+        log.debug
+        ("#"+id
+          +": declared in "+declarable.getDeclarationInfo()
+        );
+      }
+      declarableDeferred=false;
+    }
+    
     T value=source.get();
     localSource.push(value);
     try
