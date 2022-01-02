@@ -29,6 +29,11 @@ import spiralcraft.util.Path;
  */
 public interface Resource
 {
+  public static Resource resolve(String uri)
+    throws UnresolvableURIException
+  { return Resolver.getInstance().resolve(uri);
+  }
+  
   /**
    * Return the absolute, canonical URI corresponding to this resource. This 
    *   may be different than the URI used to resolve the resource, which may
