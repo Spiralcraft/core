@@ -197,6 +197,15 @@ public class Pool<T>
   }
   
   /**
+   * Offload the data structure updates when checking in to a separate thread.
+   * 
+   * @param fastCheckin
+   */
+  public void setFastCheckin(boolean fastCheckin)
+  { this.fastCheckin=fastCheckin;
+  }
+  
+  /**
    * Start the pool by filling it up to the minumum size and
    *   starting the Keeper.
    */
@@ -356,7 +365,7 @@ public class Pool<T>
             waiters.remove(ticket);
             long waitTime=System.currentTimeMillis()-ticket.timestamp;
             if (waitTime>10)
-            { log.info("Waited "+waitTime+" ms for pool");
+            { log.info("Waited "+waitTime+" ms for pool "+tag);
             }
           }
           catch (InterruptedException x)
