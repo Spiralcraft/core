@@ -12,6 +12,35 @@
      
     <detail> 
       <scm:Change>
+        <revision>-dev179
+        </revision>
+
+        <notes>
+          <scm:Note>Simplify resolving a resource from a URI string
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/Resource.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev179
+        </revision>
+
+        <notes>
+          <scm:Note>Expose Pool.fastCheckin to configure async recycling behavior
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/pool/Pool.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev178
         </revision>
 
