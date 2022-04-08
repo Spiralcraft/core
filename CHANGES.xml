@@ -10,7 +10,39 @@
     </authorId>
     
      
-    <detail> 
+    <detail>
+      <scm:Change>
+        <revision>-dev180
+        </revision>
+
+        <notes>
+          <scm:Note>Add features to structs to make copying of fields from
+             other structs more concise.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>kit/Computation.java
+          </URI>
+          <URI>parser/ExpressionParser.java
+          </URI>
+          <URI>parser/ImportedExpressionNode.java
+          </URI>
+          <URI>parser/StructField.java
+          </URI>
+          <URI>parser/StructMember.java
+          </URI>
+          <URI>parser/StructNode.java
+          </URI>
+          <URI>spi/ReduceProjector.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev179
         </revision>
