@@ -229,12 +229,12 @@ public class ImportedExpressionNode<Tobject,Treturn>
           ContextIdentifierNode identifierNode 
             = (ContextIdentifierNode) paramBinding.getTarget();
           String name = identifierNode.getIdentifier();
-          StructField field=contextStruct.getField(name);
-          if (field==null)
+          StructMember member=contextStruct.getMember(name);
+          if (member==null)
           { throw new BindException("Unrecognized context param '"+name+"'");
           }
-          field.passThrough=true;
-          field.source=paramBinding.getSource();
+          member.passThrough=true;
+          member.source=paramBinding.getSource();
         }
       }
       else

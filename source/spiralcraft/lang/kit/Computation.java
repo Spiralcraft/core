@@ -25,7 +25,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
-import spiralcraft.lang.parser.StructField;
+import spiralcraft.lang.parser.StructMember;
 import spiralcraft.lang.parser.StructNode;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -82,7 +82,7 @@ public class Computation<I,R,P>
       ArrayList<Channel<?>> keys=new ArrayList<Channel<?>>();
       
       StructNode structNode=(StructNode) function.getRootNode();
-      for (StructField field : structNode.getFields())
+      for (StructMember field : structNode.getMembers())
       {
         int lastSize=viewCache.getSize();
         if (field.getSource()==null)
@@ -97,7 +97,9 @@ public class Computation<I,R,P>
         
         Channel<?> fieldChan
           =keyFocus.bind(Expression.create(field.getSource()));
-        
+
+        // Distinguish between a key, which doesn't use the viewcache, and
+        //   an expression which contains an aggregator function, which does.
         if (viewCache.getSize()==lastSize)
         { 
 //          log.fine("Key: "+new Expression(field.getSource()));

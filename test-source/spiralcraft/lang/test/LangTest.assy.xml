@@ -1639,6 +1639,55 @@
       </testX>
     
     </test:Assertion>
+    
+    <test:Assertion>
+      <name>Parent field shorthand
+      </name>
+      
+      <subjectX>
+        { a:="a",
+          b:="b",
+          c:="c",
+        }{{ ~b , ~c }}
+      </subjectX>
+      
+      <testX>.b=="b" &amp;&amp; .c=="c"
+      </testX>
+    
+    </test:Assertion>    
+
+    <test:Assertion>
+      <name>Parent field shorthand with expression
+      </name>
+      
+      <subjectX>
+        { a:="a",
+          b:="b",
+          c:="c",
+        }{{ ~b:.toUpperCase() , ~c:.toUpperCase() }}
+      </subjectX>
+      
+      <testX>.b=="B" &amp;&amp; .c=="C"
+      </testX>
+    
+    </test:Assertion>    
+
+    <test:Assertion>
+      <name>Struct copy shorthand
+      </name>
+      
+      <subjectX>
+        { a:="a",
+          b:="b",
+          c:="c",
+        }{{ ~:.. }}
+      </subjectX>
+      
+      <testX>.a=="a" &amp;&amp; .b=="b" &amp;&amp; .c=="c"
+      </testX>
+    
+    </test:Assertion>    
+
   </sequence>
         
 </test:TestGroup>

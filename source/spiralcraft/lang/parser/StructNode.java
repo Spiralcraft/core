@@ -16,8 +16,8 @@ package spiralcraft.lang.parser;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import spiralcraft.common.Coercion;
@@ -57,11 +57,10 @@ public class StructNode
   extends Node
 {
 
+  private final ArrayList<StructMember> members = new ArrayList<>();
+  private final HashMap<String,StructMember> memberMap = new HashMap<>();
   
-  private final LinkedHashMap<String,StructField> fields
-    =new LinkedHashMap<String,StructField>();
-  
-  private Node baseExtentNode;
+//  private Node baseExtentNode;
   
   private URI typeURI;
   private String typeNamespace;
@@ -75,19 +74,13 @@ public class StructNode
   public Node[] getSources()
   { 
     ArrayList<Node> ret=new ArrayList<Node>();
-    for (StructField field:fields.values())
-    { 
-      if (field.type!=null)
-      { ret.add(field.type);
-      }
-      if (field.source!=null)
-      { ret.add(field.source);
-      }
+    for (StructMember member:members)
+    { member.addSources(ret);
     }
 
-    if (baseExtentNode!=null)
-    { ret.add(baseExtentNode);
-    }
+//    if (baseExtentNode!=null)
+//    { ret.add(baseExtentNode);
+//    }
     return ret.toArray(new Node[ret.size()]);
   }
   
@@ -124,22 +117,22 @@ public class StructNode
       copy.setTypeName(typeName);
     }
     
-    for (StructField field: fields.values())
+    for (StructMember member: members)
     {
-      StructField fieldCopy=field.copy(visitor);
-      copy.addField(fieldCopy);
-      if (fieldCopy!=field)
+      StructMember memberCopy=member.copy(visitor);
+      copy.addMember(memberCopy);
+      if (memberCopy!=member)
       { dirty=true;
       }
     }
 
-    if (baseExtentNode!=null)
-    { 
-      copy.setBaseExtentNode(baseExtentNode.copy(visitor));
-      if (copy.baseExtentNode!=baseExtentNode)
-      { dirty=true; 
-      }
-    }
+//    if (baseExtentNode!=null)
+//    { 
+//      copy.setBaseExtentNode(baseExtentNode.copy(visitor));
+//      if (copy.baseExtentNode!=baseExtentNode)
+//      { dirty=true; 
+//      }
+//    }
     
     if (!dirty)
     { return this;
@@ -163,12 +156,12 @@ public class StructNode
       builder.append(" [#:"+typeURI+"]");
     }
     
-    if (baseExtentNode!=null)
-    { builder.append(" {= "+baseExtentNode.reconstruct()+" } ");
-    }
+//    if (baseExtentNode!=null)
+//    { builder.append(" {= "+baseExtentNode.reconstruct()+" } ");
+//    }
 
     boolean first=true;
-    for (StructField field : fields.values())
+    for (StructMember member : members)
     { 
       builder.append(" ");
       if (first)
@@ -177,22 +170,7 @@ public class StructNode
       else
       { builder.append(" , ");
       }
-      if (!field.anonymous)
-      {
-        builder.append(field.name)
-          .append(" : ");
-        if (field.type!=null)
-        { builder.append(field.type.reconstruct());
-        }
-        if (field.source!=null)
-        { 
-          builder.append(field.passThrough?"~":"=")
-            .append(field.source.reconstruct());
-        }
-      }
-      else if (field.source!=null)
-      { builder.append(field.source.reconstruct());
-      }
+      member.reconstruct(builder);
     }
     builder.append(" } ");
     return builder.toString();
@@ -207,11 +185,10 @@ public class StructNode
   { this.typeName=typeName;
   }
   
-  public Iterable<StructField> getFields()
-  { return fields.values();
+  public Iterable<StructMember> getMembers()
+  { return members;
   }
   
-
   
   public void setTypeQName(String qname)
     throws UnresolvedPrefixException
@@ -242,39 +219,37 @@ public class StructNode
   { this.typeURI=typeURI;
   }
   
-  public void setBaseExtentNode(Node baseExtentNode)
-  { this.baseExtentNode=baseExtentNode;
+//  public void setBaseExtentNode(Node baseExtentNode)
+//  { this.baseExtentNode=baseExtentNode;
+//  }
+
+  public void addMember(StructMember member)
+  { 
+    members.add(member);
+    if (member.name!=null)
+    { memberMap.put(member.name,member);
+    }
   }
   
-  public void addField(StructField field)
-  { 
-    field.index=fields.size();
-    if (field.name==null)
-    { 
-      field.name="_"+field.index;
-      field.anonymous=true;
-    }
-    fields.put(field.name,field);
-  }
-
-  public StructField getField(String name)
-  { return fields.get(name);
+  public StructMember getMember(String name)
+  { return memberMap.get(name);
   }
   
   @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
-    if (baseExtentNode!=null && fields.isEmpty())
-    { 
-      // simple reference case
-      return focus.bind(Expression.create(baseExtentNode));
-    }
-    else
-    { 
+  
+//    if (baseExtentNode!=null && fields.isEmpty())
+//    { 
+//      // simple reference case
+//      return focus.bind(Expression.create(baseExtentNode));
+//    }
+//    else
+//    { 
       // struct wrapper case
       return new StructChannel(new StructReflector(focus),focus);
-    }
+//    }
   }
   
   
@@ -283,12 +258,11 @@ public class StructNode
     implements Functor<Struct>
   {
     
-
+    final ArrayList<StructField> fieldList=new ArrayList<>();
     
-    private final Channel<?>[] channels=new Channel<?>[fields.size()];
-    
-    private final StructField[] fieldArray
-      =fields.values().toArray(new StructField[fields.size()]);
+    final HashMap<String,StructField> fieldMap=new HashMap<>();
+      
+    private final StructField[] fields;
     
     private final ThreadLocalChannel<Struct> thisChannel
       =new ThreadLocalChannel<Struct>(this,true);
@@ -357,14 +331,15 @@ public class StructNode
 //      }
       
       
-      if (baseExtentNode!=null)
-      { 
-        baseChannel=focus.bind(Expression.create(baseExtentNode));
-        anonymous=false;
-      }
-      else
-      { baseChannel=null;
-      }
+//      if (baseExtentNode!=null)
+//      { 
+//        baseChannel=focus.bind(Expression.create(baseExtentNode));
+//        anonymous=false;
+//      }
+//      else
+//      { 
+        baseChannel=null;
+//      }
        
       
       // Telescope context for self resolution
@@ -375,19 +350,109 @@ public class StructNode
       Reflector iterableItemReflector=null;
       Reflector mapKeyReflector=null;
       Reflector mapValueReflector=null;
-      
-      int i=0;
-      for (StructField field: fieldArray)
+
+      // Build the field set from the members
+
+      for (StructMember member: members)
       { 
-        if (field.source!=null)
+        if (member.sourceFactory==null)
         { 
-//          log.fine("Binding "+field.name+" to "+field.source.reconstruct());
-          channels[i]= field.source.bind(focus);
-          if (channels[i]==null)
-          { throw new BindException("Could not bind field '"+field.name+"' to "+field.source);
-          } 
+          StructField field=new StructField();
+          field.index=fieldList.size();
+          field.name=member.name;
+          field.type=member.type;
+          field.source=member.source;
+          field.passThrough=member.passThrough;
+          if (field.name==null)
+          { 
+            field.name="_"+field.index;
+            field.anonymous=true;
+          }
+          fieldList.add(field);
+          fieldMap.put(field.name, field);
           
-          if (field.type!=null)
+          if (field.source!=null || member.resolveInParent)
+          {
+  //          log.fine("Binding "+field.name+" to "+field.source.reconstruct());
+            if (member.resolveInParent)
+            { 
+              // Resolve the field name in the parent and evaluate the
+              //   source expression against that field
+              
+              Channel parentFieldChannel
+                =context.getSubject().resolve(context,field.name,null);
+              if (parentFieldChannel==null)
+              { 
+                throw new BindException
+                  ("Field '"+field.name+"' not in parent "+context);
+              }
+              
+              if (field.source!=null)
+              {
+                field.channel= 
+                    field.source.bind(focus.telescope(parentFieldChannel));
+              }
+              else
+              { field.channel=parentFieldChannel;
+              }
+            }
+            else
+            { field.channel= field.source.bind(focus);
+            }
+            
+            if (field.channel==null)
+            { throw new BindException("Could not bind field '"+field.name+"' to "+field.source);
+            } 
+            
+            if (field.type!=null)
+            { 
+              Channel<Reflector> typeChannel
+                =(Channel<Reflector>) field.type.bind(focus);
+              if (!typeChannel.isConstant())
+              { 
+                throw new BindException
+                  ("Type expression for field "+field.name+" must be constant"
+                  ,field.type.getDeclarationInfo()
+                  );
+              }
+              else if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
+              { 
+                throw new BindException
+                  ("Type expression for field "+field.name+" must reflect a type");
+              }
+              // Set up field with a different declared type
+              Reflector type=typeChannel.get();
+              
+              Coercion coercion=null;
+              
+              if (!type.isAssignableFrom(field.channel.getReflector()))
+              { 
+                // XXX There are other possibilities- may have to query
+                //   both reflectors
+                coercion
+                  =NumericCoercion.instance(type.getContentType());
+                
+                if (coercion==null)
+                {
+                  throw new BindException
+                    ("Type "+type.getTypeURI()
+                    +" cannot be assigned from expression of type "
+                    +field.channel.getReflector().getTypeURI()
+                    );
+                }
+                field.channel
+                  =new CoercionChannel(type,field.channel,coercion);
+              }
+              else
+              {
+                field.channel
+                  =new AspectChannel(type,field.channel);
+              }
+              
+            }
+          
+          }
+          else if (field.type!=null)
           { 
             Channel<Reflector> typeChannel
               =(Channel<Reflector>) field.type.bind(focus);
@@ -406,104 +471,86 @@ public class StructNode
             // Set up field with a different declared type
             Reflector type=typeChannel.get();
             
-            Coercion coercion=null;
-            
-            if (!type.isAssignableFrom(channels[i].getReflector()))
-            { 
-              // XXX There are other possibilities- may have to query
-              //   both reflectors
-              coercion
-                =NumericCoercion.instance(type.getContentType());
-              
-              if (coercion==null)
-              {
-                throw new BindException
-                  ("Type "+type.getTypeURI()
-                  +" cannot be assigned from expression of type "
-                  +channels[i].getReflector().getTypeURI()
-                  );
-              }
-              channels[i]
-                =new CoercionChannel(type,channels[i],coercion);
-            }
-            else
-            {
-              channels[i]
-                =new AspectChannel(type,channels[i]);
-            }
-            
+            field.channel= new SimpleChannel(type);
           }
-        }
-        else if (field.type!=null)
-        { 
-          Channel<Reflector> typeChannel
-            =(Channel<Reflector>) field.type.bind(focus);
-          if (!typeChannel.isConstant())
-          { 
+          else
+          {
             throw new BindException
-              ("Type expression for field "+field.name+" must be constant"
-              ,field.type.getDeclarationInfo()
+              ("Field '"+field.name
+              +"' must have a source expression and/or a declared type"
               );
           }
-          else if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
-          { 
-            throw new BindException
-              ("Type expression for field "+field.name+" must reflect a type");
-          }
-          // Set up field with a different declared type
-          Reflector type=typeChannel.get();
           
-          channels[i]= new SimpleChannel(type);
-        }
-        else
-        {
-          throw new BindException
-            ("Field '"+field.name
-            +"' must have a source expression and/or a declared type"
-            );
-        }
-        
-        if (!field.anonymous)
-        { anonymous=false;
-        }
-        
-        iterableItemReflector
-          =commonType(iterableItemReflector,channels[i].getReflector());        
-        
-        if (channels[i].getReflector() instanceof StructReflector)
-        { 
-          StructReflector entryReflector
-            =(StructReflector) channels[i].getReflector();
-          if (entryReflector.pair)
-          {
-            mapKeyReflector
-              =commonType
-                (mapKeyReflector
-                ,entryReflector.channels[0].getReflector()
-                );
-            
-            mapValueReflector
-              =commonType
-                (mapValueReflector
-                ,entryReflector.channels[1].getReflector()
-                );
-            
-            
+          if (!field.anonymous)
+          { anonymous=false;
+          }
+          
+          iterableItemReflector
+            =commonType(iterableItemReflector,field.channel.getReflector());        
+          
+          if (field.channel.getReflector() instanceof StructReflector)
+          { 
+            StructReflector entryReflector
+              =(StructReflector) field.channel.getReflector();
+            if (entryReflector.pair)
+            {
+              mapKeyReflector
+                =commonType
+                  (mapKeyReflector
+                  ,entryReflector.fields[0].channel.getReflector()
+                  );
+              
+              mapValueReflector
+                =commonType
+                  (mapValueReflector
+                  ,entryReflector.fields[1].channel.getReflector()
+                  );
+              
+              
+            }
+            else
+            { map=false;
+            }
           }
           else
           { map=false;
           }
+          
+          field.linked=true;
         }
         else
-        { map=false;
+        {
+          Channel sourceFactoryChannel=member.sourceFactory.bind(focus);
+          if (sourceFactoryChannel.getReflector() instanceof StructReflector)
+          { 
+            StructField[] sourceFields
+              =((StructReflector) sourceFactoryChannel.getReflector()).fields;
+            for (StructField sourceField : sourceFields)
+            { 
+              StructField field=new StructField();
+              field.index=fieldList.size();
+              field.name=sourceField.name;
+              field.type=sourceField.type;
+              field.source=sourceField.source;
+              field.channel=sourceFactoryChannel.resolve(focus,field.name,null);
+              field.anonymous=sourceField.anonymous;
+              if (field.anonymous)
+              {
+                field.name="_"+field.index;
+              }
+              fieldList.add(field);
+              fieldMap.put(field.name,field);
+              field.linked=true;
+            }
+          }
         }
         
-        field.linked=true;
-        
-        i++;
       }
+
+      fields=fieldList.toArray(new StructField[fieldList.size()]);
+
       
-      pair= anonymous && fieldArray.length==2;
+      pair= anonymous && fields.length==2;
       
       this.iterableItemReflector
         =iterableItemReflector!=null
@@ -544,7 +591,7 @@ public class StructNode
     }
     
     public StructField getField(String name)
-    { return fields.get(name);
+    { return fieldMap.get(name);
     }
     
     public Object getValue(Struct struct,String name)
@@ -588,17 +635,17 @@ public class StructNode
       if (reflector instanceof StructReflector)
       {
         StructReflector structReflector=(StructReflector) reflector;
-        if (fieldArray.length != structReflector.fieldArray.length)
+        if (fields.length != structReflector.fields.length)
         { return false;
         }
         
-        for (int fi=0;fi<fieldArray.length;fi++)
+        for (int fi=0;fi<fields.length;fi++)
         { 
-          if (!fieldArray[fi].name.equals(structReflector.fieldArray[fi].name))
+          if (!fields[fi].name.equals(structReflector.fields[fi].name))
           { return false;
           }
-          if (! (channels[fi].getReflector()
-                  .isAssignableFrom(structReflector.channels[fi].getReflector())
+          if (! (fields[fi].channel.getReflector()
+                  .isAssignableFrom(structReflector.fields[fi].channel.getReflector())
                 )
              )
           { return false;
@@ -657,13 +704,13 @@ public class StructNode
       if (baseChannel!=null)
       { ret.addFirst(new Signature("@super",baseChannel.getReflector()));
       }
-      for (StructField field:fieldArray)
+      for (StructField field:fields)
       { 
-        if (channels[field.index]!=null)
+        if (fields[field.index].channel!=null)
         {
           ret.addFirst
             (new Signature
-              (field.name,channels[field.index].getReflector()));
+              (field.name,fields[field.index].channel.getReflector()));
         }
       }
       
@@ -700,13 +747,13 @@ public class StructNode
       if (baseChannel!=null)
       { ret.addFirst(new Signature("@super",baseChannel.getReflector()));
       }
-      for (StructField field:fieldArray)
+      for (StructField field:fields)
       { 
-        if (channels[field.index]!=null)
+        if (fields[field.index].channel!=null)
         {
           ret.add
             (new Signature
-              (field.name,channels[field.index].getReflector()));
+              (field.name,fields[field.index].channel.getReflector()));
         }
       }
       
@@ -734,25 +781,25 @@ public class StructNode
     }
     
     public StructField[] getFields()
-    { return fieldArray;
+    { return fields;
     }
     
     public Channel<?> getChannel(StructField field)
-    { return channels[field.index];
+    { return fields[field.index].channel;
     }
     
     public Struct newStruct()
     { 
-      Object[] data=new Object[channels.length];
+      Object[] data=new Object[fields.length];
       Struct struct=new Struct(this,data,baseChannel!=null?baseChannel.get():null);
       thisChannel.push(struct);
       try
       {
         int i=0;
-        for (StructField field: fieldArray)
+        for (StructField field: fields)
         { 
-          if (field.source!=null && !field.passThrough)
-          { data[i]=channels[i].get();
+          if (field.channel!=null && !field.passThrough)
+          { data[i]=field.channel.get();
           }
           i++;
         }
@@ -770,35 +817,35 @@ public class StructNode
       boolean updated=false;
       if (val==null)
       {
-        for (Channel<?> channel: channels)
+        for (StructField field: fields)
         { 
-          if (channel.isWritable())
+          if (field.channel.isWritable())
           { 
-            channel.set(null);
+            field.channel.set(null);
             updated=true;
           }
         }
       }
       else
       {
-        if (val.size()>channels.length)
+        if (val.size()>fields.length)
         { 
           throw new AccessException
             ("Supplied Struct is larger ("+val.size()+")"
-            +" than the bound field list ("+channels.length+")"
+            +" than the bound field list ("+fields.length+")"
             );
         }
           
         int i=0;
-        for (Channel channel: channels)
+        for (StructField field: fields)
         { 
-          if (channel.isWritable())
+          if (field.channel.isWritable())
           {
             if (i<val.size())
-            { channel.set(val.size());
+            { ((Channel) field.channel).set(val.get(i));
             }
             else
-            { channel.set(null);
+            { field.channel.set(null);
             }
           }
           i++;
@@ -810,9 +857,9 @@ public class StructNode
     
     public boolean isWritable()
     {
-      for (Channel<?> channel: channels)
+      for (StructField field: fields)
       { 
-        if (channel.isWritable())
+        if (field.channel.isWritable())
         { return true;
         }
       }
@@ -1052,8 +1099,8 @@ public class StructNode
         try
         {
           int index=Integer.parseInt(name.substring(1));
-          if (fieldArray.length>index)
-          { name=fieldArray[index].name;
+          if (fields.length>index)
+          { name=fields[index].name;
           }
         }
         catch (NumberFormatException x)
@@ -1068,7 +1115,7 @@ public class StructNode
       if (params==null)
       {
         
-        final StructField field=fields.get(name);
+        final StructField field=fieldMap.get(name);
        
         if (field!=null)
         {
@@ -1077,7 +1124,7 @@ public class StructNode
               ("Field "+field.name+" cannot be forward referenced");
           }
           
-          final Channel target=channels[field.index];
+          final Channel target=fieldList.get(field.index).channel;
         
           if (!field.passThrough)
           { return (Channel<X>) new FieldChannel(field,source,target);
@@ -1090,7 +1137,7 @@ public class StructNode
       else
       {
         // Method
-        final StructField field=fields.get(name);
+        final StructField field=fieldMap.get(name);
         
         if (field!=null)
         {
@@ -1112,7 +1159,7 @@ public class StructNode
                 +" from "+structChannel
               );
           }
-          return (Channel<X>) new MethodChannel(field,source,target);
+          return (Channel<X>) new MethodChannel(source,target);
         }
         
       }
@@ -1209,13 +1256,13 @@ public class StructNode
      */
     public void override(String name,Channel<?> channel)
     { 
-      final StructField field=fields.get(name);
+      final StructField field=fieldMap.get(name);
       if (field==null)
       { 
         throw new IllegalArgumentException
           ("No field named "+name+" in struct "+this);
       }
-      channels[field.index]=channel;
+      field.channel=channel;
     }
       
     class BaseExtentChannel
@@ -1393,11 +1440,9 @@ public class StructNode
     {
       private final Channel<Object> target;
       private boolean constant;
-      // private final StructField field;
 
       public MethodChannel
-      (final StructField field
-        ,final Channel<Struct> source
+      ( final Channel<Struct> source
         ,final Channel<Object> target
       )
       { 
@@ -1457,7 +1502,7 @@ public class StructNode
     
     @Override
     public String toString()
-    { return super.toString()+": "+fields.keySet();
+    { return super.toString()+": "+fieldMap.keySet();
     }
   }
   
@@ -1605,7 +1650,7 @@ public class StructNode
     out.append(prefix).append("Struct: ");
     prefix=prefix+"  ";
 
-    if (fields!=null)
+    if (members!=null)
     {
       out.append(prefix).append(" { ");
       
@@ -1613,15 +1658,15 @@ public class StructNode
       { out.append("[#:"+typeURI+"] ");
       }
       
-      if (baseExtentNode!=null)
-      { 
-        out.append(prefix).append("{=");
-        baseExtentNode.dumpTree(out,prefix);
-        out.append(prefix).append("}");
-      }
+//      if (baseExtentNode!=null)
+//      { 
+//        out.append(prefix).append("{=");
+//        baseExtentNode.dumpTree(out,prefix);
+//        out.append(prefix).append("}");
+//      }
 
       boolean first=true;
-      for (StructField field : fields.values())
+      for (StructMember member : members)
       { 
         if (!first)
         { out.append(prefix).append(",");
@@ -1629,7 +1674,7 @@ public class StructNode
         else
         { first=false;
         }
-        field.dumpTree(out,prefix);
+        member.dumpTree(out,prefix);
       }
       out.append(prefix).append(" } ");
     }
@@ -1637,7 +1682,7 @@ public class StructNode
   
   @Override
   public String toString()
-  { return super.toString()+"{"+fields.toString()+"}";
+  { return super.toString()+"{"+members.toString()+"}";
   }
 
 }

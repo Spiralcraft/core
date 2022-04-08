@@ -1551,53 +1551,84 @@ public class ExpressionParser
     throws ParseException
   {
     
-    
-    StructField field=new StructField();
-    
-    if (_tokenizer.ttype==StreamTokenizer.TT_WORD
-         && _tokenizer.lookahead.ttype==':'
-       )
+    if (_tokenizer.ttype=='~'
+        && _tokenizer.lookahead.ttype==':'
+        )
     {
-      // Named definition
-      field.name=stringPool.get(_tokenizer.sval);
+      // Copy all fields from the result of the following expression
       consumeToken();
-      expect(':');
-      
-      
-      if (_tokenizer.ttype!='=')
+      consumeToken();
+      StructMember member=new StructMember();
+      member.sourceFactory=parseExpression();
+      struct.addMember(member);
+    }
+    else if (_tokenizer.ttype=='~'
+          && _tokenizer.lookahead.ttype==StreamTokenizer.TT_WORD
+        )
+    {
+      // Copy a field from the parent context
+      consumeToken();
+      StructMember member=new StructMember();
+      member.name=stringPool.get(_tokenizer.sval);
+      member.resolveInParent=true;
+      consumeToken();
+      if (_tokenizer.ttype==':')
       {
-        Node typeNode=parseLeftHandExpression();
-        field.type=typeNode;
+        consumeToken();
+        member.source=parseExpression();
       }
+      struct.addMember(member);
       
-      switch (_tokenizer.ttype)
-      { 
-        case '~':
-          consumeToken();
-          field.source=parseExpression();
-          field.passThrough=true;
-          break;
-        case '=':
-          consumeToken();
-          field.source=parseExpression();
-          break;
-      }
     }
     else
     {
-      // Plain expression case
-      Node exprNode=parseExpression();
-      if (exprNode!=null)
-      { field.source=exprNode;
+      StructMember member=new StructMember();
+      
+      if (_tokenizer.ttype==StreamTokenizer.TT_WORD
+           && _tokenizer.lookahead.ttype==':'
+         )
+      {
+        // Named definition
+        member.name=stringPool.get(_tokenizer.sval);
+        consumeToken();
+        expect(':');
+        
+        
+        if (_tokenizer.ttype!='=')
+        {
+          Node typeNode=parseLeftHandExpression();
+          member.type=typeNode;
+        }
+        
+        switch (_tokenizer.ttype)
+        { 
+          case '~':
+            consumeToken();
+            member.source=parseExpression();
+            member.passThrough=true;
+            break;
+          case '=':
+            consumeToken();
+            member.source=parseExpression();
+            break;
+        }
       }
       else
       {
-        // Support dangling comma
-        return;
+        // Plain expression case
+        Node exprNode=parseExpression();
+        if (exprNode!=null)
+        { member.source=exprNode;
+        }
+        else
+        {
+          // Support dangling comma
+          return;
+        }
       }
+      
+      struct.addMember(member);
     }
-    
-    struct.addField(field);
   }
   
   
