@@ -704,9 +704,9 @@ public class StructNode
       if (baseChannel!=null)
       { ret.addFirst(new Signature("@super",baseChannel.getReflector()));
       }
-      for (StructField field:fields)
+      for (StructField field:fieldList)
       { 
-        if (fields[field.index].channel!=null)
+        if (field.channel!=null)
         {
           ret.addFirst
             (new Signature
