@@ -112,13 +112,29 @@ public abstract class AbstractFunctorChannel<Tresult>
           (StructNode.StructReflector) contextFocus.getSubject().getReflector();
       if (paramIndex<reflector.getFields().length)
       {
+        Channel paramTarget;
+        
+        try
+        { 
+          paramTarget = contextFocus.bind
+            (Expression.create(reflector.getFields()[paramIndex].getName()));
+        }
+        catch (BindException x)
+        {    
+          throw new BindException
+          ("Error binding argument to functor parameter '"
+            +reflector.getFields()[paramIndex].getName()+"' "+
+            "Could not bind target parameter to call context "
+          ,x
+          );
+        }
+        
         try
         {
         
           return new AssignmentChannel
             (source
-            ,contextFocus.bind
-              (Expression.create(reflector.getFields()[paramIndex].getName()))
+            ,paramTarget
             );
         }
         catch (BindException x)
@@ -126,6 +142,7 @@ public abstract class AbstractFunctorChannel<Tresult>
           throw new BindException
             ("Error binding argument to functor parameter '"
               +reflector.getFields()[paramIndex].getName()+"'"
+              +"("+source.getReflector()+")->"+"("+paramTarget.getReflector()+")"
             ,x
             );
         }

@@ -1,0 +1,9 @@
+ns:j=class:/java/lang
+
+[#f{{
+  testStringArray: [@j:String][]
+  }}
+]
+{{
+  out:= ..testStringArray.@size
+}}

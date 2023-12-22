@@ -1641,6 +1641,30 @@
     </test:Assertion>
     
     <test:Assertion>
+      <name>Function expression array positional parameter bind 1
+      </name>
+      <subjectX>
+        [~langtest:testFn1].( "hello,there,now".split(",") )
+      </subjectX>
+      <testX>
+        .out==3
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Reflector resolved for java string
+      </name>
+      <subjectX>
+        [@j:String][]
+      </subjectX>
+      <testX>
+        getContentType().getName().toString()=="[Ljava.lang.String;"
+      </testX>
+    
+    </test:Assertion>
+  
+    <test:Assertion>
       <name>Parent field shorthand
       </name>
       
