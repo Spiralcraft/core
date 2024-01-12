@@ -1,0 +1,30 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:std="class:/spiralcraft/data/types/standard/"
+  xmlns:ju="class:/java/util/"
+  xmlns:dt="class:/spiralcraft/data/task/"
+  xmlns:j="class:/java/lang/"
+  xmlns:us="class:/spiralcraft/util/string/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:dtest="class:/spiralcraft/data/test"
+  xmlns:d="class:/spiralcraft/data"
+  >
+  <!--  This won't work for a while -->
+  <abstract>true
+  </abstract>
+  <parameters>
+    <meta:TypeParameter>
+      <name>barType
+      </name>
+      <type><meta:DerivedValue.type/>
+      </type>
+    </meta:TypeParameter>
+  </parameters>
+  <archetype>
+    <dtest:DeepArchetype.type>
+      <fooType>barType
+      </fooType>
+    </dtest:DeepArchetype.type>
+  </archetype>
+    
+</meta:Type>

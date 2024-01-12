@@ -891,8 +891,14 @@ public abstract class Type<T>
       }
       selfFocus=new SimpleFocus(new SimpleChannel(selfReflector,this,true));
       selfFocus.addAlias(URIPool.create("class:/spiralcraft/data/types/meta/Type"));
+      selfFocusCreated(selfFocus);
     }
     return selfFocus;
+  }
+
+  protected void selfFocusCreated(Focus<Type<T>> selfFocus)
+    throws BindException
+  {
   }
 }
 

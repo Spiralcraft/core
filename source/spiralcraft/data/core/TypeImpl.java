@@ -35,6 +35,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -288,7 +290,12 @@ public class TypeImpl<T>
   { return baseType;
   }
   
-  
+  @Override
+  protected void selfFocusCreated(Focus<Type<T>> selfFocus)
+    throws BindException
+  {
+
+  }
   
   public void setBaseType(Type<T> baseType)
   { 

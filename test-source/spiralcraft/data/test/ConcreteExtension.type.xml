@@ -1,0 +1,18 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:ju="class:/java/util/"
+  xmlns:dt="class:/spiralcraft/data/task/"
+  xmlns:j="class:/java/lang/"
+  xmlns:us="class:/spiralcraft/util/string/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:dtest="class:/spiralcraft/data/test"
+  >
+  <!--  This won't work for a while -->  
+  <archetype>
+    <dtest:ShallowArchetype.type>
+      <barType>[@j:String]
+      </barType>
+    </dtest:ShallowArchetype.type>
+  </archetype>
+    
+</meta:Type>

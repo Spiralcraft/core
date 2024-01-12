@@ -1,0 +1,38 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:std="class:/spiralcraft/data/types/standard/"
+  xmlns:d="class:/spiralcraft/data/"
+  xmlns:ju="class:/java/util/"
+  xmlns:dt="class:/spiralcraft/data/task/"
+  xmlns:j="class:/java/lang/"
+  xmlns:us="class:/spiralcraft/util/string/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  >
+  <abstract>true
+  </abstract>
+  <parameters>
+    <meta:TypeParameter>
+      <name>fooType
+      </name>
+      <type><meta:DerivedValue.type/>
+      </type>
+    </meta:TypeParameter>
+  </parameters>
+    
+  <fields>
+    <meta:SequenceField>
+      <name>id
+      </name>
+      <type><String.type/>
+      </type>
+    </meta:SequenceField>
+    <meta:Field>
+      <name>foo
+      </name>
+      <typeX>fooType
+      </typeX>
+      <template>true
+      </template>
+    </meta:Field>
+  </fields>
+</meta:Type>

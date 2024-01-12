@@ -8,6 +8,8 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:fn="class:/spiralcraft/lang/functions/"
   xmlns:st="class:/spiralcraft/time/"
+  xmlns:dtest="class:/spiralcraft/data/test"
+  xmlns:j="class:/java/lang"
   >
  
 
@@ -403,7 +405,18 @@
       </subjectX>
       <testX>.=="customer"
       </testX>
-    </test:Assertion>     
+    </test:Assertion>
+<!--  Won't work for a while
+    <test:Assertion>
+      <name>Deep parameterized archetype inheritance
+      </name>
+      <subjectX>[@dtest:ConcreteExtension].().content.@type
+      </subjectX>
+      <testX>.==[@j:String]
+      </testX>
+    </test:Assertion>
+-->
+
   </scenarios>
   
 </task:Sequence>

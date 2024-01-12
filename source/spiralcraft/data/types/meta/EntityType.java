@@ -22,7 +22,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import java.net.URI;
 
 /**
- * A Type implementation that represents a Schema
+ * A Type implementation that represents an Entity in a Schema
  */
 public class EntityType
   extends ReflectionType<Entity>

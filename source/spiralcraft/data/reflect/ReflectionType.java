@@ -895,6 +895,9 @@ public class ReflectionType<T>
       }
       else
       {
+        if (scheme==null)
+        { throw new IllegalStateException("No scheme for this type "+toString());
+        }
         // System.out.println("Not narrowing "+val.getClass()+":"+ val.toString());
         EditableTuple tuple=new EditableArrayTuple(scheme);
         ((ReflectionScheme) scheme).persistBeanProperties(val,tuple);

@@ -584,6 +584,9 @@ public class FieldImpl<T>
 //        log.fine("Evaluating type expression for "+getURI()+" "+typeX.getText());
         Type myType= getScheme().getType().getSelfFocus().bind(typeX).get();
 //        log.fine(typeX.getText()+" returned "+myType);
+        if (myType==null)
+        { log.warning("typeX ["+typeX+"] returned null for "+getURI());
+        }
         return myType;
       }
     }

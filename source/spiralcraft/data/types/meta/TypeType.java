@@ -19,6 +19,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.core.DataDefinedType;
+import spiralcraft.data.core.DerivedValue;
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.core.MetaType;
 import spiralcraft.data.core.SchemeImpl;
@@ -45,8 +46,9 @@ public class TypeType
     ReflectionType.registerCanonicalType
       (FieldImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Field"));
     ReflectionType.registerCanonicalType
-      (SchemeImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Scheme"));
-    
+      (SchemeImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Scheme"));    
+    ReflectionType.registerCanonicalType
+      (DerivedValue.class,URIPool.create("class:/spiralcraft/data/types/meta/DerivedValue"));    
   }
   
   /**
