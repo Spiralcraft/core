@@ -1712,6 +1712,40 @@
     
     </test:Assertion>    
 
+    <task:Sequence>
+    
+      <contextX>
+        [#mymap]
+        { 
+          map:=[*fn:CacheMap
+                  {[@j:String]
+                  ,[@j:String]
+                  ,:.+"-key"
+                  }
+               ]
+        }
+      </contextX>
+      <scenarios>
+        <test:Assertion>
+          <subjectX>[mymap].map.get("test-key")
+          </subjectX>
+          <testX>.==null
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <subjectX>[mymap].map.put("test")
+          </subjectX>
+          <testX>.=="test"
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <subjectX>[mymap].map.get("test-key")
+          </subjectX>
+          <testX>.=="test"
+          </testX>
+        </test:Assertion>
+      </scenarios>
+    </task:Sequence>
   </sequence>
         
 </test:TestGroup>

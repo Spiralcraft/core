@@ -12,6 +12,28 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev181
+        </revision>
+
+        <notes>
+          <scm:Note>Add a CacheMap facility to cache and resolve keyed objects
+            with an optional backing store.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>UnaryFunctionBinding.java
+          </URI>
+          <URI>functions/CacheMap.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev180
         </revision>
 
