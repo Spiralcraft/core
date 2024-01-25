@@ -46,7 +46,7 @@ public class QName
    * @param prefixedName
    * @return a QName
    */
-  public QName resolve(String prefixedName)
+  public static QName resolve(String prefixedName)
     throws UnresolvedPrefixException
   { return resolve(prefixedName,NamespaceContext.getPrefixResolver());
   }
