@@ -14,6 +14,10 @@ public class UnaryFunctionBinding<I,R,X extends Exception>
   private Reflector<I> inputReflector;
   private Binding<R> result;
 
+  public UnaryFunctionBinding(Binding<R> binding)
+  { result=binding;
+  }
+  
   public UnaryFunctionBinding(String expression) 
     throws ParseException
   { result=new Binding<R>(expression);
