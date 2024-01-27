@@ -65,8 +65,8 @@ public class CacheMap<K,V>
     selfReflector
       =new GenericReflector<CacheMap<K,V>>
         (BeanReflector.<CacheMap<K,V>>getInstance(getClass()));
-    selfReflector.enhance("get", new Reflector[] { keyReflector }, valueReflector);
-    selfReflector.enhance("put", new Reflector[] { valueReflector }, valueReflector);
+    selfReflector.enhance("get", new Reflector<?>[] { keyReflector }, valueReflector);
+    selfReflector.enhance("put", new Reflector<?>[] { valueReflector }, valueReflector);
 
     if (keyFnBinding==null)
     { throw new BindException("CacheMap requires a KeyFn (key function)");

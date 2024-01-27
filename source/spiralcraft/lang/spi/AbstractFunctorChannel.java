@@ -112,7 +112,7 @@ public abstract class AbstractFunctorChannel<Tresult>
           (StructNode.StructReflector) contextFocus.getSubject().getReflector();
       if (paramIndex<reflector.getFields().length)
       {
-        Channel paramTarget;
+        Channel<?> paramTarget;
         
         try
         { 
