@@ -12,6 +12,29 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev182
+        </revision>
+
+        <notes>
+          <scm:Note>Fix minor compiler warnings, prevent infinite
+            loops from context tree cycles caused by rebinding after
+            errors in declarations. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>UnaryFunctionBinding.java
+          </URI>
+          <URI>functions/CacheMap.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev181
         </revision>
 
