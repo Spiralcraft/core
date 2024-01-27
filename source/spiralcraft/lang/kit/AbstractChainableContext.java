@@ -27,6 +27,7 @@ import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.profiler.ProfilerAgent;
+import spiralcraft.util.thread.CycleDetector;
 
 /**
  * <p>Provides support for implementing ChainableContext
@@ -62,6 +63,9 @@ public class AbstractChainableContext
   protected DeclarationInfo declarationInfo;
   private Channel<ProfilerAgent> profilerChannel;
   
+  private static final CycleDetector<AbstractChainableContext> cycleDetector
+  =new CycleDetector<AbstractChainableContext>();
+    
   public AbstractChainableContext()
   {
     
@@ -192,39 +196,62 @@ public class AbstractChainableContext
     { throw new IllegalArgumentException("Contextual to chain cannot be null");
     }
     
-    if (next!=null)
-    { 
-      if (chainable)
-      { 
-        if (next==this)
-        { throw new IllegalStateException("Self referential chain");
+    if (!cycleDetector.detectOrPush(this))
+    {
+      try
+      {
+        if (next!=null)
+        { 
+          if (chainable)
+          { 
+            if (next==this)
+            { throw new IllegalStateException("Self referential chain");
+            }
+            return ((ChainableContext) next).chain(chain);
+          }
+          else
+          { throw new IllegalStateException("Chain already sealed with "+next);
+          }
         }
-        return ((ChainableContext) next).chain(chain);
+        else
+        { 
+          if (!(chain instanceof Context))
+          { chain=new ChainableContextualAdapter(chain);
+          }
+          else if (!(chain instanceof ChainableContext))
+          { chain=new ChainableContextAdapter((Context) chain);
+          }
+          next=chain;
+          chainable=true;
+          context=true;
+        }
+        
+        if (chain instanceof ChainableContext)
+        { return (ChainableContext) chain;
+        }
+        else
+        { return null;
+        }
       }
-      else
-      { throw new IllegalStateException("Chain already sealed with "+next);
+      catch (CycleException x)
+      { 
+        throw new CycleException
+          (this.getClass().getName()+":"+this.getDeclarationInfo()+": Chain cycle detected in child"
+          ,x
+          );
+      }
+      finally
+      { cycleDetector.pop();
       }
     }
     else
     { 
-      if (!(chain instanceof Context))
-      { chain=new ChainableContextualAdapter(chain);
-      }
-      else if (!(chain instanceof ChainableContext))
-      { chain=new ChainableContextAdapter((Context) chain);
-      }
-      next=chain;
-      chainable=true;
-      context=true;
-    }
-    
-    if (chain instanceof ChainableContext)
-    { return (ChainableContext) chain;
-    }
-    else
-    { return null;
-    }
-        
+      throw new CycleException
+        (this.getClass().getName()+":"+this.getDeclarationInfo()
+        +": Chain cycle detected chaining "+
+        chain.getClass().getName()+":"+(chain instanceof Declarable?((Declarable) chain).getDeclarationInfo():chain.toString())
+        );
+    }  
   }
   
   @Override
@@ -312,3 +339,16 @@ public class AbstractChainableContext
   }
 }
 
+class CycleException extends RuntimeException
+{
+  private static final long serialVersionUID = 1L;
+
+  public CycleException(String descr)
+  { super(descr);
+  }
+
+  public CycleException(String descr,Exception cause)
+  { super(descr,cause);
+  }
+
+}

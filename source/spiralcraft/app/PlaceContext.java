@@ -227,7 +227,17 @@ public class PlaceContext
     if (pluginContexts!=null)
     {
       for (PluginContext pluginContext : pluginContexts)
-      { chainPlugin(localChain,pluginContext);
+      { 
+        try 
+        { 
+          log.info("Chaining plugin "+pluginContext.getPluginId());
+          chainPlugin(localChain,pluginContext);
+        }
+        catch (RuntimeException x)
+        { 
+          throw new ContextualException
+            ("Error chaining plugin "+pluginContext.getPluginId(),x);
+        }
       }
 
       
