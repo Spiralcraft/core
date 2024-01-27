@@ -21,11 +21,12 @@ import spiralcraft.log.ClassLog;
 
 /**
  * Stub for Classloader level permissions implementation
- * 
+ *
+ * Defunct now due to the removal of SecurityManager from Java core
+ *  
  * @author mike
  */
 public class SystemSecurityManager
-  extends SecurityManager
 {
   private static final ClassLog log
     =ClassLog.getInstance(SystemSecurityManager.class);
@@ -39,13 +40,11 @@ public class SystemSecurityManager
     }
   }
   
-  @Override
   public void checkPermission(Permission perm)
   { 
     if (DEBUG)
     { log.fine("SystemSecurityManager.checkPermission("+perm+")");
     }
     
-    super.checkPermission(perm);
   }
 }

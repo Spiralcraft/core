@@ -36,7 +36,7 @@ public class DefaultFormatter
     out.append(" ");
     out.append(record.getLevel().getName());
     out.append(" ");
-    out.append(Integer.toString(record.getThreadID()));
+    out.append(Long.toString(record.getLongThreadID()));
     out.append(" ");
     out.append(record.getLoggerName());
     out.append(" (");
