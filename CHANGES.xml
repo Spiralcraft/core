@@ -12,6 +12,20 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev183
+        </revision>
+
+        <notes>
+          <scm:Note>Fix NPE getting the @subtype() of a Struct object. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/AbstractReflector.java
+        </path>
+      </scm:Change>
+      
+      
+      <scm:Change>
         <revision>-dev182
         </revision>
 
