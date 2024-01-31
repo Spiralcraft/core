@@ -34,6 +34,9 @@ public class Struct
 //  private static final ClassLog log
 //    =ClassLog.getInstance(Struct.class);
   
+// TODO: Implement Reflectable but check for side effects in things that
+//   automatically detect and call that interface
+
   public final StructNode.StructReflector reflector;
   public final Object baseExtent;
   private final Object[] data;

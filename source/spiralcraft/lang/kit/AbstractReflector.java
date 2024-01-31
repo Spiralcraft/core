@@ -39,6 +39,7 @@ import spiralcraft.lang.kit.members.MetaSubtypeMember;
 import spiralcraft.lang.kit.members.MetaTopMember;
 import spiralcraft.lang.kit.members.MetaTuneMember;
 import spiralcraft.lang.kit.members.MetaTypeMember;
+import spiralcraft.lang.parser.Struct;
 import spiralcraft.lang.kit.members.MetaConstantMember;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
@@ -316,6 +317,20 @@ public abstract class AbstractReflector<T>
           ,x
           );
       }
+    }
+    
+    // XXX: Consider making Struct implement Reflectable
+    if (val instanceof Struct)
+    { return (Reflector<T>) ((Struct) val).getReflector();
+    }
+    
+    if (base==null)
+    { 
+      throw new IllegalArgumentException
+        (getTypeURI()
+        +": No base type. Unable to get subtype for value "
+        +val.getClass().getName()+": "
+        +val);
     }
     Reflector<T> baseSubtype = base.subtype(val);
     if (baseSubtype==base)
