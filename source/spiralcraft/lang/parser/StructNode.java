@@ -799,7 +799,14 @@ public class StructNode
         for (StructField field: fields)
         { 
           if (field.channel!=null && !field.passThrough)
-          { data[i]=field.channel.get();
+          { 
+            try
+            { data[i]=field.channel.get();
+            }
+            catch (RuntimeException x)
+            { throw new RuntimeException
+                ("Error initializing struct field "+field.name,x);
+            }
           }
           i++;
         }
