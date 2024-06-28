@@ -233,15 +233,15 @@ public class Pool<T>
       { 
         if (logLevel.isInfo())
         { 
-          log.info("Waiting for "+_out.size()+" checkouts...");
+          log.info(tag+": Waiting for "+_out.size()+" checkouts...");
           for (Object o : _out.keySet().toArray())
-          { log.info("Checked out: "+o.toString());
+          { log.info(tag+": Checked out: "+o.toString());
           }
         }
         _monitor.wait(5000);
       }
       if (!_out.isEmpty())
-      { log.info("Timed out waiting for "+_out.size()+" checkouts");
+      { log.info(tag+": Timed out waiting for "+_out.size()+" checkouts");
       }
     }
     catch (InterruptedException x)
