@@ -12,6 +12,19 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev186
+        </revision>
+
+        <notes>
+          <scm:Note>Add another constructor for data Fetch task 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Fetch.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev185
         </revision>
 
