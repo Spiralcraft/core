@@ -103,8 +103,11 @@ public class Fetch<Tcontext>
   }
   
   public Fetch(DataReflector<?> reflector,Expression<Boolean> criteria)
+  { this(reflector.getType(),criteria); 
+  }
+
+  public Fetch(Type<?> resultType,Expression<Boolean> criteria)
   { 
-    Type<?> resultType=reflector.getType();
     Type<?> tupleType
       =resultType.isAggregate()?resultType.getContentType():resultType;
     if (resultType==tupleType)
@@ -112,7 +115,6 @@ public class Fetch<Tcontext>
     }
     this.query=new Selection(tupleType,criteria);
   }
-
   
   public Fetch(Type<?> resultType,Expression<?>[] bindings)
   { 
