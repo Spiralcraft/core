@@ -12,6 +12,19 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev187
+        </revision>
+
+        <notes>
+          <scm:Note>Add additional specificity to error message on load failure
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev186
         </revision>
 
