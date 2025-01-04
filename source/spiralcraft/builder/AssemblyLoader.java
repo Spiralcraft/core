@@ -614,7 +614,7 @@ public class AssemblyLoader
           if (constructorBuff.length()>0)
           { 
             throw new BuildException
-              ("Assembly definition cannot contain both constructor text"
+              ("Assembly definition '"+node.getQName()+"' cannot contain both constructor text"
               +" and property specifiers"
               );
           }    
@@ -633,7 +633,7 @@ public class AssemblyLoader
             if (readProperties)
             {
               throw new BuildException
-                ("Assembly definition cannot contain both constructor text"
+                ("Assembly definition '"+node.getQName()+"'  cannot contain both constructor text"
                 +" and property specifiers"
                 );
               
