@@ -245,6 +245,7 @@ public class Synchronize
           =new EditableArrayListAggregate<BufferTuple>
             (bufferType);
             
+        // Pull the matching set from the DB for comparison
         EditableKeyedListAggregate<Tuple> tempSet
           =new EditableKeyedListAggregate<Tuple>
             (Type.getAggregateType(boundQuery.getType()));
