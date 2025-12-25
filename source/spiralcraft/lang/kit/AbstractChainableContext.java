@@ -190,7 +190,7 @@ public class AbstractChainableContext
   }
 
   @Override
-  public ChainableContext chain(Contextual chain)
+  public final ChainableContext chain(Contextual chain)
   {
     if (chain==null)
     { throw new IllegalArgumentException("Contextual to chain cannot be null");
