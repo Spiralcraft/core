@@ -117,7 +117,7 @@ public class Event
     time=Clock.instance().approxTimeMillis();
     
     this.threadName=Thread.currentThread().getName();
-    this.threadId=Thread.currentThread().getId();
+    this.threadId=Thread.currentThread().threadId();
     if (context==null)
     { this.context=DEFAULT_CONTEXT;
     }
