@@ -12,6 +12,31 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev188
+        </revision>
+
+        <notes>
+          <scm:Note>Fix URL constructor deprecation
+          </scm:Note>
+          <scm:Note>Fix Thread.getId() deprecation
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>classloader/JarArchige.java
+          </URI>
+          <URI>data/types/standard/URLType.java
+          </URI>
+          <URI>log/Event.java
+          </URI>
+          
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev187
         </revision>
 
