@@ -17,6 +17,8 @@ package spiralcraft.classloader;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -161,9 +163,17 @@ public class JarArchive
     @Override
     public URL getResource()
       throws IOException
-    { return new URL("jar:"+resource.getURI()+"!/"+jarEntry.getName());
+    { 
+      try
+      {
+        return new URI("jar:"+resource.getURI()+"!/"+jarEntry.getName()).toURL();
+      }
+      catch (URISyntaxException x)
+      { throw new RuntimeException("Invalid jar URL",x);
+      }
+    
     }
-
+    
     @Override
     public InputStream getResourceAsStream()
       throws IOException

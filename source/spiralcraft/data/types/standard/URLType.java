@@ -20,6 +20,7 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public class URLType
@@ -33,7 +34,10 @@ public class URLType
   public URL fromString(String str)
   { 
     try
-    { return str!=null?new URL(str):null;
+    { return str!=null?new URI(str).toURL():null;
+    }
+    catch (URISyntaxException x)
+    { throw new IllegalArgumentException("URISyntaxException: "+str);
     }
     catch (MalformedURLException x)
     { throw new IllegalArgumentException("Malformed URL: "+str);
