@@ -1,6 +1,11 @@
 package spiralcraft.lang.parser;
 
+
+import java.net.URI;
+
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.namespace.QName;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -13,18 +18,53 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.FocusChannel;
 import spiralcraft.task.Eval;
 import spiralcraft.task.Scenario;
+import spiralcraft.util.refpool.URIPool;
 
 public class FunctionNode
   extends Node
 {
   private final Node context;
   private final Node body;
-  private String typeQName;
+  private final String typeQName;
+  private final String namespace;
+  private final String suffix;
+  private final URI uri;
   
   public FunctionNode(String typeQName,Node context,Node body)
+    throws UnresolvedPrefixException  
   { 
     this.typeQName=typeQName;
     this.context=context;
+    this.body=body;
+    
+    int colonPos=typeQName.indexOf(':');
+    if (colonPos==0)
+    { 
+      this.uri=URIPool.create(typeQName.substring(1));    
+      this.namespace=null;
+      this.suffix=null;
+    }
+    else if (colonPos>0)
+    {
+      this.namespace=typeQName.substring(0,colonPos);
+      this.suffix=typeQName.substring(colonPos+1);
+      this.uri=resolveQName(namespace,suffix);      
+    }
+    else
+    { 
+      this.namespace=null;
+      this.suffix=typeQName;
+      this.uri=resolveQName(namespace,suffix);
+    }    
+  }
+
+  public FunctionNode(String typeQName, String namespace, String suffix, URI uri, Node context, Node body)
+  {
+    this.typeQName=typeQName;
+    this.namespace=namespace;
+    this.suffix=suffix;
+    this.context=context;
+    this.uri=uri;
     this.body=body;
   }
 
@@ -38,7 +78,7 @@ public class FunctionNode
     { return this;
     }
     else
-    { return new FunctionNode(typeQName,context,body);
+    { return new FunctionNode(typeQName,namespace,suffix,uri,context,body);
     }
   }
 
@@ -60,10 +100,12 @@ public class FunctionNode
   {
     try
     {
-      Scenario functor
+      Expression contextExpr=context!=null?Expression.create(context):null;
+      Eval functor
         =context!=null
           ?new Eval(Expression.create(context),Expression.create(body))
           :new Eval(Expression.create(body));
+      functor.setContextAliasURI(uri);
       Focus<?> functorFocus=functor.bind(focus);
       Channel<?> ret=new ConstantChannel(functor.reflect(),functor);
       ret.setContext(functorFocus);

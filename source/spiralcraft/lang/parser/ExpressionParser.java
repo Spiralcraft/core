@@ -1466,9 +1466,14 @@ public class ExpressionParser
       expect('}');
       expect(']');
       
-      return new FunctionNode
-        (typeQName,context,parseSubcontextExpression(null));
-      
+      try
+      {
+        return new FunctionNode
+            (typeQName,context,parseSubcontextExpression(null));
+      }
+      catch (UnresolvedPrefixException x)
+      { throw newException("Unresolved prefix",x);
+      }
     }
     else
     {

@@ -708,9 +708,10 @@ public class StructNode
       { 
         if (field.channel!=null)
         {
+          
           ret.addFirst
             (new Signature
-              (field.name,fields[field.index].channel.getReflector()));
+              (field.name,fields!=null?fields[field.index].channel.getReflector():null));
         }
       }
       
