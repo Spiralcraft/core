@@ -11,6 +11,31 @@
     
      
     <detail>
+
+      <scm:Change>
+        <revision>-dev189
+        </revision>
+
+        <notes>
+          <scm:Note>Apply Functor alias to parameter context for simplicity
+            in referencing local parameters.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>FunctionNode.java
+          </URI>
+          <URI>StructNode.java
+          </URI>
+          
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev188
         </revision>
