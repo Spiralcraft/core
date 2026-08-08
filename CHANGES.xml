@@ -13,6 +13,28 @@
     <detail>
 
       <scm:Change>
+        <revision>-dev190
+        </revision>
+
+        <notes>
+          <scm:Note>Check File URIs for unnecessary path separator encodings
+            before resolving the File
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/URIUtil.java
+          </URI>
+          <URI>vfs/file/FileResource.java
+          </URI>
+          
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev189
         </revision>
 
