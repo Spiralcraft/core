@@ -478,4 +478,26 @@ public class URIUtil
     }
   }
   
+  /**
+   * Check to see if a raw URI string has a particular escape. 
+   * Usually 2E/2F/00.
+   * 
+   * @param raw The string to check
+   * @param escapes The hex strings (ie. 2E, 2F) to looks for case-insensitively
+   * @return Whether any of the escapes are in the raw string
+   */
+  public static boolean hasEscape(String raw,String[] escapes) 
+  {
+    for (int i = raw.indexOf('%'); i >= 0; i = raw.indexOf('%', i + 1)) 
+    {
+      if (i + 2 >= raw.length()) return true;         // truncated escape: reject on principle
+      for (String escape: escapes)
+      { 
+        if (raw.regionMatches(true, i + 1, escape, 0, 2)) return true;
+      }
+    }
+    return false;
+  }
+  
+  
 }

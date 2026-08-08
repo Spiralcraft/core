@@ -14,6 +14,7 @@
 //
 package spiralcraft.vfs.file;
 
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
@@ -36,6 +37,7 @@ public class FileResource
   extends AbstractResource
   implements Container
 {
+  static final String[] badPathEscapes = {"2E","2F","00"};
   
   public static URI toRelativeURI(File file)
   { 
@@ -70,8 +72,13 @@ public class FileResource
   }
   
   public FileResource(URI uri)
+    throws UnresolvableURIException
   { 
     super(uri,uri);
+    if (URIUtil.hasEscape(uri.getRawPath(),badPathEscapes))
+    { throw new UnresolvableURIException(uri,"Bad escapes in uri path "+uri.getRawPath());
+    }
+    
     try
     { _file=new File(uri);
     }
