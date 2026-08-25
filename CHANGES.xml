@@ -13,6 +13,22 @@
     <detail>
 
       <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Provide a way to get a struct's array type from its
+             reflector.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/StructNode.java
+        </path>
+        
+      </scm:Change>
+
+
+      <scm:Change>
         <revision>-dev190
         </revision>
 
