@@ -39,6 +39,7 @@ import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.kit.CoercionChannel;
 import spiralcraft.lang.kit.MapLookupChannel;
+import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractFunctorChannel;
@@ -995,6 +996,10 @@ public class StructNode
     { return Struct.class;
     }
 
+    public Reflector<Struct[]> getArrayType()
+    { return ArrayReflector.getInstance(this);
+    }
+    
     @Override
     public URI getTypeURI()
     { return typeURI;
