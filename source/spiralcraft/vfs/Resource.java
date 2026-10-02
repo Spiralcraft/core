@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.net.URL;
+import java.nio.ByteBuffer;
 
 import spiralcraft.util.Path;
 
@@ -255,4 +256,27 @@ public interface Resource
    * @return
    */
   URL getURL();
+  
+  /**
+   * Read all the bytes from the resource
+   * @return A byte[]
+   * @throws IOException
+   */
+  default byte[] readContent()
+    throws IOException
+  { 
+
+    try (InputStream in = getInputStream())
+    { return in.readAllBytes();
+    }
+    
+  }
+  
+  default void writeContent(byte[] content)
+    throws IOException
+  {
+    try (OutputStream out = getOutputStream())
+    { out.write(content);
+    }
+  }
 }
