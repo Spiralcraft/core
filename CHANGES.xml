@@ -17,6 +17,22 @@
         </revision>
 
         <notes>
+          <scm:Note>Add a simple interface default method to read and write file
+             bytes directly
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/Resource.java
+        </path>
+        
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Provide a way to get a struct's array type from its
              reflector.
           </scm:Note>
