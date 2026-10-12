@@ -18,6 +18,8 @@ public class CrockfordBase32Codec
       
   private static final char[] decoding = new char['z'+1];
 
+  public static final String alphabet=String.valueOf(encoding).intern();
+  
   static
   {
     Arrays.fill(decoding, (char) -1);

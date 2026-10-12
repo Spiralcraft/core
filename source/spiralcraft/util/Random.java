@@ -11,7 +11,7 @@ import java.security.SecureRandom;
  */
 public class Random
 {
-  private static char[] chars=
+  private static final char[] chars=
     {'A'
     ,'B'
     ,'C'
@@ -81,5 +81,17 @@ public class Random
     return out.toString();
   }
 
+  public String generateString(int length,CharSequence alpha)
+  {
+    StringBuilder out=new StringBuilder(length);
+    if (alpha==null)
+    { alpha=String.valueOf(chars);
+    }
+    final int alphalen=alpha.length();
+    for (int i=0;i<length;i++)
+    { out.append(alpha.charAt(Math.abs(random.nextInt() % alphalen)));
+    }
+    return out.toString();
+  }
   
 }

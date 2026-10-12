@@ -167,7 +167,9 @@
         [#create] { 
           principalId:[@j:String]
           ,duration:[@st:Duration]
-          ,code:=[@util:Random].@secureInstance().generateString(32)
+          ,length:=32
+          ,alphabet:[@j:CharSequence]
+          ,code:[@j:String]        
         }
       </contextX>
       
@@ -175,7 +177,13 @@
         { .principalId=[create].principalId
           ,.period=[create].duration
           ,.expireTime=[@st:Instant].().add([create].duration)
-          ,.code=[create].code
+          ,.code=[create].code!=null
+            ?[create].code
+            :[create].alphabet!=null
+              ?[@util:Random].@secureInstance()
+                .generateString([create].length,[create].alphabet)
+              :[@util:Random].@secureInstance()
+                .generateString([create].length)
           ,.@tuple.save()
           ,.
         }
