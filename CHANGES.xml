@@ -17,6 +17,50 @@
         </revision>
 
         <notes>
+          <scm:Note>Refine scalable distributed unique id generation scheme
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util
+        </path>
+        
+        <resources>
+          <URI>TimestampIdGenerator.java
+          </URI>
+          <URI>CrockfordExpandingSequence.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Provde for configurable length and alphabet for security
+             ticket token generation. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>codec/text/CrockfordBase32Codec
+          </URI>
+          <URI>security/Ticket.type.xml
+          </URI>
+          <URI>util/Random.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Add a simple interface default method to read and write file
              bytes directly
           </scm:Note>
