@@ -14,7 +14,7 @@ import spiralcraft.util.string.StringUtil;
  *    
  * When multiple values are requested within the same timestamp, a lexicographically
  *   ordered sequence of increasing length is appended to the timestamp portion of
- *   the value.
+ *   the value. The sequence is a {@link CrockfordExpandingSequence}.
  *    
  * If the generator is not persisted, in oder to prevent duplicate IDs the timestamp
  *   resolution must be fine enough to ensure that the timestamp changes when the
@@ -35,8 +35,7 @@ public class TimestampIdGenerator
   private final int timestampDigits;
   private volatile long lastTimestamp=0;
   private volatile String lastTimePart;
-  private volatile long suffix;
-  private volatile int suffixDigits;
+  private volatile String lastSuffix;
   
   /**
    * Create a generator.
@@ -84,7 +83,13 @@ public class TimestampIdGenerator
 //    log.fine("time: "+System.currentTimeMillis());
 //    log.fine("coarseness: "+coarseness);
 //    log.fine("div: "+timeDiv);
-    if (now>lastTimestamp)
+    if (lastTimePart==null && now<0)
+    { 
+      throw new IllegalStateException
+        ("Current time is before the offset of the sequence");
+    }
+    
+    if (now>lastTimestamp || lastTimePart==null)
     {
       lastTimestamp=now;
 //      log.fine("now "+now);
@@ -101,27 +106,13 @@ public class TimestampIdGenerator
           ,'0'
           ,timestampDigits
           );
-      suffix=0;
-      suffixDigits=0;
+      lastSuffix=null;
       return lastTimePart;
     }
     else
     { 
-      switch (suffixDigits)
-      {
-        case 0:
-          suffixDigits++;
-          return lastTimePart+"0";
-        default:
-          suffix++;
-          if (suffix>= (Math.pow(32L,suffixDigits)/8)*suffixDigits)
-          { 
-            suffix*=32;
-            suffixDigits++;
-          }
-          return lastTimePart+CrockfordBase32Codec.encodeLong(suffix);
-      }
-      
+      lastSuffix=CrockfordExpandingSequence.next(lastSuffix);
+      return lastTimePart+lastSuffix;
     }
     
   }
