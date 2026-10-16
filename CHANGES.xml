@@ -17,6 +17,21 @@
         </revision>
 
         <notes>
+          <scm:Note>Provide a way to declare a local context root in a
+            PathContext
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PathContext.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Refine scalable distributed unique id generation scheme
           </scm:Note>
         </notes>
