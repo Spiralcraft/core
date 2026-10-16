@@ -32,6 +32,7 @@ import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.context.ContextResourceMap;
 import spiralcraft.vfs.Package;
 
 public class PathContext
@@ -58,6 +59,8 @@ public class PathContext
   private Binding<?>[] constantExports;
   private Binding<?>[] onEnter;
   private Binding<?>[] onExit;
+  private String localAuthorityName;
+  private ContextResourceMap localMap;
       
   /**
    * The path from the context root
@@ -92,6 +95,15 @@ public class PathContext
   { this.codeBaseURI=URIUtil.ensureTrailingSlash(codeBaseURI);
   }
   
+  /**
+   * Declares a context://[name]/ authority, mapped to this PathContext's
+   *   effective code base, visible to code bound and run under this
+   *   PathContext.
+   */
+  public void setLocalAuthorityName(String localAuthorityName)
+  { this.localAuthorityName=localAuthorityName;
+  }
+    
   /**
    * An optional condition to allow access to resources in this path and 
    *   subpaths
@@ -463,6 +475,21 @@ public class PathContext
   protected Focus<?> bindImports(Focus<?> chain)
     throws ContextualException
   { 
+    if (localAuthorityName!=null)
+    {
+      URI codeBase=getEffectiveCodeBaseURI();
+      if (codeBase==null)
+      { 
+        throw new ContextualException
+          ("No code base for local authority '"+localAuthorityName+"'"
+          ,declarationInfo
+          );
+      }
+      localMap=new ContextResourceMap();
+      localMap.bind(chain);   // captures current thread map as parent
+      localMap.put(localAuthorityName,URIUtil.ensureTrailingSlash(codeBase));
+    }
+      
     if (constantImports!=null || imports!=null)
     { chain=chain.chain(chain.getSubject());
     }
@@ -541,6 +568,9 @@ public class PathContext
   @Override
   protected void pushLocal()
   {
+    if (localMap!=null)
+    { localMap.push();
+    }  
     super.pushLocal();
     if (baseContext!=null)
     { baseContext.push();
@@ -566,7 +596,9 @@ public class PathContext
     { baseContext.pop();
     }
     super.popLocal();
-    
+    if (localMap!=null)
+    { localMap.pop();
+    }    
   }  
   @Override
   public void start()
