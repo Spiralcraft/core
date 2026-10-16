@@ -86,6 +86,20 @@ public class Binding<T>
     this.targetType=targetType;
   }
   
+  /**
+   * <p>Obtain any required references from the Focus chain.
+   * </p>
+   * 
+   * <p>If this method is called once successfully, attempting to call it again
+   *   may result in an undefined state and should throw an exception.
+   * </p>
+   * 
+   * @param focusChain
+   * @return A Focus chained to the input that publishes the contents of
+   *   the binding
+   *   
+   * @throws BindException If any resources are not found
+   */  
   @Override
   public Focus<?> bind(Focus<?> focus)
     throws BindException
