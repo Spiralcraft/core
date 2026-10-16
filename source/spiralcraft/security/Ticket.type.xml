@@ -149,6 +149,32 @@
     </meta:Method>
     
     <meta:Method>
+      <name>findValidByPrincipalId</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <sec:Ticket.list.type/>
+      </returnType>
+      
+      <contextX>[#p] { principalId:[@j:String],contextId:[@j:String] }
+      </contextX>
+          
+      <x>[*dtask:Fetch{[@sec:Ticket.list],[{`principalId:=principalId`}]}].()
+          [ ([p].contextId==null || .contextId==[p].contextId)   
+            &amp;&amp; .valid 
+          ]
+      </x>
+          
+    </meta:Method>
+
+    <meta:Method>
       <name>create
       </name>
       
@@ -169,7 +195,8 @@
           ,duration:[@st:Duration]
           ,length:=32
           ,alphabet:[@j:CharSequence]
-          ,code:[@j:String]        
+          ,code:[@j:String]
+          ,contextId:[@j:String]        
         }
       </contextX>
       
@@ -184,12 +211,23 @@
                 .generateString([create].length,[create].alphabet)
               :[@util:Random].@secureInstance()
                 .generateString([create].length)
+          ,.contextId=[create].contextId
           ,.@tuple.save()
           ,.
         }
       </x>
     </meta:Method>
 
+    <meta:Method>
+      <name>revoke
+      </name>
+      
+      <returnType><sec:Ticket.type/>
+      </returnType>
+      
+      <x>[sec:Ticket].[*dtask:Edit{ action:=`.revoked=true` }].()
+      </x>
+    </meta:Method>
     
   </methods>
 </meta:Type>
