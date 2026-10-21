@@ -17,6 +17,56 @@
         </revision>
 
         <notes>
+          <scm:Note>Enhance security module to allow for 2FA configurations
+          </scm:Note>
+          <scm:Note>Added try-with-resource construct for ThreadLocalChannel
+            to simplify stack scoping.
+          </scm:Note>
+          <scm:Note>Added default interface methods to Focus to simplify
+            grafting facets in scope.
+          </scm:Note>
+          <scm:Note>Added unit tests (not detailed here)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/Focus.java
+          </URI>
+          <URI>lang/spi/ThreadLocalChannel.java
+          </URI>
+          <URI>security/Login.type.xml
+          </URI>
+          <URI>security/Ticket.type.xml
+          </URI>
+          <URI>security/auth/Authenticator.java
+          </URI>
+          <URI>security/auth/AuthModule.java
+          </URI>
+          <URI>security/auth/AuthSession.java
+          </URI>
+          <URI>security/auth/LoginEntry.java
+          </URI>
+          <URI>security/auth/ModuleSessionContext.java
+          </URI>
+          <URI>security/auth/OneTimeCodeCredential.java
+          </URI>
+          <URI>security/spi/AbstractAuthModule.java
+          </URI>
+          <URI>security/spi/DataAuthModule.java
+          </URI>
+          <URI>security/spi/AuthModuleGroup.java
+          </URI>
+        </resources>        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Provide a way to declare a local context root in a
             PathContext
           </scm:Note>
