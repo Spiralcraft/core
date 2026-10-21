@@ -65,6 +65,10 @@ public class ThreadLocalChannel<T>
   private final boolean writeThrough;
   private DeclarationInfo declarationInfo;
 
+  public interface Scope extends AutoCloseable { @Override void close(); }
+  
+  private final Scope scope= () -> pop();
+  
   class InheritableThreadLocalImpl
     extends InheritableThreadLocal<ThreadReference<T>>
   {
@@ -86,6 +90,13 @@ public class ThreadLocalChannel<T>
     }
     
   }
+  
+  public Scope with(T value)
+  {
+    push(value);
+    return scope;
+  }
+  
   
   public ThreadLocalChannel(final Reflector<T> reflector,boolean inheritable)
   { 

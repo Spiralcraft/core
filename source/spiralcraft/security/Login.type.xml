@@ -107,6 +107,26 @@
 
     </meta:Field>
     
+    <!--  Login.secondFactorList -->
+    <meta:Field>
+
+      <name>secondFactorList
+      </name>
+
+      <description>A list of 2FA types enabled for this user, indicating
+        that 2FA is required. Empty or null means no 2FA required.
+      </description>
+
+      <type>
+        <String.type>
+
+          <maxLength>32
+          </maxLength>
+        
+        </String.type>
+      </type>
+
+    </meta:Field>
     
   </fields>
   

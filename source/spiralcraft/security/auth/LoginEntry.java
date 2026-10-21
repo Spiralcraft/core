@@ -41,6 +41,7 @@ public class LoginEntry
   private volatile String challenge;
   private volatile byte[] digest;
   private volatile boolean persistent;
+  private volatile String oneTimeCode;
   
   
   public LoginEntry(Channel<AuthSession> sessionChannel)
@@ -62,6 +63,7 @@ public class LoginEntry
     challenge=null;
     digest=null;
     persistent=false;
+    oneTimeCode=null;
   }
   
   public void update()
@@ -69,6 +71,13 @@ public class LoginEntry
     AuthSession session=(this.session==null?sessionChannel.get():this.session);
     session.clearCredentials();
     
+    submit();
+  }
+  
+  public void submit()
+  {
+    AuthSession session=(this.session==null?sessionChannel.get():this.session);
+      
     ArrayList<Credential<?>> credentials
       =new ArrayList<Credential<?>>();
 
@@ -85,11 +94,16 @@ public class LoginEntry
     if (challenge!=null)
     { credentials.add(new ChallengeCredential(challenge));
     }
+    if (oneTimeCode!=null)
+    { credentials.add(new OneTimeCodeCredential(oneTimeCode));
+    }
     
     session.addCredentials
       (credentials.toArray(new Credential<?>[credentials.size()]));
   
   }
+  
+  
   
   public void setUsername(String name)
   { this.name=name;
@@ -137,6 +151,13 @@ public class LoginEntry
   public void setPersistent(boolean persistent)
   { this.persistent=persistent;
   }
+
+  public String getOneTimeCode()
+  { return oneTimeCode;
+  }
   
+  public void setOneTimeCode(String oneTimeCode)
+  { this.oneTimeCode=oneTimeCode;
+  }
   
 }

@@ -1,6 +1,9 @@
 package spiralcraft.security.spi;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
@@ -26,6 +29,7 @@ public abstract class AbstractAuthModule
   protected boolean usesActiveCredentials;
   protected String name;
   protected boolean debug;
+  protected Set<String> credentialTypes=new HashSet<>();
   
 
   @Override
@@ -79,6 +83,12 @@ public abstract class AbstractAuthModule
     usesActiveCredentials
       =acceptedCredentials!=null
         && acceptedCredentials.length>0;
+    if (acceptedCredentials!=null)
+    {
+      for (var cred: acceptedCredentials)
+      { credentialTypes.add(cred.getSimpleName());
+      }
+    }
   }
   
   public abstract class AbstractSession
@@ -88,6 +98,7 @@ public abstract class AbstractAuthModule
     protected boolean authenticated;
     protected AuthSession authSession
       =sessionFocus.getSubject().get();
+ 
   
     @Override
     public abstract boolean authenticate();
@@ -104,7 +115,8 @@ public abstract class AbstractAuthModule
     
     @Override
     public void refresh()
-    {
+    { 
+
     }
     
     @Override
@@ -119,6 +131,22 @@ public abstract class AbstractAuthModule
         authenticated=false;
       }
     }
+
+    @Override
+    public void credentialsChanged(Set<String> changedTypes)
+    {      
+      if (usesActiveCredentials &&
+          !Collections.disjoint(changedTypes,credentialTypes)
+         )
+      {
+        principal=null;
+        if (debug)
+        { log.fine("Deauthenticating");
+        }
+        authenticated=false;
+      }
+    }
+
     
     /**
      * Logs out the user by clearing all credentials, attributes and principal 

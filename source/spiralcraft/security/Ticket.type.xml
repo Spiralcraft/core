@@ -86,6 +86,14 @@
       </type>
     </meta:Field>
     
+    <meta:Field>
+      <name>pin
+      </name>
+    
+      <type><String.type/>
+      </type>
+    </meta:Field>
+
     <meta:RelativeField>
       <name>login
       </name>
@@ -196,7 +204,8 @@
           ,length:=32
           ,alphabet:[@j:CharSequence]
           ,code:[@j:String]
-          ,contextId:[@j:String]        
+          ,contextId:[@j:String]
+          ,pin:[@j:String] 
         }
       </contextX>
       
@@ -212,6 +221,7 @@
               :[@util:Random].@secureInstance()
                 .generateString([create].length)
           ,.contextId=[create].contextId
+          ,.pin=[create].pin
           ,.@tuple.save()
           ,.
         }

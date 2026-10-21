@@ -1,0 +1,229 @@
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:sectest="class:/spiralcraft/security/test/"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  xmlns:st="class:/spiralcraft/time/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  >
+  <targetTypeURI>class:/spiralcraft/security/test/Authenticator
+  </targetTypeURI>
+  
+  
+  <sequence>
+
+    <test:Stub>
+      <name>running
+      </name>
+      <messageX>[secauth:Authenticator]
+      </messageX>
+      <conditionX>true
+      </conditionX>
+    </test:Stub>
+    
+    <task:Sequence>
+      <contextX>[secauth:Authenticator].createSession()
+      </contextX>
+    
+    
+      <sequence>
+
+        <test:Stub>
+          <name>session
+          </name>
+          <messageX>[secauth:AuthSession]
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+
+        <test:Assertion>
+          <name>authenticated by default
+          </name>
+          <subjectX>[secauth:AuthSession].isAuthenticated()
+          </subjectX>
+          <testX>.==false
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>login with clearpass
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserOne"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>[secauth:AuthSession].logout()
+          </subjectX>
+          <testX>![secauth:AuthSession].authenticate()
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>login with digest
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userThree"
+                ,saltedDigest:=[@codec:HexCodec].@decodeHex
+                  ("A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04"
+                  )
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserThree"
+            &amp;&amp; [secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>[secauth:AuthSession].logout()
+          </subjectX>
+          <testX>![secauth:AuthSession].authenticate()
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>login nopass
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFour"
+                ,passwordCleartext:=""
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>[secauth:AuthSession].logout()
+          </subjectX>
+          <testX>![secauth:AuthSession].authenticate()
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>login denied
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="denied"                    
+                ,passwordCleartext:="test"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="Denied"
+            &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>digest
+          </name>
+          <subjectX>
+            [@codec:HexCodec]
+              .@encodeHex([secauth:AuthSession].digest("useronetestOne"))
+          </subjectX>
+          <testX>
+            .=="bbb1f56bf069fc1ddee2d08231a9fcc092f63a597a63e32ad1ff047e69627b9d"
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>securePassword
+          </name>
+          <subjectX>
+            [@sec:Login].(username:="userone",clearpass:="testOne")
+              { 
+                .securePassword([secauth:AuthSession].digestFunction)
+                ,.digestpass
+              }
+          </subjectX>
+          <testX>
+            .=="a6753cb0b7567c2ab79d64ce66e9b95512a30ba77f5c359b2241af7e4edf46e8"
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+          
+            <test:Assertion>
+              <name>ticket.create
+              </name>
+              
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("1"
+                  ,[@st:Chronom].@MINUTE.times(5)
+                  ,code:="fooBarBaz123xyz"
+                  )
+              </subjectX>
+              <testX>.code!=null
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+        
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+          
+            <test:Assertion>
+              <name>ticket.validate
+              </name>
+              
+              <subjectX>
+                [@sec:Ticket].@findByCode("fooBarBaz123xyz")
+              </subjectX>
+              <testX>.valid &amp;&amp; .login!=null
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+        
+      </sequence>  
+        
+        
+        
+      
+    </task:Sequence>
+            
+
+  </sequence>
+        
+</task:Reference>

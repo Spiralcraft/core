@@ -31,4 +31,11 @@
     <searchname>denied</searchname>    
     <clearpass>test</clearpass>
   </security:Login>
+  <security:Login>
+    <principalId>7</principalId>
+    <username>UserFive</username>
+    <searchname>userfive</searchname>
+    <clearpass>testFive</clearpass>
+    <secondFactorList>email</secondFactorList>
+  </security:Login>
 </security:Login.list>

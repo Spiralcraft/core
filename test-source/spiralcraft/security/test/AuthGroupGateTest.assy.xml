@@ -1,0 +1,134 @@
+<!-- A group whose second module never passes: the first factor passes and identifies, the session stays unauthenticated and exposes no principal or account -->
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  >
+  <targetTypeURI>class:/spiralcraft/security/test/AuthenticatorGroupGate
+  </targetTypeURI>
+  
+  <sequence>
+
+    <test:Stub>
+      <name>running
+      </name>
+      <messageX>[secauth:Authenticator]
+      </messageX>
+      <conditionX>true
+      </conditionX>
+    </test:Stub>
+    
+    <task:Sequence>
+      <contextX>[secauth:Authenticator].createSession()
+      </contextX>
+    
+      <sequence>
+
+        <test:Assertion>
+          <name>password passes, gate never does
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("gate")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("mfa")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>nothing exposed while staged
+          </name>
+          <subjectX>
+            [secauth:AuthSession]
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>identity known while staged
+          </name>
+          <subjectX>
+            [secauth:AuthSession]
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].identifiedPrincipal.id=="1"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>authenticate again does not change the outcome
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authenticate()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>wrong password: no identity either
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="wrong"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+      </sequence>  
+    </task:Sequence>
+  </sequence>
+</task:Reference>

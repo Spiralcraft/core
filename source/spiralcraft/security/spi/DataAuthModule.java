@@ -417,6 +417,11 @@ public class DataAuthModule
     }
     
     @Override
+    public AuthPrincipal getIdentifiedPrincipal()
+    { return isAuthenticated()?getPrincipal():null;
+    }
+    
+    @Override
     public synchronized boolean authenticate()
     {
       if (boundAccountQuery==null)

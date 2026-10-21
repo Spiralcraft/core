@@ -1,0 +1,110 @@
+<!-- A group whose children resolve to different principals must not authenticate; it does when they agree -->
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  >
+  <targetTypeURI>class:/spiralcraft/security/test/AuthenticatorGroupMismatch
+  </targetTypeURI>
+  
+  <sequence>
+
+    <test:Stub>
+      <name>running
+      </name>
+      <messageX>[secauth:Authenticator]
+      </messageX>
+      <conditionX>true
+      </conditionX>
+    </test:Stub>
+    
+    <task:Sequence>
+      <contextX>[secauth:Authenticator].createSession()
+      </contextX>
+    
+      <sequence>
+
+        <test:Assertion>
+          <name>children disagree: UserOne vs fixed UserTwo
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("fixed")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("mfa")
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>first identifying child takes precedence
+          </name>
+          <subjectX>
+            [secauth:AuthSession]
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].identifiedPrincipal.id=="1"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>children agree: UserTwo
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userTwo"
+                ,passwordCleartext:="testTwo"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserTwo"
+            &amp;&amp; [secauth:AuthSession].accountId=="2"
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("mfa")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+      </sequence>  
+    </task:Sequence>
+  </sequence>
+</task:Reference>

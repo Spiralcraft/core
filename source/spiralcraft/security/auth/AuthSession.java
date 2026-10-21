@@ -19,10 +19,13 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.time.Clock;
 import spiralcraft.util.refpool.URIPool;
 
 /**
@@ -44,12 +47,15 @@ public class AuthSession
   public static final URI FOCUS_URI
     =URIPool.create("class:/spiralcraft/security/auth/AuthSession");
 
+  protected static final Clock clock=Clock.instance();
+  
   protected final ArrayList<Credential<?>> credentialList
     =new ArrayList<Credential<?>>();
   
   protected final HashMap<String,Credential<?>> credentialMap
     =new HashMap<String,Credential<?>>();
-  
+
+    
   protected boolean debug;
 
 
@@ -61,7 +67,7 @@ public class AuthSession
   protected AuthModule.Session[] sessions;
   protected AuthModule.Session primarySession;
   
-  
+  protected long stagedSince;
 
   
   public AuthSession(Authenticator authenticator)
@@ -103,14 +109,7 @@ public class AuthSession
       { return primarySession.getAccountId();
       } 
       else
-      {
-        for (AuthModule.Session session:sessions)
-        { 
-          if (session.getAccountId()!=null)
-          { return session.getAccountId();
-          }
-        }
-        return null;
+      { return null;
       }
     }
     finally
@@ -127,27 +126,52 @@ public class AuthSession
   public synchronized boolean associateLogin
     (String moduleName)
   { 
+  
+    int[] path=resolve(moduleName);
+    if (path==null)
+    { throw new IllegalArgumentException("Module '"+moduleName+"' not found in AuthSession");
+    }    
+    if (sessions==null || sessions[path[0]]==null)
+    { return false;
+    }
     push();
     try
-    { return getModuleSession(moduleName).associateLogin();
+    { return sessions[path[0]].associateLogin(path,1);
     }
     finally
     { pop();
     }
+  
+  
+
   }
- 
+
   
   public synchronized boolean isAuthenticated(String moduleName)
   { 
+
+    int[] path=resolve(moduleName);
+    if (path==null)
+    { throw new IllegalArgumentException("Module '"+moduleName+"' not found in AuthSession");
+    }
+    
+    if (sessions==null || sessions[path[0]]==null)
+    { return false;
+    }
+
     push();
     try
-    { return getModuleSession(moduleName).isAuthenticated();
+    { return sessions[path[0]].isAuthenticated(path,1);
     }
     finally
     { pop();
     }
   }
 
+  private int[] resolve(String moduleName)
+  { return authenticator.getSessionIndex(moduleName);
+  }
+  
   public synchronized boolean isAuthenticated()
   { 
     
@@ -209,20 +233,27 @@ public class AuthSession
     { log.fine("Adding credentials "+Arrays.deepToString(credentials));
     }
     
-
+    Set<String> changed=new HashSet<>();
+    
     for (Credential<?> cred: credentials)
     { 
-      Iterator<Credential<?>> it=credentialList.iterator();
-      while (it.hasNext())
-      { 
-        if (it.next().getClass()==cred.getClass())
-        { it.remove();
-        }
+      String type=cred.getClass().getSimpleName();
+      Credential<?> prior=credentialMap.get(type);
+      if (prior==null || !Objects.deepEquals(prior.getValue(),cred.getValue()))
+      { changed.add(type);
       }
+      
+      credentialList.removeIf(c -> c.getClass()==cred.getClass());
+
       credentialList.add(cred);
-      credentialMap.put(cred.getClass().getSimpleName(),cred);
+      credentialMap.put(type,cred);
     }
-    credentialsChanged();
+    if (!changed.isEmpty())
+    { credentialsChanged(changed);
+    }
+    if (stagedSince==0) 
+    { stagedSince=clock.approxTimeMillis(); 
+    }
   }
 
   /**
@@ -294,6 +325,16 @@ public class AuthSession
     push();
     try
     {
+      long timeout=authenticator.getStagedTimeoutMinutes()*60_000L;
+      if (timeout>0
+           && stagedSince > 0
+           && !credentialList.isEmpty()
+           && clock.approxTimeMillis()-stagedSince > timeout
+           && !isAuthenticated()
+         )
+      { clearCredentials();
+      }
+          
       for (AuthModule.Session session:sessions)
       {
         if (session!=null)
@@ -308,20 +349,30 @@ public class AuthSession
     
   }
 
-  
-  private AuthModule.Session getModuleSession(String moduleName)
-  { 
-    Integer sessionIndex=authenticator.getSessionIndex(moduleName);
-    if (sessionIndex!=null && sessions[sessionIndex]!=null)
-    { return sessions[sessionIndex];
+  public synchronized AuthPrincipal getIdentifiedPrincipal()
+  {
+    if (isAuthenticated())
+    { return getPrincipal();
     }
-    else
-    { throw new IllegalArgumentException("AuthModule '"+moduleName+"' not found");
+    if (sessions==null)
+    { return null;
     }
     
+    for (var session:sessions)
+    {
+      if (session!=null )
+      { 
+        AuthPrincipal p=session.getIdentifiedPrincipal();
+        if (p!=null)
+        { return p;
+        }
+      }
+    }
+    return null;
   }
   
-  private void credentialsChanged()
+  
+  private void credentialsChanged(Set<String> changed)
   {
     if (sessions==null)
     { return;
@@ -330,10 +381,11 @@ public class AuthSession
     push();
     try
     {
+    
       for (AuthModule.Session session:sessions)
       {
         if (session!=null)
-        { session.credentialsChanged();
+        { session.credentialsChanged(changed);
         }
       }
       recomputePrimarySession();
@@ -401,7 +453,14 @@ public class AuthSession
       i++;
     }
     recomputePrimarySession();
-    return primarySession!=null && primarySession.isAuthenticated();
+    if (primarySession!=null && primarySession.isAuthenticated())
+    {
+      stagedSince=0;
+      return true;
+    }
+    else
+    { return false;
+    }
     
   }
   
@@ -501,6 +560,7 @@ public class AuthSession
     credentialMap.clear();
     attributes.clear();
     logoutModules();
+    stagedSince=0;
     
   }
   
@@ -510,10 +570,12 @@ public class AuthSession
    */
   public synchronized void clearCredentials()
   {
+    Set<String> changed=new HashSet<>(credentialMap.keySet());
     credentialList.clear();
     credentialMap.clear();
     attributes.clear();
-    credentialsChanged();
+    credentialsChanged(changed); 
+    stagedSince=0;
     
   }
   

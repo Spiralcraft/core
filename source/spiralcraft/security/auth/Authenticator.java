@@ -20,6 +20,7 @@ import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class Authenticator
   protected AuthModule[] authModules;
   protected boolean debug;
 
-  protected HashMap<String,Integer> moduleMap;
+  protected HashMap<String,int[]> moduleMap;
   
   protected String digestAlgorithm="SHA-256";
 
@@ -85,6 +86,7 @@ public class Authenticator
   
   protected DeclarationInfo declarationInfo;
   protected boolean bound;
+  protected int stagedTimeoutMinutes=10;
   
   protected DigestFunction digestFunction
     =new DigestFunction()
@@ -164,6 +166,14 @@ public class Authenticator
   { return digestFunction;
   }
 
+  public void setStagedTimeoutMinutes(int minutes)
+  { this.stagedTimeoutMinutes=minutes;
+  }
+  
+  public int getStagedTimeoutMinutes()
+  { return stagedTimeoutMinutes;
+  }
+  
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
@@ -177,6 +187,7 @@ public class Authenticator
   public DeclarationInfo getDeclarationInfo()
   { return declarationInfo;
   }
+  
   
   /**
    * <p>Compute a message digest which includes the specified input 
@@ -278,14 +289,24 @@ public class Authenticator
 
     if (authModules!=null)
     {
-      moduleMap=new HashMap<String,Integer>();
+    
+      moduleMap=new HashMap<String,int[]>();
       int i=0;
       for (AuthModule authModule:authModules)
       { 
-        authModule.bind(credentialFocus);
-        if (authModule.getName()!=null)
-        { moduleMap.put(authModule.getName(),i);
+        var path=new int[] {i};
+        String name=authModule.getName();
+        if (name!=null)
+        { 
+          var existing=moduleMap.putIfAbsent(name,path);
+          if (existing!=null)
+          {
+            throw new BindException
+              ("Duplicate AuthModule name '"+name+"'");
+          }
         }
+        authModule.mapChildren(moduleMap,path);
+        authModule.bind(credentialFocus);
         i++;
       }
     }
@@ -307,7 +328,7 @@ public class Authenticator
   { sessionChannel.pop();
   }
   
-  public Integer getSessionIndex(String moduleName)
+  public int[] getSessionIndex(String moduleName)
   { 
     if (moduleMap==null)
     { 

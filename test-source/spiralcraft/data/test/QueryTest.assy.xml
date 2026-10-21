@@ -510,7 +510,7 @@
       <testX>
         .data[0].@cast([@data:Aggregate]).size()==4 
         &amp;&amp; 
-        .data[1].@cast([@data:Aggregate]).size()==5
+        .data[1].@cast([@data:Aggregate]).size()==6
       </testX>
     </test:Assertion>
 
@@ -542,7 +542,7 @@
         {
           .data[0].@cast([@data:Aggregate]).size()==4 
           &amp;&amp; 
-          .data[1].@cast([@data:Aggregate]).size()==5
+          .data[1].@cast([@data:Aggregate]).size()==6
         }
       </testX>
       

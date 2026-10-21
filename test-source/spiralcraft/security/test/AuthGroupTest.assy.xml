@@ -1,0 +1,180 @@
+<!-- A group of one module must behave like the module alone; named lookups reach the module inside the group and the group itself -->
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  >
+  <targetTypeURI>class:/spiralcraft/security/test/AuthenticatorGroup
+  </targetTypeURI>
+  
+  <sequence>
+
+    <test:Stub>
+      <name>running
+      </name>
+      <messageX>[secauth:Authenticator]
+      </messageX>
+      <conditionX>true
+      </conditionX>
+    </test:Stub>
+    
+    <task:Sequence>
+      <contextX>[secauth:Authenticator].createSession()
+      </contextX>
+    
+      <sequence>
+
+        <test:Assertion>
+          <name>not authenticated by default
+          </name>
+          <subjectX>
+            [secauth:AuthSession]
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("mfa")
+            &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>login with clearpass
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserOne"
+            &amp;&amp; [secauth:AuthSession].accountId=="1"
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("mfa")
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="1"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>login with digest
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userThree"
+                ,saltedDigest:=[@codec:HexCodec].@decodeHex
+                  ("A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04"
+                  )
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserThree"
+            &amp;&amp; [secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>wrong password
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="wrong"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>login denied
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="denied"
+                ,passwordCleartext:="test"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="Denied"
+            &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+      </sequence>  
+    </task:Sequence>
+  </sequence>
+</task:Reference>

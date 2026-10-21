@@ -1,0 +1,269 @@
+<!-- Staged login through a group with a dependent code module (test double, fixed code 246810): credentials added by submit() keep earlier factors; the group resets a factor authenticated for a previous identity -->
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  >
+  <targetTypeURI>class:/spiralcraft/security/test/AuthenticatorStaged
+  </targetTypeURI>
+  
+  <sequence>
+
+    <test:Stub>
+      <name>running
+      </name>
+      <messageX>[secauth:Authenticator]
+      </messageX>
+      <conditionX>true
+      </conditionX>
+    </test:Stub>
+    
+    <task:Sequence>
+      <contextX>[secauth:Authenticator].createSession()
+      </contextX>
+    
+      <sequence>
+
+        <test:Assertion>
+          <name>no second factor configured: password alone
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserOne"
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("code")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>second factor configured: password leaves the login staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("code")
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>wrong code: still staged, password factor kept
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="000000"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("code")
+            &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right code: authenticated
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="246810"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserFive"
+            &amp;&amp; [secauth:AuthSession].accountId=="7"
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("code")
+            &amp;&amp; [secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>username changed by submit: password factor drops
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>identity switch: start as UserOne (no second factor)
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserOne"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>identity switch: UserFive by submit resets the code factor
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("code")
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>identity switch: code completes UserFive
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="246810"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate()
+            &amp;&amp; [secauth:AuthSession].principal.name=="UserFive"
+            &amp;&amp; [secauth:AuthSession].accountId=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>update replaces staged credentials
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("code")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>update with a code alone drops the password factor
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="246810"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate()
+            &amp;&amp; ![secauth:AuthSession].isAuthenticated("local")
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated()
+            &amp;&amp; [secauth:AuthSession].principal==null
+            &amp;&amp; [secauth:AuthSession].accountId==null
+            &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+      </sequence>  
+    </task:Sequence>
+  </sequence>
+</task:Reference>

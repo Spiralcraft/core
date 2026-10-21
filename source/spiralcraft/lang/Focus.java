@@ -299,6 +299,43 @@ public interface Focus<T>
    */
   public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel);
 
+  /**
+   * Chain the focus without changing the subject so that augmentations can
+   *   be made in the for local additions of facets
+   * 
+   * @return
+   */
+  public default Focus<T> chain()
+  { return chain(getSubject());
+  }
+  
+  /**
+   * Chain the focus without changing the subject, adding the specified facet
+   *   into the new scope.
+   * 
+   * @return
+   */
+  public default <Tchannel> Focus<T> chainFacet(Channel<Tchannel> facet)
+  {
+    Focus<T> chain=chain(getSubject());
+    chain.addFacet(new SimpleFocus<Tchannel>(facet));
+    return chain;
+    
+  }
+
+  /**
+   * Chain the focus without changing the subject, adding the specified facet
+   *   into the new scope.
+   * 
+   * @return
+   */
+  public default <Tchannel> Focus<T> chainFacet(Focus<Tchannel> facet)
+  {
+    Focus<T> chain=chain(getSubject());
+    chain.addFacet(facet);
+    return chain;
+    
+  }
   
   /**
    * <p>Return a new Focus for the end of the Focus chain that adds a set
