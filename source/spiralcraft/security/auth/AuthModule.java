@@ -16,6 +16,7 @@ package spiralcraft.security.auth;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import spiralcraft.lang.Contextual;
@@ -150,6 +151,14 @@ public interface AuthModule
     
     public default AuthPrincipal getIdentifiedPrincipal() 
     { return isAuthenticated()?getPrincipal():null; 
-    }        
+    } 
+    
+    default void collectNeeded(List<AuthState.Need> out,String path) 
+    { 
+    }
+    
+    default void collectPassed(List<String> out,String path) 
+    { 
+    }    
   }
 }

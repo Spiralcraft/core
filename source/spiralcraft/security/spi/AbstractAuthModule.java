@@ -2,6 +2,7 @@ package spiralcraft.security.spi;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.security.auth.AuthModule;
 import spiralcraft.security.auth.AuthPrincipal;
 import spiralcraft.security.auth.AuthSession;
+import spiralcraft.security.auth.AuthState;
 import spiralcraft.security.auth.Authenticator;
 import spiralcraft.security.auth.Credential;
 
@@ -98,8 +100,7 @@ public abstract class AbstractAuthModule
     protected boolean authenticated;
     protected AuthSession authSession
       =sessionFocus.getSubject().get();
- 
-  
+     
     @Override
     public abstract boolean authenticate();
     
@@ -161,5 +162,19 @@ public abstract class AbstractAuthModule
       }      
       authenticated=false;
     }    
+    
+    public void collectNeeded(List<AuthState.Need> out,String path) 
+    { 
+      if (!authenticated)
+      { out.add(new AuthState.Need(name!=null?name:path,credentialTypes));
+      }    
+    }
+    
+    public void collectPassed(List<String> out,String path) 
+    { 
+      if (authenticated)
+      { out.add(name!=null?name:path);
+      }
+    }     
   }
 }

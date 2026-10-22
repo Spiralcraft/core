@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -55,6 +56,10 @@ public class AuthSession
   protected final HashMap<String,Credential<?>> credentialMap
     =new HashMap<String,Credential<?>>();
 
+  private static String idOf(AuthPrincipal p)
+  { return p!=null?p.getId():null;
+  }
+
     
   protected boolean debug;
 
@@ -69,6 +74,7 @@ public class AuthSession
   
   protected long stagedSince;
 
+  protected AuthState authState;
   
   public AuthSession(Authenticator authenticator)
   { this.authenticator=authenticator;
@@ -227,6 +233,61 @@ public class AuthSession
   { return credentialMap;
   }
     
+  public synchronized AuthState getAuthState()
+  {
+    if (authState==null)
+    { authState=calcAuthState();
+    }
+    return authState;
+  }
+  
+  private AuthState calcAuthState()
+  {
+    if (getIdentifiedPrincipal()==null)
+    { return AuthState.DEFAULT;
+    }
+    else return new AuthState(this);
+  }
+  
+  void collectNeeded(List<AuthState.Need> out) 
+  { 
+    if (sessions==null || isAuthenticated())
+    { return;
+    }
+    String id=idOf(getIdentifiedPrincipal());
+    for (int i=0;i<sessions.length;i++)
+    {
+      var s=sessions[i];
+      if (s==null || s.isAuthenticated())
+      { continue;
+      }
+      String sid=idOf(s.getIdentifiedPrincipal());
+      if (sid!=null && sid.equals(id))
+      { s.collectNeeded(out,String.valueOf(i));
+      }
+    }
+  }
+  
+  void collectPassed(List<String> out)
+  {
+    if (sessions==null)
+    { return;
+    }
+    String id=idOf(getIdentifiedPrincipal());
+    for (int i=0;i<sessions.length;i++)
+    {
+      var s=sessions[i];
+      if (s==null)
+      { continue;
+      }
+      String sid=idOf(s.getIdentifiedPrincipal());
+      if (sid!=null && sid.equals(id))
+      { s.collectPassed(out,String.valueOf(i));
+      }
+    }
+  }
+  
+    
   public synchronized void addCredentials(Credential<?>[] credentials)
   { 
     if (debug)
@@ -249,11 +310,14 @@ public class AuthSession
       credentialMap.put(type,cred);
     }
     if (!changed.isEmpty())
-    { credentialsChanged(changed);
+    { 
+      credentialsChanged(changed);
+      authState=null;
     }
     if (stagedSince==0) 
     { stagedSince=clock.approxTimeMillis(); 
     }
+    
   }
 
   /**
@@ -265,7 +329,9 @@ public class AuthSession
   {
     push();
     try
-    { return authenticateModules();
+    { 
+      authState=null;
+      return authenticateModules();
     }
     finally
     { pop();
@@ -318,6 +384,7 @@ public class AuthSession
    */
   public synchronized void refresh()
   {
+    authState=null;
     if (sessions==null)
     { return;
     }
@@ -561,6 +628,7 @@ public class AuthSession
     attributes.clear();
     logoutModules();
     stagedSince=0;
+    authState=null;
     
   }
   
@@ -576,7 +644,8 @@ public class AuthSession
     attributes.clear();
     credentialsChanged(changed); 
     stagedSince=0;
-    
+    authState=null;
   }
+  
   
 }

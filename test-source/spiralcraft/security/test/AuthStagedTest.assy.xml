@@ -27,6 +27,20 @@
       <sequence>
 
         <test:Assertion>
+          <name>state before any login: nothing needed
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==0
+            &amp;&amp; .passed.@size()==0
+            &amp;&amp; .identifiedPrincipalId==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
           <name>no second factor configured: password alone
           </name>
           <subjectX>
@@ -46,6 +60,20 @@
         </test:Assertion>
 
         <test:Assertion>
+          <name>state: authenticated, both factors passed, nothing needed
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            .authenticated
+            &amp;&amp; .needed.@size()==0
+            &amp;&amp; .passed.@size()==2
+            &amp;&amp; .identifiedPrincipalId=="1"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
           <name>logout
           </name>
           <subjectX>
@@ -56,6 +84,19 @@
             &amp;&amp; [secauth:AuthSession].principal==null
             &amp;&amp; [secauth:AuthSession].accountId==null
             &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>state after logout: empty
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==0
+            &amp;&amp; .identifiedPrincipalId==null
           </testX>
         </test:Assertion>
 
@@ -81,6 +122,23 @@
         </test:Assertion>
 
         <test:Assertion>
+          <name>state: the code module is needed for principal 7
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==1
+            &amp;&amp; .needed[0].module=="code"
+            &amp;&amp; .needed[0].credentialTypes.contains("OneTimeCodeCredential")
+            &amp;&amp; .passed.@size()==1
+            &amp;&amp; .passed[0]=="local"
+            &amp;&amp; .identifiedPrincipalId=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
           <name>wrong code: still staged, password factor kept
           </name>
           <subjectX>
@@ -95,6 +153,19 @@
             &amp;&amp; [secauth:AuthSession].isAuthenticated("local")
             &amp;&amp; ![secauth:AuthSession].isAuthenticated("code")
             &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>state after a wrong code: code still needed
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==1
+            &amp;&amp; .needed[0].module=="code"
           </testX>
         </test:Assertion>
 
@@ -114,6 +185,20 @@
             &amp;&amp; [secauth:AuthSession].accountId=="7"
             &amp;&amp; [secauth:AuthSession].isAuthenticated("code")
             &amp;&amp; [secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>state after the right code: authenticated, nothing needed
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            .authenticated
+            &amp;&amp; .needed.@size()==0
+            &amp;&amp; .passed.@size()==2
+            &amp;&amp; .identifiedPrincipalId=="7"
           </testX>
         </test:Assertion>
 
@@ -182,6 +267,20 @@
             &amp;&amp; ![secauth:AuthSession].isAuthenticated("code")
             &amp;&amp; [secauth:AuthSession].principal==null
             &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>state after the identity switch: code needed for principal 7
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==1
+            &amp;&amp; .needed[0].module=="code"
+            &amp;&amp; .identifiedPrincipalId=="7"
           </testX>
         </test:Assertion>
 

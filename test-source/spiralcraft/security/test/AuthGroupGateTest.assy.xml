@@ -71,6 +71,23 @@
         </test:Assertion>
 
         <test:Assertion>
+          <name>state: the gate module is needed
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==1
+            &amp;&amp; .needed[0].module=="gate"
+            &amp;&amp; .needed[0].credentialTypes.@size()==0
+            &amp;&amp; .passed.@size()==1
+            &amp;&amp; .passed[0]=="local"
+            &amp;&amp; .identifiedPrincipalId=="1"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
           <name>authenticate again does not change the outcome
           </name>
           <subjectX>
@@ -112,6 +129,19 @@
             ![secauth:AuthSession].authenticate()
             &amp;&amp; ![secauth:AuthSession].isAuthenticated("local")
             &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>state after a wrong password: nothing needed
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==0
+            &amp;&amp; .identifiedPrincipalId==null
           </testX>
         </test:Assertion>
 

@@ -1,5 +1,6 @@
 package spiralcraft.security.spi;
 
+import java.util.List;
 import java.util.Set;
 
 import spiralcraft.common.ContextualException;
@@ -9,6 +10,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.security.auth.AuthModule;
 import spiralcraft.security.auth.AuthPrincipal;
+import spiralcraft.security.auth.AuthState;
 import spiralcraft.security.auth.ModuleSessionContext;
 
 public class AuthModuleGroup
@@ -37,8 +39,16 @@ public class AuthModuleGroup
     this.sessionChannel
       =new ThreadLocalChannel<>(BeanReflector.getInstance(ModuleSessionContext.class));
     Focus<?> localChain=focusChain.chainFacet(sessionChannel);
+    int i=0;
     for (var module: modules)
-    { module.bind(localChain);
+    { 
+      module.bind(localChain);
+      if (module.getName()==null)
+      { 
+        log.warning("Unnamed module at position "+i+" in group '"+name
+          +"'");
+      }
+      i++;
     }
     return focusChain;
   }
@@ -250,7 +260,33 @@ public class AuthModuleGroup
       
     }
 
-
+    public void collectNeeded(List<AuthState.Need> out,String path) 
+    { 
+      int i=0;
+      for (var session:sessions)
+      {
+        if (!session.isAuthenticated())
+        { 
+          session.collectNeeded(out, path+"."+i);
+          break;
+        }
+        i++;
+      }
+    }
+    
+    public void collectPassed(List<String> out,String path) 
+    { 
+      int i=0;
+      for (var session:sessions)
+      {
+        if (session.isAuthenticated())
+        { 
+          session.collectPassed(out, path+"."+i);
+        }
+        i++;
+      }
+    }   
+    
     @Override
     public AuthPrincipal getPrincipal()
     {
