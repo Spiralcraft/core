@@ -262,30 +262,32 @@ public class AuthModuleGroup
 
     public void collectNeeded(List<AuthState.Need> out,String path) 
     { 
-      int i=0;
-      for (var session:sessions)
-      {
-        if (!session.isAuthenticated())
-        { 
-          session.collectNeeded(out, path+"."+i);
+
+      for (int i=0;i<sessions.length;i++)
+      { 
+        if (sessions[i]!=null
+            && !sessions[i].isAuthenticated()
+           )
+        { sessions[i].collectNeeded(out,path+"."+i);
           break;
         }
-        i++;
+      }
+
+    }
+
+    public void collectPassed(List<String> out,String path)
+    {
+      if (isAuthenticated())
+      { out.add(name!=null?name:path);
+      }
+      for (int i=0;i<sessions.length;i++)
+      { 
+        if (sessions[i]!=null)
+        { sessions[i].collectPassed(out,path+"."+i);
+        }
       }
     }
-    
-    public void collectPassed(List<String> out,String path) 
-    { 
-      int i=0;
-      for (var session:sessions)
-      {
-        if (session.isAuthenticated())
-        { 
-          session.collectPassed(out, path+"."+i);
-        }
-        i++;
-      }
-    }   
+        
     
     @Override
     public AuthPrincipal getPrincipal()

@@ -68,7 +68,7 @@
           <testX>
             .authenticated
             &amp;&amp; .needed.@size()==0
-            &amp;&amp; .passed.@size()==2
+            &amp;&amp; .passed.@size()==3
             &amp;&amp; .identifiedPrincipalId=="1"
           </testX>
         </test:Assertion>
@@ -197,7 +197,7 @@
           <testX>
             .authenticated
             &amp;&amp; .needed.@size()==0
-            &amp;&amp; .passed.@size()==2
+            &amp;&amp; .passed.@size()==3
             &amp;&amp; .identifiedPrincipalId=="7"
           </testX>
         </test:Assertion>
