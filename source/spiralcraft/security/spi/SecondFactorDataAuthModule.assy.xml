@@ -1,0 +1,55 @@
+<!-- Second factor: a dependent module, placed in an AuthModuleGroup after
+     a module that identifies the user. It finds the account from the
+     group's identified principal and accepts only OneTimeCodeCredential.
+     It passes when the account has no secondFactorList; otherwise it
+     requires a pin that Ticket.verifyPin accepts for context "2fa:email"
+     (match revokes the ticket; a miss counts an attempt, revoking the
+     ticket at 5). The code is discarded once checked, so a later
+     authenticate() does not count another attempt and the state asks
+     for a code again. The app issues the ticket and sends the pin. -->
+<sspi:DataAuthModule
+  xmlns:auth="class:/spiralcraft/security/auth/"
+  xmlns:sspi="class:/spiralcraft/security/spi/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:j="class:/java/lang/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  >
+  <discardCredentials>true
+  </discardCredentials>
+
+  <acceptedCredentials>
+    <j:Class>spiralcraft.security.auth.OneTimeCodeCredential
+    </j:Class>
+  </acceptedCredentials>
+
+  <accountQuery 
+    x="[*query:Selection
+         {[*query:Scan{accountDataType}]
+         ,`.principalId==[auth:ModuleSessionContext].identifiedPrincipal.id`
+         }
+       ]
+      "
+  />
+
+  <credentialValidators>
+    <!-- No second factor configured for the account -->
+    <sspi:BasicCredentialValidator>
+      <whenX>.secondFactorList==null 
+        || .secondFactorList.trim().length()==0
+      </whenX>
+      <validationX>true
+      </validationX>
+    </sspi:BasicCredentialValidator>
+
+    <!-- Second factor configured: a valid ticket with a matching pin -->
+    <sspi:BasicCredentialValidator>
+      <whenX>.secondFactorList!=null 
+        &amp;&amp; .secondFactorList.trim().length()&gt;0
+      </whenX>
+      <validationX>
+        [@sec:Ticket].@verifyPin
+          (.principalId,"2fa:email",OneTimeCodeCredential,5)
+      </validationX>
+    </sspi:BasicCredentialValidator>
+  </credentialValidators>
+</sspi:DataAuthModule>

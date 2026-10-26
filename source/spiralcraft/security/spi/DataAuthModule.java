@@ -510,6 +510,10 @@ public class DataAuthModule
           }
           
           
+          if (discardCredentials)
+          { authSession.discardCredentials(credentialTypes);
+          }
+                    
           if (valid)
           {
           

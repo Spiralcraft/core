@@ -198,6 +198,13 @@ public class AuthSession
   }
   
 
+  public synchronized void discardCredentials(Set<String> types)
+  {
+    for (String type: types)
+    { credentialMap.remove(type);
+    }
+    authState=null;
+  }
   
   public void setDebug(boolean debug)
   { this.debug=debug;

@@ -42,6 +42,13 @@
         <AuthStagedTest/>
       </sequence>
     </test:TestGroup>
+    <test:TestGroup>
+      <name>AuthSecondFactor
+      </name>
+      <sequence>
+        <AuthSecondFactorTest/>
+      </sequence>
+    </test:TestGroup>
   </sequence>
         
 </test:TestGroup>

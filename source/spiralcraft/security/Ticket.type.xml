@@ -93,6 +93,15 @@
       <type><String.type/>
       </type>
     </meta:Field>
+    
+    <meta:Field>
+      <name>attempts
+      </name>
+      <type><Integer.type/>
+      </type>
+      <defaultExpression>0
+      </defaultExpression>
+    </meta:Field>
 
     <meta:RelativeField>
       <name>login
@@ -228,6 +237,61 @@
       </x>
     </meta:Method>
 
+    <meta:TransactionMethod>
+      <name>verifyPin
+      </name>
+    
+      <static>true
+      </static>
+    
+      <parameterTypes>
+        <String.type/>
+        <String.type/>
+        <String.type/>
+        <Integer.type/>
+      </parameterTypes>
+    
+      <returnType><Boolean.type/>
+      </returnType>
+    
+      <contextX>
+        [#v] { principalId:[@j:String]
+             , contextId:[@j:String]
+             , pin:[@j:String]
+             , limit:[@j:Integer]
+             }
+      </contextX>
+    
+      <x>
+        ([v].pin!=null &amp;&amp; [v].contextId!=null)
+         ?@{
+            [@sec:Ticket].@findValidByPrincipalId([v].principalId,[v].contextId)
+            #{
+               .pin==[v].pin?[.]{ .revoke(),true }:[.]{ .recordFailedAttempt([v].limit),false }
+            }
+            [.]
+            .@size()&gt;0
+         }
+         :false
+      </x>
+    </meta:TransactionMethod>    
+
+    <meta:Method>
+      <name>recordFailedAttempt
+      </name>
+      <returnType><sec:Ticket.type/>
+      </returnType>
+      <parameterTypes>
+        <Integer.type/>
+      </parameterTypes>
+      <contextX>
+        [#r] { limit:[@j:Integer] }
+      </contextX>
+      <x>
+        [sec:Ticket].[*dtask:Edit{ action:=`@{ .attempts=(.attempts??0)+1, .revoked=.attempts&gt;=[r].limit }`}].()
+      </x>
+    </meta:Method>
+
     <meta:Method>
       <name>revoke
       </name>
@@ -238,6 +302,7 @@
       <x>[sec:Ticket].[*dtask:Edit{ action:=`.revoked=true` }].()
       </x>
     </meta:Method>
+    
     
   </methods>
 </meta:Type>

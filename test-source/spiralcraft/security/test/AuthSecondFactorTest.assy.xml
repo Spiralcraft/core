@@ -1,0 +1,680 @@
+<!-- The second-factor module against Ticket.verifyPin: tickets are
+     issued here as the app would (Ticket.create with contextId "2fa:email"
+     and a pin). Covers: no 2FA, right pin (revokes), a miss (counts an
+     attempt), reuse, the limit of 5, expiry, another principal's ticket,
+     another context, a code without a password, and the discard of a
+     checked code (a repeated authenticate() counts nothing). -->
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:st="class:/spiralcraft/time/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  >
+  <targetTypeURI>class:/spiralcraft/security/test/AuthenticatorSecondFactor
+  </targetTypeURI>
+  
+  <sequence>
+
+    <test:Stub>
+      <name>running
+      </name>
+      <messageX>[secauth:Authenticator]
+      </messageX>
+      <conditionX>true
+      </conditionX>
+    </test:Stub>
+    
+    <task:Sequence>
+      <contextX>[secauth:Authenticator].createSession()
+      </contextX>
+    
+      <sequence>
+
+        <test:Assertion>
+          <name>no second factor configured: password alone
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userOne"
+                ,passwordCleartext:="testOne"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].principal.name=="UserOne" &amp;&amp; [secauth:AuthSession].isAuthenticated("code")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: state needs the code module
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated &amp;&amp; .needed.@size()==1 &amp;&amp; .needed[0].module=="code" &amp;&amp; .identifiedPrincipalId=="7"
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+            <test:Assertion>
+              <name>right pin: app issues ticket, pin 111111
+              </name>
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("7"
+                  ,[@st:Chronom].@MINUTE.times(10)
+                  ,contextId:="2fa:email"
+                  ,pin:="111111"
+                  )
+              </subjectX>
+              <testX>.pin=="111111" &amp;&amp; .contextId=="2fa:email"
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+
+        <test:Assertion>
+          <name>right pin: wrong pin first fails, password kept
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="900001"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: the wrong code was discarded; authenticating again checks nothing
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authenticate()
+          </subjectX>
+          <testX>
+            .==false
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: state asks for the code again
+          </name>
+          <subjectX>
+            [secauth:AuthSession].authState
+          </subjectX>
+          <testX>
+            !.authenticated
+            &amp;&amp; .needed.@size()==1
+            &amp;&amp; .needed[0].module=="code"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: the miss counted one attempt
+          </name>
+          <subjectX>
+            [@sec:Ticket].@findValidByPrincipalId("7","2fa:email")[.pin=="111111"][0]
+          </subjectX>
+          <testX>
+            .attempts==1
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: pin 111111 authenticates
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="111111"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].principal.name=="UserFive" &amp;&amp; [secauth:AuthSession].accountId=="7" &amp;&amp; [secauth:AuthSession].isAuthenticated("code")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>right pin: the ticket is revoked
+          </name>
+          <subjectX>
+            [@sec:Ticket].@findValidByPrincipalId("7","2fa:email")[.pin=="111111"]
+          </subjectX>
+          <testX>
+            .@size()==0
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>reuse: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>reuse: a used pin fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="111111"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+            <test:Assertion>
+              <name>limit: app issues ticket, pin 222222
+              </name>
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("7"
+                  ,[@st:Chronom].@MINUTE.times(10)
+                  ,contextId:="2fa:email"
+                  ,pin:="222222"
+                  )
+              </subjectX>
+              <testX>.pin=="222222" &amp;&amp; .contextId=="2fa:email"
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+
+        <test:Assertion>
+          <name>limit: miss 1 fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="900002"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: miss 2 fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="900003"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: miss 3 fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="900004"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: miss 4 fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="900005"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: four misses, ticket still valid, 4 attempts
+          </name>
+          <subjectX>
+            [@sec:Ticket].@findValidByPrincipalId("7","2fa:email")[.pin=="222222"][0]
+          </subjectX>
+          <testX>
+            .attempts==4
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: miss 5 fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="900006"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: the fifth miss revoked the ticket
+          </name>
+          <subjectX>
+            [@sec:Ticket].@findValidByPrincipalId("7","2fa:email")[.pin=="222222"]
+          </subjectX>
+          <testX>
+            .@size()==0
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>limit: the right pin no longer works
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="222222"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>expired: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+            <test:Assertion>
+              <name>expired: ticket that expires at once, pin 333333
+              </name>
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("7"
+                  ,[@st:Chronom].@MINUTE.times(0)
+                  ,contextId:="2fa:email"
+                  ,pin:="333333"
+                  )
+              </subjectX>
+              <testX>.pin=="333333" &amp;&amp; .contextId=="2fa:email"
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+
+        <test:Assertion>
+          <name>expired: pin 333333 fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="333333"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>other principal: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+            <test:Assertion>
+              <name>other principal: ticket for UserOne, pin 444444
+              </name>
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("1"
+                  ,[@st:Chronom].@MINUTE.times(10)
+                  ,contextId:="2fa:email"
+                  ,pin:="444444"
+                  )
+              </subjectX>
+              <testX>.pin=="444444" &amp;&amp; .contextId=="2fa:email"
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+
+        <test:Assertion>
+          <name>other principal: UserOne's pin fails for UserFive
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="444444"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>other context: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+            <test:Assertion>
+              <name>other context: pwdreset ticket for UserFive, pin 555555
+              </name>
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("7"
+                  ,[@st:Chronom].@MINUTE.times(10)
+                  ,contextId:="pwdreset"
+                  ,pin:="555555"
+                  )
+              </subjectX>
+              <testX>.pin=="555555" &amp;&amp; .contextId=="pwdreset"
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+
+        <test:Assertion>
+          <name>other context: a pwdreset pin fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="555555"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+            <test:Assertion>
+              <name>code alone: ticket for UserFive, pin 666666
+              </name>
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("7"
+                  ,[@st:Chronom].@MINUTE.times(10)
+                  ,contextId:="2fa:email"
+                  ,pin:="666666"
+                  )
+              </subjectX>
+              <testX>.pin=="666666" &amp;&amp; .contextId=="2fa:email"
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+
+        <test:Assertion>
+          <name>code alone: no password, no identity, fails
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="666666"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>code alone: the ticket is untouched
+          </name>
+          <subjectX>
+            [@sec:Ticket].@findValidByPrincipalId("7","2fa:email")[.pin=="666666"][0]
+          </subjectX>
+          <testX>
+            .attempts==0
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>after code alone: password leaves UserFive staged
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,username:="userFive"
+                ,passwordCleartext:="testFive"
+              )
+              .update()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].isAuthenticated("local") &amp;&amp; ![secauth:AuthSession].isAuthenticated("code") &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal.id=="7"
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>after code alone: pin 666666 now authenticates
+          </name>
+          <subjectX>
+            [@secauth:LoginEntry]
+              .([secauth:AuthSession].@channel
+                ,oneTimeCode:="666666"
+              )
+              .submit()
+          </subjectX>
+          <testX>
+            [secauth:AuthSession].authenticate() &amp;&amp; [secauth:AuthSession].principal.name=="UserFive" &amp;&amp; [secauth:AuthSession].accountId=="7" &amp;&amp; [secauth:AuthSession].isAuthenticated("code")
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>logout
+          </name>
+          <subjectX>
+            [secauth:AuthSession].logout()
+          </subjectX>
+          <testX>
+            ![secauth:AuthSession].isAuthenticated() &amp;&amp; [secauth:AuthSession].principal==null &amp;&amp; [secauth:AuthSession].identifiedPrincipal==null
+          </testX>
+        </test:Assertion>
+
+      </sequence>  
+    </task:Sequence>
+  </sequence>
+</task:Reference>

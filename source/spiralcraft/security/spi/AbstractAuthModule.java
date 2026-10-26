@@ -32,6 +32,7 @@ public abstract class AbstractAuthModule
   protected String name;
   protected boolean debug;
   protected Set<String> credentialTypes=new HashSet<>();
+  protected boolean discardCredentials;
   
 
   @Override
@@ -93,6 +94,10 @@ public abstract class AbstractAuthModule
     }
   }
   
+  public void setDiscardCredentials(boolean discardCredentials)
+  { this.discardCredentials=discardCredentials;
+  }
+    
   public abstract class AbstractSession
     implements Session
   {
