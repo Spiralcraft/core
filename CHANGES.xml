@@ -11,6 +11,26 @@
     
      
     <detail>
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Make Switch and Case work for all data types including
+            primitives
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/components
+        </path>
+        
+        <resources>
+          <URI>Case.java
+          </URI>
+          <URI>Switch.java
+          </URI>
+        </resources>
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev191
@@ -46,6 +66,8 @@
           <URI>security/auth/AuthModule.java
           </URI>
           <URI>security/auth/AuthSession.java
+          </URI>
+          <URI>security/auth/AuthState.java
           </URI>
           <URI>security/auth/LoginEntry.java
           </URI>
