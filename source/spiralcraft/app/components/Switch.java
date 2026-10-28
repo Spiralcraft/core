@@ -29,6 +29,7 @@ import spiralcraft.app.kit.StandardContainer;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
+import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -96,7 +97,11 @@ public class Switch<T>
     emptyMask=new boolean[children.length];
     defaultMask=new boolean[children.length];
     
-    constants=(T[]) Array.newInstance(x.getContentType(),children.length);
+    constants=(T[]) Array.newInstance
+      (ClassUtil.boxedEquivalent(x.getContentType())
+      ,children.length
+      );
+      
     StringConverter<T> converter=x.getReflector().getStringConverter();
     for (int i=0;i<children.length;i++)
     {

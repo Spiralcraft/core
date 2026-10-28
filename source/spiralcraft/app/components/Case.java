@@ -35,7 +35,7 @@ public class Case<T>
   private T constant;
   private boolean deflt;
   
-  void setConstantX(Binding<T> constantX)
+  public void setConstantX(Binding<T> constantX)
   { 
     removeParentContextual(this.constantX);
     this.constantX=constantX;
