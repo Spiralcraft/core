@@ -248,6 +248,10 @@ public class AuthSession
     return authState;
   }
   
+  public synchronized boolean isStagedFor(String credentialName)
+  { return getAuthState().isStagedFor(credentialName);
+  }
+  
   private AuthState calcAuthState()
   {
     if (getIdentifiedPrincipal()==null)

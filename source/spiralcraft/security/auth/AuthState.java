@@ -46,6 +46,38 @@ public final class AuthState
   { return passed.toArray(new String[passed.size()]);
   }
 
+  @Override
+  public String toString()
+  {
+    return "AuthState{authenticated="+authenticated
+      +", principal="+getIdentifiedPrincipalId()
+      +", passed="+passed
+      +", needed="+needed
+      +"}";
+  }
+
+  /**
+   * Indicate whether we're in a staged state and a given credential is needed
+   * 
+   * @param credentialName
+   * @return
+   */
+  public boolean isStagedFor(String credentialName)
+  { 
+    if (!authenticated && getPassed().length>0)
+    {
+      for (var need: getNeeded())
+      { 
+        if (need.getCredentialTypes()
+            .contains(OneTimeCodeCredential.class.getSimpleName())
+           )
+        { return true;
+        }    
+      }
+    }
+    return false;
+  }
+
   public static final class Need
   {
     private final String name;
@@ -63,6 +95,12 @@ public final class AuthState
                  // name, or dotted path "0.1"
     public Set<String> getCredentialTypes()
     { return credentialTypes;
+    }
+    
+    // In Need, after getCredentialTypes():
+    @Override
+    public String toString()
+    { return name+credentialTypes;
     }
   }
 }
