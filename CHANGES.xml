@@ -21,6 +21,27 @@
           </scm:Note>
         </notes>
         
+        <path>source/spiralcraft/util/string
+        </path>
+        
+        <resources>
+          <URI>IdentifierConverter.java
+          </URI>
+          <URI>CamelSnakeConverter.java
+          </URI>
+        </resources>
+      </scm:Change>
+    
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Make Switch and Case work for all data types including
+            primitives
+          </scm:Note>
+        </notes>
+        
         <path>source/spiralcraft/app/components
         </path>
         
