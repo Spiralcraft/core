@@ -86,6 +86,10 @@
         <utiltest:UtilTest
           xmlns:utiltest="class:/spiralcraft/util/test/"
         />
+
+        <idtest:IdTest
+          xmlns:idtest="class:/spiralcraft/data/id/test/"
+        />
         
         <iotest:RecordIteratorTest>
 

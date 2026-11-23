@@ -1,5 +1,5 @@
 //
-package spiralcraft.data.util;
+package spiralcraft.data.id;
 
 import spiralcraft.codec.text.CrockfordBase32Codec;
 import spiralcraft.util.string.StringUtil;

@@ -1,5 +1,5 @@
 //
-package spiralcraft.data.util;
+package spiralcraft.data.id;
 
 /**
  * An expanding, lexicographically ordered sequence of Crockford Base32 strings.
@@ -121,6 +121,90 @@ public final class CrockfordExpandingSequence
     { b.append('0');
     }
     return b.toString();
+  }
+
+  /**
+   * The position of a value in the sequence, counting "0" as 0.
+   *
+   * @throws IllegalArgumentException if s is not a value this class generates
+   * @throws ArithmeticException if the position does not fit in a long
+   */
+  public static long positionOf(String s)
+  {
+    if (s==null || s.isEmpty())
+    { throw new IllegalArgumentException("Not a valid sequence value: "+s);
+    }
+    int length=lengthAt(s,0);
+    if (s.length()!=length)
+    { throw new IllegalArgumentException("Not a valid sequence value: "+s);
+    }
+
+    // The values of all shorter lengths come first
+    long position=0;
+    int firstDigitStart=0;
+    for (int l=1;l<length;l++)
+    {
+      position=Math.addExact
+        (position
+        ,Math.multiplyExact(DIGITS_PER_LENGTH[l-1],power32(l-1))
+        );
+      firstDigitStart+=DIGITS_PER_LENGTH[l-1];
+    }
+
+    // Then the value read as a base 32 number, its first digit counted
+    //   from the first digit of its length
+    long offset=DIGITS.indexOf(s.charAt(0))-firstDigitStart;
+    for (int i=1;i<length;i++)
+    {
+      int digit=DIGITS.indexOf(s.charAt(i));
+      if (digit<0)
+      { throw new IllegalArgumentException("Not a valid sequence value: "+s);
+      }
+      offset=Math.addExact(Math.multiplyExact(offset,32),digit);
+    }
+    return Math.addExact(position,offset);
+  }
+
+  /**
+   * The value at a position in the sequence, "0" at 0; the inverse of
+   *   {@link #positionOf}.
+   *
+   * @throws IllegalArgumentException if position is negative
+   * @throws ArithmeticException beyond the values of 13 characters
+   */
+  public static String valueAt(long position)
+  {
+    if (position<0)
+    { throw new IllegalArgumentException("Negative position: "+position);
+    }
+    int firstDigitStart=0;
+    for (int l=1;l<=DIGITS_PER_LENGTH.length;l++)
+    {
+      long span=power32(l-1);
+      long count=DIGITS_PER_LENGTH[l-1]*span;
+      if (position<count)
+      {
+        char[] d=new char[l];
+        for (int i=l-1;i>0;i--)
+        {
+          d[i]=DIGITS.charAt((int) (position%32));
+          position/=32;
+        }
+        d[0]=DIGITS.charAt(firstDigitStart+(int) position);
+        return new String(d);
+      }
+      position-=count;
+      firstDigitStart+=DIGITS_PER_LENGTH[l-1];
+    }
+    throw new IllegalArgumentException("Position beyond the sequence");
+  }
+
+  private static long power32(int exponent)
+  {
+    if (exponent>12)
+    { throw new ArithmeticException("32^"+exponent+" does not fit in a long");
+    }
+    return 1L<<(5*exponent);
   }
 
   /**

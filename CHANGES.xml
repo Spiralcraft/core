@@ -11,6 +11,37 @@
     
      
     <detail>
+    
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Refine scalable distributed unique id generation scheme
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/id
+        </path>
+        
+        <resources>
+          <URI>CrockfordExpandingSequence.java
+          </URI>
+          <URI>FractalId.java
+          </URI>
+          <URI>FractalIdContext.java
+          </URI>
+          <URI>FractalSequence.java
+          </URI>
+          <URI>FractalTimebase.java
+          </URI>
+          <URI>FractalTimebaseParts.java
+          </URI>
+          <URI>TimestampIdGenerator.java
+          </URI>
+        </resources>
+      </scm:Change>    
+    
       <scm:Change>
         <revision>-dev191
         </revision>
@@ -120,25 +151,7 @@
         
       </scm:Change>
 
-      <scm:Change>
-        <revision>-dev191
-        </revision>
 
-        <notes>
-          <scm:Note>Refine scalable distributed unique id generation scheme
-          </scm:Note>
-        </notes>
-        
-        <path>source/spiralcraft/data/util
-        </path>
-        
-        <resources>
-          <URI>TimestampIdGenerator.java
-          </URI>
-          <URI>CrockfordExpandingSequence.java
-          </URI>
-        </resources>
-      </scm:Change>
 
       <scm:Change>
         <revision>-dev191

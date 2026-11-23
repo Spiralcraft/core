@@ -1,6 +1,6 @@
 <task:Eval
   xmlns:task="class:/spiralcraft/task"
-  xmlns:du="class:/spiralcraft/data/util"
+  xmlns:du="class:/spiralcraft/data/id"
   xmlns:j="class:/java/lang"
   xmlns:ju="class:/java/util"
   xmlns:su="class:/spiralcraft/util/string"

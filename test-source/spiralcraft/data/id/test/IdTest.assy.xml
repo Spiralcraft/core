@@ -1,0 +1,234 @@
+<test:TestGroup
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:fid="class:/spiralcraft/data/id/"
+  xmlns:j="class:/java/lang/"
+  xmlns:ju="class:/java/util/"
+  >
+  <name>spiralcraft.data.id.test
+  </name>
+
+  <sequence>
+
+    <test:Assertion>
+      <name>mint at a fixed time
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0").nextIdAt(1795428000000L)
+      </subjectX>
+      <testX>.=="3PAGY5XD0"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>counter within a tick
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0")
+        { .nextIdAt(1795428000000L)+" "+.nextIdAt(1795428000000L)+" "+.nextIdAt(1795428000000L)+" "+.nextIdAt(1795428000000L)
+          +" "+.nextIdAt(1795428000000L)+" "+.nextIdAt(1795428000000L)
+        }
+      </subjectX>
+      <testX>.=="3PAGY5XD0 3PAGY5XD00 3PAGY5XD01 3PAGY5XD02 3PAGY5XD03 3PAGY5XD040"
+        &amp;&amp; [@ju:ArrayList].([@ju:TreeSet].([@ju:Arrays].@asList(.split(" ")))).equals([@ju:Arrays].@asList(.split(" ")))
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>across ticks and an epoch bump
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0")
+        { .nextIdAt(1795428000000L)+" "+.nextIdAt(1795428000000L)+" "+.nextIdAt(1795428000020L)
+          +" "+.nextIdAt(1795428000020L)+" "+.nextIdAt(1798277264724L)
+          +" "+.nextIdAt(1798277264725L)+" "+.nextIdAt(1798277264725L)
+        }
+      </subjectX>
+      <testX>.=="3PAGY5XD0 3PAGY5XD00 3PAGY5ZD0 3PAGY5ZD00 3ZZZZZZD0 4000000D0 4000000D00"
+        &amp;&amp; [@ju:ArrayList].([@ju:TreeSet].([@ju:Arrays].@asList(.split(" ")))).equals([@ju:Arrays].@asList(.split(" ")))
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>many mints strictly increasing
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0").nextIds(2000)
+      </subjectX>
+      <testX>[@ju:TreeSet].([@ju:Arrays].@asList(.)).@size()==2000
+        &amp;&amp; [@ju:ArrayList].([@ju:TreeSet].([@ju:Arrays].@asList(.))).equals([@ju:Arrays].@asList(.))
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>clock steps back
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0")
+        { .nextIdAt(1795428000000L)+" "+.nextIdAt(1795427995000L)+" "+.nextIdAt(1795428000000L)
+        }
+      </subjectX>
+      <testX>.=="3PAGY5XD0 3PAGY5XD00 3PAGY5XD01"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>P0 sorts after D0 within the tick
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"P0").nextIdAt(1795428000000L)
+      </subjectX>
+      <testX>.=="3PAGY5XP0"
+        &amp;&amp; .compareTo("3PAGY5XD0")&gt;0
+        &amp;&amp; .compareTo("3PAGY5XD0ZZ")&gt;0
+        &amp;&amp; .compareTo("3PAGY5YD0")&lt;0
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>a prefix carries a counter on a new tick
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0").nextPrefixAt(1795428000000L)
+      </subjectX>
+      <testX>.=="3PAGY5XD00"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>the next id is the prefix's sibling
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0")
+        { .nextIdAt(1795428000000L)+" "+.nextPrefixAt(1795428000000L)+" "+.nextIdAt(1795428000000L)
+        }
+      </subjectX>
+      <testX>.=="3PAGY5XD0 3PAGY5XD00 3PAGY5XD01"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>a block sorts between the ids around it
+      </name>
+      <subjectX>[@fid:FractalSequence].([@fid:FractalTimebase].@parse("A76A79869XCFV2"),"D0")
+        { .nextIdAt(1795428000000L)+" "+[@j:String].@join(" ",.nextBlockAt(1795428000000L,5))+" "+.nextIdAt(1795428000000L)
+        }
+      </subjectX>
+      <testX>.=="3PAGY5XD0 3PAGY5XD000 3PAGY5XD001 3PAGY5XD002 3PAGY5XD003 3PAGY5XD0040 3PAGY5XD01"
+        &amp;&amp; [@ju:ArrayList].([@ju:TreeSet].([@ju:Arrays].@asList(.split(" ")))).equals([@ju:Arrays].@asList(.split(" ")))
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>a prefix extended under a prefix
+      </name>
+      <subjectX>[@j:String].@join(" ",[@fid:FractalSequence].@extend("3PAGY5XD000",2))
+      </subjectX>
+      <testX>.=="3PAGY5XD0000 3PAGY5XD0001"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>decompose an id
+      </name>
+      <subjectX>[@fid:FractalIdContext].@instance().parse("3PAGY5XD010")
+      </subjectX>
+      <testX>.id=="3PAGY5XD010"
+        &amp;&amp; .epoch==3
+        &amp;&amp; .epochCharacter=='3'
+        &amp;&amp; .timestamp=="PAGY5X"
+        &amp;&amp; .minter=="D0"
+        &amp;&amp; .minterRubric=='D'
+        &amp;&amp; .minterSequence=="0"
+        &amp;&amp; .counter=="10"
+        &amp;&amp; .counterLevels.@size()==2
+        &amp;&amp; .counterLevels[0]=="1"
+        &amp;&amp; .counterLevels[1]=="0"
+        &amp;&amp; .tickMillis&gt;8.77
+        &amp;&amp; .tickMillis&lt;8.79
+        &amp;&amp; .tickStartMillis&lt;=1795428000000.0
+        &amp;&amp; .tickStartMillis+.tickMillis&gt;1795428000000.0
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>decompose the counter of a nested prefix
+      </name>
+      <subjectX>[@fid:FractalIdContext].@instance().parse("3PAGY5XD0001")
+      </subjectX>
+      <testX>.counter=="001"
+        &amp;&amp; .counterLevels.@size()==3
+        &amp;&amp; .counterLevels[2]=="1"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>decompose the first id of a tick, a longer minter
+      </name>
+      <subjectX>[@fid:FractalIdContext].@instance().parse("3PAGY5XP40")
+      </subjectX>
+      <testX>.minter=="P40"
+        &amp;&amp; .minterSequence=="40"
+        &amp;&amp; .counter==""
+        &amp;&amp; .counterLevels.@size()==0
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>decompose a width 7 id
+      </name>
+      <subjectX>[@fid:FractalIdContext].@instance().parse("70000000S0")
+      </subjectX>
+      <testX>.epoch==7
+        &amp;&amp; .timestamp=="0000000"
+        &amp;&amp; .minterRubric=='S'
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>explain the timebase
+      </name>
+      <subjectX>[@fid:FractalIdContext].@instance().explainTimebase()
+      </subjectX>
+      <testX>.spec=="A76A79869XCFV2"
+        &amp;&amp; .base==10
+        &amp;&amp; .originMillis==1767225600000L
+        &amp;&amp; .epochs.@size()==32
+        &amp;&amp; .epochs[0].startMillis==1767225600000.0
+        &amp;&amp; .epochs[6].width==6
+        &amp;&amp; .epochs[7].width==7
+        &amp;&amp; .epochs[16].width==7
+        &amp;&amp; .epochs[17].width==8
+        &amp;&amp; .epochs[25].width==8
+        &amp;&amp; .epochs[26].width==9
+        &amp;&amp; .epochs[31].character=='Z'
+        &amp;&amp; .epochs[3].endMillis==.epochs[4].startMillis
+        &amp;&amp; .epochs[3].tickMillis&gt;8.77
+        &amp;&amp; .epochs[3].tickMillis&lt;8.79
+        &amp;&amp; .epochs[16].tickMillis&gt;30.2
+        &amp;&amp; .epochs[16].tickMillis&lt;30.4
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>the origin day of the spec
+      </name>
+      <subjectX>[@fid:CrockfordExpandingSequence].@positionOf("CFV2")
+      </subjectX>
+      <testX>.==20454L
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>positions and values of the expanding sequence
+      </name>
+      <subjectX>[@fid:CrockfordExpandingSequence].@valueAt(0L)+" "+[@fid:CrockfordExpandingSequence].@valueAt(3L)+" "+[@fid:CrockfordExpandingSequence].@valueAt(4L)+" "+[@fid:CrockfordExpandingSequence].@valueAt(20454L)
+      </subjectX>
+      <testX>.=="0 3 40 CFV2"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>the system context
+      </name>
+      <subjectX>[@fid:FractalIdContext].@instance()
+      </subjectX>
+      <testX>.minter=="D0"
+        &amp;&amp; .timebase.spec=="A76A79869XCFV2"
+        &amp;&amp; .nextId().startsWith(.timebase.encode([@j:System].@currentTimeMillis()).substring(0,1))
+      </testX>
+    </test:Assertion>
+
+  </sequence>
+</test:TestGroup>
