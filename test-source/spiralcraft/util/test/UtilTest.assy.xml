@@ -616,6 +616,393 @@
       <testX>true
       </testX>
     </test:Assertion>      
+
+    <test:Assertion>
+      <name>camelSnake toIn tool_call_id
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("tool_call_id")
+      </subjectX>
+      <testX>.=="toolCallId"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut toolCallId
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("toolCallId")
+      </subjectX>
+      <testX>.=="tool_call_id"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip tool_call_id
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("tool_call_id"))
+      </subjectX>
+      <testX>.=="tool_call_id"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip toolCallId
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("toolCallId"))
+      </subjectX>
+      <testX>.=="toolCallId"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn finish_reason
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("finish_reason")
+      </subjectX>
+      <testX>.=="finishReason"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut finishReason
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("finishReason")
+      </subjectX>
+      <testX>.=="finish_reason"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip finish_reason
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("finish_reason"))
+      </subjectX>
+      <testX>.=="finish_reason"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip finishReason
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("finishReason"))
+      </subjectX>
+      <testX>.=="finishReason"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn reasoning_content
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("reasoning_content")
+      </subjectX>
+      <testX>.=="reasoningContent"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut reasoningContent
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("reasoningContent")
+      </subjectX>
+      <testX>.=="reasoning_content"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip reasoning_content
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("reasoning_content"))
+      </subjectX>
+      <testX>.=="reasoning_content"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip reasoningContent
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("reasoningContent"))
+      </subjectX>
+      <testX>.=="reasoningContent"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn max_tokens
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("max_tokens")
+      </subjectX>
+      <testX>.=="maxTokens"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut maxTokens
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("maxTokens")
+      </subjectX>
+      <testX>.=="max_tokens"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip max_tokens
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("max_tokens"))
+      </subjectX>
+      <testX>.=="max_tokens"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip maxTokens
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("maxTokens"))
+      </subjectX>
+      <testX>.=="maxTokens"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn prompt_tokens_details
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("prompt_tokens_details")
+      </subjectX>
+      <testX>.=="promptTokensDetails"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut promptTokensDetails
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("promptTokensDetails")
+      </subjectX>
+      <testX>.=="prompt_tokens_details"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip prompt_tokens_details
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("prompt_tokens_details"))
+      </subjectX>
+      <testX>.=="prompt_tokens_details"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip promptTokensDetails
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("promptTokensDetails"))
+      </subjectX>
+      <testX>.=="promptTokensDetails"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn top_p
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("top_p")
+      </subjectX>
+      <testX>.=="topP"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut topP
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("topP")
+      </subjectX>
+      <testX>.=="top_p"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip top_p
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("top_p"))
+      </subjectX>
+      <testX>.=="top_p"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip topP
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("topP"))
+      </subjectX>
+      <testX>.=="topP"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn role
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("role")
+      </subjectX>
+      <testX>.=="role"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut role
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("role")
+      </subjectX>
+      <testX>.=="role"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip role
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("role"))
+      </subjectX>
+      <testX>.=="role"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip role
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("role"))
+      </subjectX>
+      <testX>.=="role"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn content
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("content")
+      </subjectX>
+      <testX>.=="content"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut content
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("content")
+      </subjectX>
+      <testX>.=="content"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip content
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut([@sutil:CamelSnakeConverter].@INSTANCE.toIn("content"))
+      </subjectX>
+      <testX>.=="content"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake round trip content
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn([@sutil:CamelSnakeConverter].@INSTANCE.toOut("content"))
+      </subjectX>
+      <testX>.=="content"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn passes a_1
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("a_1")
+      </subjectX>
+      <testX>.=="a_1"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn passes _x
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("_x")
+      </subjectX>
+      <testX>.=="_x"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn passes x_
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("x_")
+      </subjectX>
+      <testX>.=="x_"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn passes a__b
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("a__b")
+      </subjectX>
+      <testX>.=="a__b"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn passes Tool_call
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("Tool_call")
+      </subjectX>
+      <testX>.=="Tool_call"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toIn passes HTTP_status
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toIn("HTTP_status")
+      </subjectX>
+      <testX>.=="HTTP_status"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut passes HTTPStatus
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("HTTPStatus")
+      </subjectX>
+      <testX>.=="HTTPStatus"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut passes ToolCall
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("ToolCall")
+      </subjectX>
+      <testX>.=="ToolCall"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut passes a_b
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("a_b")
+      </subjectX>
+      <testX>.=="a_b"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake toOut passes _x
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].@INSTANCE.toOut("_x")
+      </subjectX>
+      <testX>.=="_x"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>camelSnake constructed instance
+      </name>
+      <subjectX>[@sutil:CamelSnakeConverter].().toIn("tool_call_id")
+      </subjectX>
+      <testX>.=="toolCallId"
+      </testX>
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
