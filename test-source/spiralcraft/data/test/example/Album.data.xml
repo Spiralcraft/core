@@ -1,0 +1,10 @@
+<example:Album.list
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+
+  <example:Album>
+    <albumId>a1</albumId>
+    <title>Ordered</title>
+  </example:Album>
+
+</example:Album.list>

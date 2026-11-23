@@ -827,6 +827,62 @@
       </sequence>
     </dtask:Session>
 
+
+    <!-- The order of a RelativeField: Album's items, written out of order -->
+    <dtask:Fetch>
+
+      <query>
+        <query:Scan>
+          <type x="[@example:Album].type"/>
+        </query:Scan>
+      </query>
+
+      <sequence>
+        <test:Assertion>
+          <name>RelativeField order, with a second element for ties
+          </name>
+          <subjectX>[example:Album.list].@top.items
+          </subjectX>
+          <testX>.#{.title}==[{"Morning","Bridge","Coda","Anthem","Echo","Dusk"}]
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <name>RelativeField order across subtypes
+          </name>
+          <subjectX>[example:Album.list].@top.items
+          </subjectX>
+          <testX>@[2].@cast([@example:Interlude])!=null
+            &amp;&amp; @[3].@cast([@example:Track]).seconds==240
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <name>RelativeField order reversed
+          </name>
+          <subjectX>[example:Album.list].@top.itemsReversed
+          </subjectX>
+          <testX>.#{.title}==[{"Dusk","Echo","Anthem","Coda","Bridge","Morning"}]
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <name>RelativeField order by a String
+          </name>
+          <subjectX>[example:Album.list].@top.itemsByTitle
+          </subjectX>
+          <testX>.#{.title}==[{"Anthem","Bridge","Coda","Dusk","Echo","Morning"}]
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <name>RelativeField without an order
+          </name>
+          <subjectX>[example:Album.list].@top.unorderedItems
+          </subjectX>
+          <testX>.@size()==6
+            &amp;&amp; .#{.title}.[*fn:Sort]==[{"Anthem","Bridge","Coda","Dusk","Echo","Morning"}]
+          </testX>
+        </test:Assertion>
+      </sequence>
+    </dtask:Fetch>
+
   </scenarios>
   
 </task:Sequence>

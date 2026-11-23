@@ -31,6 +31,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.DeletionConstraint;
 import spiralcraft.data.Field;
 import spiralcraft.data.Key;
+import spiralcraft.data.Order;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.CursorAggregate;
@@ -61,6 +62,7 @@ public class RelativeField<T extends DataComposite>
   private boolean child;
   private DeletionConstraint deletionConstraint;
   private boolean importKey;
+  private Order order;
   
   { this.setTransient(true);
   }
@@ -106,6 +108,20 @@ public class RelativeField<T extends DataComposite>
   { referencedKeyName=keyName;
   }
 
+  /**
+   * The order of the records of a relation to many: its elements, earlier
+   *   ones taking preference, are ordering expressions over the referenced
+   *   type, relative to the record (.seq), each with an optional + or -
+   *   for its direction. The sort runs in memory over the related records.
+   */
+  public void setOrder(Order order)
+  { this.order=order;
+  }
+
+  public Order getOrder()
+  { return order;
+  }
+
   @SuppressWarnings("rawtypes")
   @Override
   public void setArchetypeField(Field field)
@@ -122,6 +138,9 @@ public class RelativeField<T extends DataComposite>
        }
        if (referencedFieldNames==null)
        { referencedFieldNames=rfield.referencedFieldNames;
+       }
+       if (order==null)
+       { order=rfield.order;
        }
        child=rfield.child;
      }
@@ -175,6 +194,7 @@ public class RelativeField<T extends DataComposite>
     super.constructExtension(copy);
     copy.fieldNames=fieldNames;
     copy.referencedFieldNames=referencedFieldNames;
+    copy.order=order;
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
@@ -445,6 +465,15 @@ public class RelativeField<T extends DataComposite>
       query=key.getForeignQuery();
       if (query==null)
       { throw new BindException("No foreign query for "+getURI());
+      }
+      if (order!=null)
+      {
+        if (!getType().isAggregate())
+        { 
+          throw new BindException
+            ("An order applies only to a relation to many: "+getURI());
+        }
+        query=query.sort(order);
       }
     }
     catch (DataException x)

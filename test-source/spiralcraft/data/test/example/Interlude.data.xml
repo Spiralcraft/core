@@ -1,0 +1,13 @@
+<example:Interlude.list
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+
+  <example:Interlude>
+    <itemId>i1</itemId>
+    <albumId>a1</albumId>
+    <disc>1</disc>
+    <trackNo>3</trackNo>
+    <title>Coda</title>
+  </example:Interlude>
+
+</example:Interlude.list>

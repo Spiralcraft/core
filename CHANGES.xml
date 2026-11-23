@@ -11,6 +11,19 @@
     
      
     <detail>
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Add sort option for RelativeField
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/RelativeField.java
+        </path>
+      </scm:Change>
     
       <scm:Change>
         <revision>-dev191

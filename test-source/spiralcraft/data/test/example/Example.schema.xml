@@ -87,5 +87,21 @@
       <type><example:ToDoListItem.type/>
       </type>
     </meta:Entity>
+
+    <meta:Entity>
+      <type><example:Album.type/>
+      </type>
+    </meta:Entity>
+
+    <meta:Entity>
+      <type><example:Track.type/>
+      </type>
+    </meta:Entity>
+
+    <meta:Entity>
+      <type><example:Interlude.type/>
+      </type>
+    </meta:Entity>
+
   </entities>
 </meta:Schema>

@@ -1,0 +1,8 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <baseType><example:AlbumItem.type/>
+  </baseType>
+</meta:Type>

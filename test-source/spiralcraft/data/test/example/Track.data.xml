@@ -1,0 +1,50 @@
+<example:Track.list
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+
+  <example:Track>
+    <itemId>t5</itemId>
+    <albumId>a1</albumId>
+    <disc>2</disc>
+    <trackNo>1</trackNo>
+    <title>Echo</title>
+    <seconds>200</seconds>
+  </example:Track>
+
+  <example:Track>
+    <itemId>t2</itemId>
+    <albumId>a1</albumId>
+    <disc>1</disc>
+    <trackNo>2</trackNo>
+    <title>Bridge</title>
+    <seconds>180</seconds>
+  </example:Track>
+
+  <example:Track>
+    <itemId>t4</itemId>
+    <albumId>a1</albumId>
+    <disc>1</disc>
+    <trackNo>4</trackNo>
+    <title>Anthem</title>
+    <seconds>240</seconds>
+  </example:Track>
+
+  <example:Track>
+    <itemId>t1</itemId>
+    <albumId>a1</albumId>
+    <disc>1</disc>
+    <trackNo>1</trackNo>
+    <title>Morning</title>
+    <seconds>210</seconds>
+  </example:Track>
+
+  <example:Track>
+    <itemId>t6</itemId>
+    <albumId>a1</albumId>
+    <disc>2</disc>
+    <trackNo>2</trackNo>
+    <title>Dusk</title>
+    <seconds>190</seconds>
+  </example:Track>
+
+</example:Track.list>
