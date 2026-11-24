@@ -59,7 +59,9 @@ public class RelativeField<T extends DataComposite>
   private String[] fieldNames;
   private String[] referencedFieldNames;
   private String referencedKeyName;
-  private boolean child;
+  // Null until declared, so a type that uses an archetype can tell its own
+  //   value from an unset one
+  private Boolean child;
   private DeletionConstraint deletionConstraint;
   private boolean importKey;
   private Order order;
@@ -142,7 +144,10 @@ public class RelativeField<T extends DataComposite>
        if (order==null)
        { order=rfield.order;
        }
-       child=rfield.child;
+       // The type that uses the archetype decides; an unset value inherits
+       if (child==null)
+       { child=rfield.child;
+       }
      }
    }
   
@@ -165,7 +170,7 @@ public class RelativeField<T extends DataComposite>
    * @return
    */
   public boolean isChild()
-  { return child;
+  { return child!=null && child;
   }
   
   String[] getFieldNames()
@@ -189,12 +194,25 @@ public class RelativeField<T extends DataComposite>
     return copy;
   }
   
-  protected void contructExtension(RelativeField<? extends T> copy)
+  /**
+   * Copy the declared properties of this field to an extension of it, the
+   *   field an archetyping type gets for a generic or template field. The
+   *   key and the resolution state belong to this field's own type and are
+   *   not copied.
+   */
+  @SuppressWarnings("rawtypes")
+  @Override
+  protected void constructExtension(FieldImpl copy)
   { 
     super.constructExtension(copy);
-    copy.fieldNames=fieldNames;
-    copy.referencedFieldNames=referencedFieldNames;
-    copy.order=order;
+    RelativeField<?> rcopy=(RelativeField<?>) copy;
+    rcopy.fieldNames=fieldNames;
+    rcopy.referencedFieldNames=referencedFieldNames;
+    rcopy.referencedKeyName=referencedKeyName;
+    rcopy.child=child;
+    rcopy.deletionConstraint=deletionConstraint;
+    rcopy.importKey=importKey;
+    rcopy.order=order;
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic

@@ -1,0 +1,35 @@
+<!-- A record related to the shelves, for RelativeField extension -->
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <fields>
+    <meta:Field>
+      <name>bookId
+      </name>
+      <type><String.type/>
+      </type>
+    </meta:Field>
+    <meta:Field>
+      <name>shelfId
+      </name>
+      <type><String.type/>
+      </type>
+    </meta:Field>
+    <meta:Field>
+      <name>title
+      </name>
+      <type><String.type/>
+      </type>
+    </meta:Field>
+  </fields>
+  <keys>
+    <meta:Key>
+      <fieldList>bookId
+      </fieldList>
+      <primary>true
+      </primary>
+    </meta:Key>
+  </keys>
+</meta:Type>

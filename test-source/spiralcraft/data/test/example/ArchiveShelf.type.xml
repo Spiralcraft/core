@@ -1,0 +1,42 @@
+<!--
+  Uses AbstractShelf and redeclares its relations: its own child wins over
+  the archetype's, an unset one inherits
+-->
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <archetype><example:AbstractShelf.type/>
+  </archetype>
+  <fields>
+    <meta:RelativeField>
+      <name>books
+      </name>
+      <type><example:Book.list.type/>
+      </type>
+      <referencedFieldList>shelfId
+      </referencedFieldList>
+      <child>false
+      </child>
+    </meta:RelativeField>
+    <meta:RelativeField>
+      <name>loans
+      </name>
+      <type><example:Book.list.type/>
+      </type>
+      <referencedFieldList>shelfId
+      </referencedFieldList>
+      <child>true
+      </child>
+    </meta:RelativeField>
+    <meta:RelativeField>
+      <name>reserved
+      </name>
+      <type><example:Book.list.type/>
+      </type>
+      <referencedFieldList>shelfId
+      </referencedFieldList>
+    </meta:RelativeField>
+  </fields>
+</meta:Type>

@@ -1,0 +1,72 @@
+<!--
+  An archetype whose RelativeFields are templates, so a type that uses it
+  gets extended copies of those it does not redeclare
+-->
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <fields>
+    <meta:Field>
+      <name>shelfId
+      </name>
+      <type><String.type/>
+      </type>
+    </meta:Field>
+    <meta:RelativeField>
+      <name>books
+      </name>
+      <type><example:Book.list.type/>
+      </type>
+      <referencedFieldList>shelfId
+      </referencedFieldList>
+      <template>true
+      </template>
+      <child>true
+      </child>
+      <deletionConstraint>NULLIFY
+      </deletionConstraint>
+      <order>
+        <data:Order>
+          <elements>
+            <data:OrderElement>
+              <ordering>.title
+              </ordering>
+            </data:OrderElement>
+          </elements>
+        </data:Order>
+      </order>
+    </meta:RelativeField>
+    <meta:RelativeField>
+      <name>loans
+      </name>
+      <type><example:Book.list.type/>
+      </type>
+      <referencedFieldList>shelfId
+      </referencedFieldList>
+      <template>true
+      </template>
+    </meta:RelativeField>
+    <meta:RelativeField>
+      <name>reserved
+      </name>
+      <type><example:Book.list.type/>
+      </type>
+      <referencedFieldList>shelfId
+      </referencedFieldList>
+      <template>true
+      </template>
+      <child>true
+      </child>
+    </meta:RelativeField>
+  </fields>
+  <keys>
+    <meta:Key>
+      <fieldList>shelfId
+      </fieldList>
+      <primary>true
+      </primary>
+    </meta:Key>
+  </keys>
+</meta:Type>

@@ -12,12 +12,15 @@
      
     <detail>
 
+
       <scm:Change>
         <revision>-dev191
         </revision>
 
         <notes>
           <scm:Note>Add sort option for RelativeField
+          </scm:Note>
+          <scm:Note>Fix incomplete archetype extension of RelativeField
           </scm:Note>
         </notes>
         

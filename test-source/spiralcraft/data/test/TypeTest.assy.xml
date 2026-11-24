@@ -10,6 +10,8 @@
   xmlns:st="class:/spiralcraft/time/"
   xmlns:dtest="class:/spiralcraft/data/test"
   xmlns:j="class:/java/lang"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:dcore="class:/spiralcraft/data/core/"
   >
  
 
@@ -406,6 +408,60 @@
       <testX>.=="customer"
       </testX>
     </test:Assertion>
+    <!-- RelativeField extension and the child of a redeclared relation -->
+    <test:Assertion>
+      <name>An extended RelativeField keeps its declared properties
+      </name>
+      <subjectX>[@example:Shelf].type.getField("books")
+        .@cast([@dcore:RelativeField])
+      </subjectX>
+      <testX>.child
+        &amp;&amp; .deletionConstraint==[@data:DeletionConstraint].@NULLIFY
+        &amp;&amp; .order!=null
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>An extended RelativeField keeps an unset child unset
+      </name>
+      <subjectX>[@example:Shelf].type.getField("loans")
+        .@cast([@dcore:RelativeField])
+      </subjectX>
+      <testX>!.child
+        &amp;&amp; .deletionConstraint==null
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>A redeclared RelativeField's false child wins over the archetype's true
+      </name>
+      <subjectX>[@example:ArchiveShelf].type.getField("books")
+        .@cast([@dcore:RelativeField])
+      </subjectX>
+      <testX>!.child
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>A redeclared RelativeField's true child wins over the archetype's unset one
+      </name>
+      <subjectX>[@example:ArchiveShelf].type.getField("loans")
+        .@cast([@dcore:RelativeField])
+      </subjectX>
+      <testX>.child
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>A redeclared RelativeField with no child inherits the archetype's
+      </name>
+      <subjectX>[@example:ArchiveShelf].type.getField("reserved")
+        .@cast([@dcore:RelativeField])
+      </subjectX>
+      <testX>.child
+      </testX>
+    </test:Assertion>
+
 <!--  Won't work for a while
     <test:Assertion>
       <name>Deep parameterized archetype inheritance
