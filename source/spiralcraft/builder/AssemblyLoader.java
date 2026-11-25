@@ -747,8 +747,9 @@ public class AssemblyLoader
         { 
           throw new BuildException
             ("Unknown attribute '"+name+"' in "+sourceUri+"."
-            +" Allowed attributes are (x,whitespace,persistent,dynamic,"
-            +"collection,export,uri,dataURI,debugLevel,contextualize)");
+            +" Allowed attributes are (x,whitespace,normalizeEOL,persistent,"
+            +"dynamic,collection,replaceCollection,prepend,export,uri,dataURI,"
+            +"debugLevel,contextualize)");
             
         }
       }

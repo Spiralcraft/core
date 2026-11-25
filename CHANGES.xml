@@ -16,6 +16,20 @@
         </revision>
 
         <notes>
+          <scm:Note>Provide complete attribue list in error message
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Enhance runtime resolution of generics in abstract constructs
           </scm:Note>
         </notes>
