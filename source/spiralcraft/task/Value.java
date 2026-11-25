@@ -52,7 +52,7 @@ public class Value<Tresult>
     if (value instanceof Context)
     { context=(Context) value;
     }
-    if (value instanceof Contextual)
+    if (value instanceof Lifecycle)
     { lifecycle=(Lifecycle) value;
     }
   }
