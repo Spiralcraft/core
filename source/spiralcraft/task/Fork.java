@@ -111,6 +111,7 @@ public class Fork
   public void stop()
     throws LifecycleException
   {
+    stopRequested();
     for (Scenario<?,?> scenario: scenarios)
     { scenario.stop();
     }

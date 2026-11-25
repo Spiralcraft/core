@@ -188,6 +188,7 @@ public abstract class Chain<Tcontext,Tresult>
   public void stop()
     throws LifecycleException
   { 
+    stopRequested();
     if (chain!=null)
     { chain.stop();
     }

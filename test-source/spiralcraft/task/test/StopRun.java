@@ -71,6 +71,8 @@ public class StopRun
     =new LinkedHashMap<String,WaitScenario>();
   private final Map<String,MarkScenario> markers
     =new LinkedHashMap<String,MarkScenario>();
+  private final Map<String,ProbeScenario> probes
+    =new LinkedHashMap<String,ProbeScenario>();
   private final AtomicInteger touches=new AtomicInteger();
   private volatile TaskCommand<?,?> current;
 
@@ -110,6 +112,17 @@ public class StopRun
 
   void register(MarkScenario marker)
   { markers.put(marker.getName(),marker);
+  }
+
+  void register(ProbeScenario probe)
+  { probes.put(probe.getName(),probe);
+  }
+
+  /**
+   * Whether the subject is stopping now
+   */
+  boolean subjectStopping()
+  { return subject.isStopping();
   }
 
   /**
@@ -152,6 +165,43 @@ public class StopRun
 
     public MarkScenario marker(String name)
     { return markers.get(name);
+    }
+
+    public ProbeScenario probe(String name)
+    { return probes.get(name);
+    }
+
+    /**
+     * The subject's stopping flag
+     */
+    public boolean isSubjectStopping()
+    { return subject.isStopping();
+    }
+
+    /**
+     * Call stopRequested() on the subject twice, then report its flag
+     */
+    public boolean requestTwice()
+    {
+      subject.stopRequested();
+      subject.stopRequested();
+      return subject.isStopping();
+    }
+
+    /**
+     * Stop the subject, start it again, then report its flag
+     */
+    public boolean stopThenStart()
+    {
+      try
+      { 
+        subject.stop();
+        subject.start();
+      }
+      catch (LifecycleException x)
+      { throw new RuntimeException(x);
+      }
+      return subject.isStopping();
     }
 
     @Override

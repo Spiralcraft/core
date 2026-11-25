@@ -26,13 +26,19 @@
         <resources>
           <URI>AbstractTask.java
           </URI>
+          <URI>Branch.java
+          </URI>
           <URI>Chain.java
           </URI>
           <URI>CommandTask.java
           </URI>
           <URI>Cycle.java
           </URI>
+          <URI>Fork.java
+          </URI>
           <URI>ParallelTask.java
+          </URI>
+          <URI>Reference.java
           </URI>
           <URI>Scenario.java
           </URI>

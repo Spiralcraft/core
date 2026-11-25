@@ -96,6 +96,7 @@ public class Reference<Tresult>
   public void stop()
     throws LifecycleException
   {
+    stopRequested();
     target.stop();
     super.stop();
   }

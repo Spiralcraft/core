@@ -425,5 +425,133 @@
       </testX>
     </st:StopRun>
 
+    <st:StopRun>
+      <name>Flag set before a Sequence stops its children
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+<task:Sequence><scenarios><st:WaitScenario><name>w</name></st:WaitScenario><st:ProbeScenario><name>p</name></st:ProbeScenario></scenarios></task:Sequence>
+      </subject>
+      <testX>
+        .probe("p").stops==1 &amp;&amp; .probe("p").stoppingAtStop &amp;&amp; .subjectStopping &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Flag set before a Chain stops its chain
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+<st:ChainScenario><chain><task:Sequence><scenarios><st:ProbeScenario><name>p</name></st:ProbeScenario></scenarios></task:Sequence></chain></st:ChainScenario>
+      </subject>
+      <testX>
+        .probe("p").stops==1 &amp;&amp; .probe("p").stoppingAtStop &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Flag set before a Fork stops its children
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+<task:Fork><scenarios><st:ProbeScenario><name>p</name></st:ProbeScenario><st:ProbeScenario><name>q</name></st:ProbeScenario></scenarios></task:Fork>
+      </subject>
+      <testX>
+        .probe("p").stoppingAtStop &amp;&amp; .probe("q").stoppingAtStop &amp;&amp; .probe("p").stops==1 &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Flag set before an If stops its children
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+<task:If><x>true</x><then><st:ProbeScenario><name>p</name></st:ProbeScenario></then><else><st:ProbeScenario><name>q</name></st:ProbeScenario></else></task:If>
+      </subject>
+      <testX>
+        .probe("p").stoppingAtStop &amp;&amp; .probe("q").stoppingAtStop &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Flag set before a Value stops its lifecycle
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+<task:Value><value><st:ProbeScenario><name>p</name></st:ProbeScenario></value></task:Value>
+      </subject>
+      <testX>
+        .probe("p").stops==1 &amp;&amp; .probe("p").stoppingAtStop &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>stopRequested twice then stop
+      </name>
+      <how>none
+      </how>
+      <subject>
+<task:Sequence><scenarios><st:ProbeScenario><name>p</name></st:ProbeScenario></scenarios></task:Sequence>
+      </subject>
+      <testX>
+        .requestTwice() &amp;&amp; .probe("p").stops==0 &amp;&amp; .probe("p").runs==1 &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>start clears the flag set by stop
+      </name>
+      <how>none
+      </how>
+      <subject>
+<task:Sequence><scenarios><st:ProbeScenario><name>p</name></st:ProbeScenario></scenarios></task:Sequence>
+      </subject>
+      <testX>
+        !.stopThenStart() &amp;&amp; !.subjectStopping &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Flag set before a Reference stops its target
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+        <task:Reference>
+          <targetTypeURI>class:/spiralcraft/task/test/ProbeScenario
+          </targetTypeURI>
+          <targetURI>class:/spiralcraft/task/test/ReferenceProbe.assy.xml
+          </targetURI>
+        </task:Reference>
+      </subject>
+      <testX>
+        .probe("r").stops==1
+        &amp;&amp; .probe("r").stoppingAtStop
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>A Scenario with no children is stopping once stopped
+      </name>
+      <how>lifecycle-before
+      </how>
+      <subject>
+        <st:MarkScenario>
+          <name>m
+          </name>
+        </st:MarkScenario>
+      </subject>
+      <testX>
+        .subjectStopping
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
   </sequence>
 </test:TestGroup>

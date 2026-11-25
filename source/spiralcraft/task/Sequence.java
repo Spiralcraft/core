@@ -128,6 +128,7 @@ public class Sequence<Tresult>
   public void stop()
     throws LifecycleException
   {
+    stopRequested();
     Lifecycler.stop(Lifecycler.group(scenarios));
     super.stop();
   }

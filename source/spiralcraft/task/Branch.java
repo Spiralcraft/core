@@ -123,6 +123,7 @@ public abstract class Branch<Tcontext,Tresult>
   public void stop()
     throws LifecycleException
   { 
+    stopRequested();
     Lifecycler.stop(children.toArray(new Scenario<?,?>[children.size()]));
     super.stop();
   }  

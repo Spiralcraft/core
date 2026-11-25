@@ -602,12 +602,22 @@ public abstract class Scenario<Tcontext,Tresult>
   public void stop()
     throws LifecycleException
   { 
-    stopping=true;
+    stopRequested();
     if (debug)
     { log.log(Level.DEBUG,"Finalizing");
     }
   }
   
+  
+  /**
+   * Mark this Scenario as stopping. Composites call this before they stop
+   *   their children, so that the flag is already set, in pre-order, when
+   *   a stop reaches any descendant and tasks can decline to launch.
+   *   Idempotent; stop() calls it, and start() clears it.
+   */
+  public void stopRequested()
+  { stopping=true;
+  }
   
   /**
    * Whether a lifecycle stop of this Scenario has begun and it has not been
