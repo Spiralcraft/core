@@ -118,6 +118,7 @@ public abstract class Scenario<Tcontext,Tresult>
   
   protected boolean debug;
   protected boolean verbose;
+  private volatile boolean stopping;
   protected Level logLevel=Level.INFO;
   protected boolean logTaskResults;
   protected boolean storeResults;
@@ -591,6 +592,7 @@ public abstract class Scenario<Tcontext,Tresult>
   public void start()
     throws LifecycleException
   { 
+    stopping=false;
     if (debug)
     { log.log(Level.DEBUG,"Initializing");
     }
@@ -600,12 +602,21 @@ public abstract class Scenario<Tcontext,Tresult>
   public void stop()
     throws LifecycleException
   { 
+    stopping=true;
     if (debug)
     { log.log(Level.DEBUG,"Finalizing");
     }
   }
   
   
+  /**
+   * Whether a lifecycle stop of this Scenario has begun and it has not been
+   *   started again. Tasks check this at the points where they can stop.
+   */
+  public boolean isStopping()
+  { return stopping;
+  }
+
   @Override
   /**
    * Whether this Scenario is currently operable 

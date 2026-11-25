@@ -59,6 +59,7 @@ public abstract class AbstractTask
   private boolean _stoppable=false;
   private boolean _running=false;
   private boolean _stopRequested=false;
+  private volatile boolean _stopped=false;
   private boolean _completed=false;
   protected boolean debug;
   protected Scheduler scheduler;
@@ -150,6 +151,15 @@ public abstract class AbstractTask
   { return _stopRequested;
   }
   
+  /**
+   * Whether the last run of this task completed with a stop requested.
+   *   Not an error: the task has not failed and has recorded no exception.
+   *   Cleared when the next run starts.
+   */
+  public boolean isStopped()
+  { return _stopped;
+  }
+
   @Override
   public boolean isCompleted()
   { return _completed;
@@ -176,6 +186,7 @@ public abstract class AbstractTask
   @Override
   public final synchronized void run()
   {
+    final boolean stopBeforeRun;
     synchronized (_lock)
     { 
       if (_running)
@@ -185,13 +196,20 @@ public abstract class AbstractTask
       setStoppable(true);
       setRunning(true);
       _completed=false;
+      _stopped=false;
       // _runThread=Thread.currentThread();
-      setStopRequested(false);
+
+      // A stop requested before the run is kept: _stopRequested is cleared
+      //   when a run ends
+      stopBeforeRun=_stopRequested;
       fireTaskStarted();
     }
     
     try
-    { work();
+    {
+      if (!stopBeforeRun)
+      { work();
+      }
     }
     catch (InterruptedException x)
     { 
@@ -207,6 +225,7 @@ public abstract class AbstractTask
     { 
       synchronized(_lock)
       { 
+        _stopped=_stopRequested;
         setRunning(false);
         setStoppable(false);
         setStartable(true);
@@ -225,7 +244,8 @@ public abstract class AbstractTask
     {
       if (!_completed)
       {
-        if (_stoppable && !_stopRequested)
+        // Before the first run the stop is kept (run() then returns at once)
+        if (!_stopRequested)
         { setStopRequested(true);
         }
         _lock.notifyAll();
@@ -238,6 +258,26 @@ public abstract class AbstractTask
   { return _lock;
   }
   
+  /**
+   * <p>Check whether work() should stop at a point where it can: if a stop
+   *   has been requested, or the Scenario that created this task is being
+   *   stopped as a lifecycle, which counts as a stop request.
+   * </p>
+   *
+   * @param scenario The Scenario that created this task, or null
+   * @return Whether the task should stop
+   */
+  protected boolean checkStop(Scenario<?,?> scenario)
+  {
+    synchronized (_lock)
+    {
+      if (!_stopRequested && scenario!=null && scenario.isStopping())
+      { setStopRequested(true);
+      }
+      return _stopRequested;
+    }
+  }
+
   protected void setOpsCompletedInUnit(int val)
   { 
     firePropertyChange

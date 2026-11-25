@@ -65,14 +65,22 @@ public abstract class Chain<Tcontext,Tresult>
     protected void work()
       throws InterruptedException
     { 
-      if (exception==null)
+      if (exception==null && !checkStop(Chain.this))
       {
         if (chain!=null)
         {
           command=chain.command();
+
+          // A stop requested before the command was set was not passed on
+          if (checkStop(Chain.this))
+          { return;
+          }
           super.work();
         }
-        if (resultX!=null)
+
+        // Stopped means stopped itself: the chain stopping on its own
+        //   does not stop this task
+        if (resultX!=null && !checkStop(Chain.this))
         { addResult(resultX.get());
         }        
       }

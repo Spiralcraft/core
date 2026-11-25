@@ -61,6 +61,17 @@ public class TaskCommand<Tcontext,Tresult>
   { return task;
   }
   
+  /**
+   * <p>Ask the task of this command to stop. The stop is passed down to the
+   *   task being run by any command the task is running, and a stop
+   *   requested before the command is executed is kept, so the task returns
+   *   at once when it is.
+   * </p>
+   */
+  public void stop()
+  { task.stop();
+  }
+
   public void setError(Object error)
   { this.error=error;
   }

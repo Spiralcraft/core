@@ -1,0 +1,429 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:st="class:/spiralcraft/task/test/"
+  >
+  <name>spiralcraft.task.test.Stop
+  </name>
+
+  <sequence>
+
+    <st:StopRun>
+      <name>Stop from the top
+      </name>
+      <how>command
+      </how>
+      <subject>
+        <task:Sequence>
+          <resultX>[st:StopRun].touch()
+          </resultX>
+          <scenarios>
+            <st:WaitScenario>
+              <name>w
+              </name>
+            </st:WaitScenario>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.stopped
+        &amp;&amp; .waiter("w").lastTask.stopped
+        &amp;&amp; .waiter("w").ends==1
+        &amp;&amp; !.waiter("w").timedOut
+        &amp;&amp; .marker("m").runs==0
+        &amp;&amp; .marker("m").created==0
+        &amp;&amp; .touches==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Stop during the last child of a Sequence
+      </name>
+      <how>command
+      </how>
+      <subject>
+        <task:Sequence>
+          <resultX>[st:StopRun].touch()
+          </resultX>
+          <scenarios>
+            <st:WaitScenario>
+              <name>w
+              </name>
+            </st:WaitScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.stopped
+        &amp;&amp; .waiter("w").lastTask.stopped
+        &amp;&amp; .touches==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Stop nested in a Chain
+      </name>
+      <how>command
+      </how>
+      <subject>
+        <st:ChainScenario>
+          <resultX>[st:StopRun].touch()
+          </resultX>
+          <chain>
+            <task:Sequence>
+              <scenarios>
+                <st:WaitScenario>
+                  <name>w
+                  </name>
+                </st:WaitScenario>
+                <st:MarkScenario>
+                  <name>m
+                  </name>
+                </st:MarkScenario>
+              </scenarios>
+            </task:Sequence>
+          </chain>
+        </st:ChainScenario>
+      </subject>
+      <testX>
+        .task.stopped
+        &amp;&amp; .waiter("w").lastTask.stopped
+        &amp;&amp; .waiter("w").ends==1
+        &amp;&amp; !.waiter("w").timedOut
+        &amp;&amp; .marker("m").runs==0
+        &amp;&amp; .touches==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>A child stopped on its own
+      </name>
+      <how>none
+      </how>
+      <subject>
+        <task:Sequence>
+          <scenarios>
+            <st:WaitScenario>
+              <name>w
+              </name>
+              <selfStop>true
+              </selfStop>
+            </st:WaitScenario>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .waiter("w").lastTask.stopped
+        &amp;&amp; .waiter("w").ends==1
+        &amp;&amp; !.waiter("w").timedOut
+        &amp;&amp; .marker("m").runs==1
+        &amp;&amp; !.task.stopped
+        &amp;&amp; .task.completed
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Stop before the run
+      </name>
+      <how>before
+      </how>
+      <subject>
+        <task:Sequence>
+          <scenarios>
+            <st:WaitScenario>
+              <name>w
+              </name>
+            </st:WaitScenario>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .waiter("w").starts==0
+        &amp;&amp; .marker("m").runs==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Lifecycle stop
+      </name>
+      <how>lifecycle
+      </how>
+      <subject>
+        <task:Sequence>
+          <scenarios>
+            <st:WaitScenario>
+              <name>gate
+              </name>
+              <gated>true
+              </gated>
+            </st:WaitScenario>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.stopped
+        &amp;&amp; .waiter("gate").ends==1
+        &amp;&amp; !.waiter("gate").timedOut
+        &amp;&amp; !.waiter("gate").lastTask.stopped
+        &amp;&amp; .marker("m").runs==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Stop a Fork
+      </name>
+      <how>command
+      </how>
+      <subject>
+        <task:Fork>
+          <scenarios>
+            <st:WaitScenario>
+              <name>a
+              </name>
+            </st:WaitScenario>
+            <st:WaitScenario>
+              <name>b
+              </name>
+            </st:WaitScenario>
+          </scenarios>
+        </task:Fork>
+      </subject>
+      <testX>
+        .task.stopped
+        &amp;&amp; .waiter("a").ends==1
+        &amp;&amp; .waiter("b").ends==1
+        &amp;&amp; !.waiter("a").timedOut
+        &amp;&amp; !.waiter("b").timedOut
+        &amp;&amp; .waiter("a").lastTask.stopped
+        &amp;&amp; .waiter("b").lastTask.stopped
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>A run after a stopped run
+      </name>
+      <how>twice
+      </how>
+      <subject>
+        <task:Sequence>
+          <scenarios>
+            <st:WaitScenario>
+              <name>w
+              </name>
+              <waits>1
+              </waits>
+            </st:WaitScenario>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.stopped
+        &amp;&amp; .secondTask.completed
+        &amp;&amp; !.secondTask.stopped
+        &amp;&amp; .waiter("w").starts==2
+        &amp;&amp; .waiter("w").ends==2
+        &amp;&amp; !.waiter("w").timedOut
+        &amp;&amp; .marker("m").runs==1
+        &amp;&amp; .secondException==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Stop a Cycle
+      </name>
+      <how>command
+      </how>
+      <subject>
+        <task:Cycle>
+          <periodMs>30000
+          </periodMs>
+          <chain>
+            <st:WaitScenario>
+              <name>w
+              </name>
+            </st:WaitScenario>
+          </chain>
+        </task:Cycle>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .waiter("w").starts==1
+        &amp;&amp; .waiter("w").ends==1
+        &amp;&amp; !.waiter("w").timedOut
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Lifecycle stop before the run, Sequence
+      </name>
+      <how>lifecycle-before
+      </how>
+      <subject>
+        <task:Sequence>
+          <scenarios>
+            <st:WaitScenario>
+              <name>w
+              </name>
+            </st:WaitScenario>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .waiter("w").created==0
+        &amp;&amp; .waiter("w").starts==0
+        &amp;&amp; .marker("m").created==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Lifecycle stop before the run, Chain
+      </name>
+      <how>lifecycle-before
+      </how>
+      <subject>
+        <st:ChainScenario>
+          <resultX>[st:StopRun].touch()
+          </resultX>
+          <chain>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </chain>
+        </st:ChainScenario>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .marker("m").created==0
+        &amp;&amp; .touches==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>Lifecycle stop before the run, Cycle
+      </name>
+      <how>lifecycle-before
+      </how>
+      <subject>
+        <task:Cycle>
+          <x>[st:StopRun].touch()
+          </x>
+          <chain>
+            <st:MarkScenario>
+              <name>m
+              </name>
+            </st:MarkScenario>
+          </chain>
+        </task:Cycle>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .marker("m").created==0
+        &amp;&amp; .touches==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>A stop while the next command of a Sequence is made
+      </name>
+      <how>none
+      </how>
+      <subject>
+        <task:Sequence>
+          <scenarios>
+            <st:MarkScenario>
+              <name>m1
+              </name>
+            </st:MarkScenario>
+            <st:MarkScenario>
+              <name>m2
+              </name>
+              <contextX>[st:StopRun].stopNow()
+              </contextX>
+            </st:MarkScenario>
+          </scenarios>
+        </task:Sequence>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .marker("m1").runs==1
+        &amp;&amp; .marker("m2").created==1
+        &amp;&amp; .marker("m2").runs==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+    <st:StopRun>
+      <name>A stop while the command of a Chain is made
+      </name>
+      <how>none
+      </how>
+      <subject>
+        <st:ChainScenario>
+          <resultX>[st:StopRun].touch()
+          </resultX>
+          <chain>
+            <st:MarkScenario>
+              <name>m
+              </name>
+              <contextX>[st:StopRun].stopNow()
+              </contextX>
+            </st:MarkScenario>
+          </chain>
+        </st:ChainScenario>
+      </subject>
+      <testX>
+        .task.completed
+        &amp;&amp; .task.stopped
+        &amp;&amp; .marker("m").created==1
+        &amp;&amp; .marker("m").runs==0
+        &amp;&amp; .touches==0
+        &amp;&amp; .exception==null
+      </testX>
+    </st:StopRun>
+
+  </sequence>
+</test:TestGroup>

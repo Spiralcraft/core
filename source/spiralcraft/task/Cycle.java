@@ -94,7 +94,7 @@ public class Cycle<Tcontext,Tresult>
       
       long start=System.currentTimeMillis();
       long cycles=0;
-      while (true)
+      while (!checkStop(Cycle.this))
       {
         long lastRun=System.currentTimeMillis();
         if (x!=null)
@@ -108,6 +108,9 @@ public class Cycle<Tcontext,Tresult>
         long end=System.currentTimeMillis();
         
         cycles++;
+        if (checkStop(Cycle.this))
+        { break;
+        }
         if (maxCycles>0 && cycles>=maxCycles)
         { break;
         }

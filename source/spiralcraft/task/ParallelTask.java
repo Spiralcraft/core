@@ -42,6 +42,19 @@ public class ParallelTask<Tsubtask extends Task>
   { this.useScheduler=useScheduler;
   }
   
+  /**
+   * Pass the stop to the subtasks. A subtask not yet started keeps it, and
+   *   returns at once when it is started.
+   */
+  @Override
+  public void stop()
+  {
+    super.stop();
+    for (Tsubtask task: subtasks)
+    { task.stop();
+    }
+  }
+
   private void waitForComplete()
   { 
     synchronized (monitor)

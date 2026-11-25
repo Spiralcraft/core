@@ -24,10 +24,23 @@ public abstract class CommandTask
   extends AbstractTask
 {
 
-  protected TaskCommand<?,?> command;
+  protected volatile TaskCommand<?,?> command;
   protected boolean addCommandAsResult;
   protected boolean addCommandResult;
   
+  /**
+   * Pass the stop to the command being run, if any
+   */
+  @Override
+  public void stop()
+  {
+    super.stop();
+    TaskCommand<?,?> current=command;
+    if (current!=null)
+    { current.stop();
+    }
+  }
+
   @Override
   protected void work()
     throws InterruptedException

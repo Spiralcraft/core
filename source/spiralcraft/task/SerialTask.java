@@ -40,6 +40,9 @@ public class SerialTask<Tsubtask extends Task>
     
     for (Tsubtask task: subtasks)
     { 
+      if (isStopRequested())
+      { break;
+      }
       task.addTaskListener(this);
       subtaskStarting(task);
       task.run();

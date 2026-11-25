@@ -95,11 +95,19 @@ public class Sequence<Tresult>
         {
           for (Scenario<?,?> scenario: scenarios)
           { 
+            if (checkStop(Sequence.this))
+            { return;
+            }
             command=scenario.command();
+
+            // A stop requested before the command was set was not passed on
+            if (checkStop(Sequence.this))
+            { return;
+            }
             super.work();
           }
         }
-        if (resultX!=null)
+        if (resultX!=null && !checkStop(Sequence.this))
         { 
           addResult(resultX.get());
         }

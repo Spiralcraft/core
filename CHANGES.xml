@@ -16,6 +16,42 @@
         </revision>
 
         <notes>
+          <scm:Note>Add path to stop running tasks
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task
+        </path>
+        
+        <resources>
+          <URI>AbstractTask.java
+          </URI>
+          <URI>Chain.java
+          </URI>
+          <URI>CommandTask.java
+          </URI>
+          <URI>Cycle.java
+          </URI>
+          <URI>ParallelTask.java
+          </URI>
+          <URI>Scenario.java
+          </URI>
+          <URI>Sequence.java
+          </URI>
+          <URI>SerialTask.java
+          </URI>
+          <URI>TaskCommand.java
+          </URI>
+
+        </resources>
+      </scm:Change>    
+
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Fix induced failure testiong
           </scm:Note>
         </notes>
