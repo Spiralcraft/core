@@ -431,7 +431,7 @@
       <how>lifecycle
       </how>
       <subject>
-<task:Sequence><scenarios><st:WaitScenario><name>w</name></st:WaitScenario><st:ProbeScenario><name>p</name></st:ProbeScenario></scenarios></task:Sequence>
+<task:Sequence><scenarios><st:ProbeScenario><name>p</name></st:ProbeScenario></scenarios></task:Sequence>
       </subject>
       <testX>
         .probe("p").stops==1 &amp;&amp; .probe("p").stoppingAtStop &amp;&amp; .subjectStopping &amp;&amp; .exception==null
