@@ -12,6 +12,25 @@
      
     <detail>
 
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Add Switch/Case to Task package
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task
+        </path>
+        
+        <resources>
+          <URI>Switch.java
+          </URI>
+          <URI>Case.java
+          </URI>
+        </resources>
+      </scm:Change>    
 
       <scm:Change>
         <revision>-dev191

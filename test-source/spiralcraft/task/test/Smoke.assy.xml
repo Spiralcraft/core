@@ -167,6 +167,181 @@
             </test:Assertion>  
           </else>
         </task:If>
+
+        <task:Switch>
+          <x>"b"
+          </x>
+          <cases>
+            <task:Case>
+              <constant>a
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch a FAIL
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>false
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+            <task:Case>
+              <constant>b
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch matches its case
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>true
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+            <task:Case>
+              <default>true
+              </default>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch default FAIL
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>false
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+          </cases>
+        </task:Switch>
+
+        <task:Switch>
+          <x>"z"
+          </x>
+          <cases>
+            <task:Case>
+              <constant>a
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch a FAIL
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>false
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+            <task:Case>
+              <default>true
+              </default>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch default on no match
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>true
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+          </cases>
+        </task:Switch>
+
+        <task:Switch>
+          <x>"z"
+          </x>
+          <cases>
+            <task:Case>
+              <constant>a
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch no default FAIL
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>false
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+          </cases>
+        </task:Switch>
+
+        <task:Switch>
+          <x>2
+          </x>
+          <cases>
+            <task:Case>
+              <constant>1
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch integer 1 FAIL
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>false
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+            <task:Case>
+              <constant>2
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch converts a text constant
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>true
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+          </cases>
+        </task:Switch>
+
+        <task:Switch>
+          <x>2
+          </x>
+          <cases>
+            <task:Case>
+              <constant>1
+              </constant>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch constantX FAIL
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>false
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+            <task:Case>
+              <constantX>1+1
+              </constantX>
+              <sequence>
+                <test:Assertion>
+                  <name>Switch evaluates constantX
+                  </name>
+                  <subjectX>.
+                  </subjectX>
+                  <testX>true
+                  </testX>
+                </test:Assertion>
+              </sequence>
+            </task:Case>
+          </cases>
+        </task:Switch>
         
         <task:If>
           <x>true
