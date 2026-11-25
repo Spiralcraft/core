@@ -22,7 +22,15 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.task.Chain;
 
 /**
- * Ensures that the chained task throws an exception
+ * <p>Ensures that the chained task reports an exception.
+ * </p>
+ *
+ * <p>The test passes when the chain reports an exception, which it clears.
+ *   When the chain reports none, the test fails: a failed result goes to
+ *   the TestGroup, so the group and its parents fail, and with
+ *   throwFailure the task also fails. An uncaught RuntimeException is
+ *   unexpected: a failed result, and the task fails.
+ * </p>
  * 
  * @author mike
  *
@@ -32,6 +40,7 @@ public class AssertFailure
 {
   private String name;
   protected TestGroup testGroup;
+  protected boolean throwFailure;
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
@@ -46,6 +55,14 @@ public class AssertFailure
   
   public void setName(String name)
   { this.name=name;
+  }
+
+  /**
+   * Whether a chain that reports no exception also fails this task, besides
+   *   failing the test
+   */
+  public void setThrowFailure(boolean throwFailure)
+  { this.throwFailure=throwFailure;
   }
 
   
@@ -66,10 +83,15 @@ public class AssertFailure
           super.work();
           if (command.getException()==null)
           {
-            addException
-              (new TestFailedException
-                (new TestResult(name,false,"No exception generated")));
-        
+            TestResult result
+              =new TestResult(name,false,"No exception generated");
+            if (testGroup!=null)
+            { testGroup.addTestResult(result);
+            }
+            if (throwFailure)
+            { addException(new TestFailedException(result));
+            }
+            addResult(result);
           }
           else
           {

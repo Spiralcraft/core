@@ -16,6 +16,20 @@
         </revision>
 
         <notes>
+          <scm:Note>Fix induced failure testiong
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/test/AssertFailure.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
           <scm:Note>Provide complete attribue list in error message
           </scm:Note>
         </notes>
