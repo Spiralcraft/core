@@ -14,6 +14,7 @@
 //
 package spiralcraft.util.tree;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 
 
 import spiralcraft.util.EmptyIterator;
+import spiralcraft.util.lang.ClassUtil;
 
 /**
  * A node in a tree
@@ -28,6 +30,21 @@ import spiralcraft.util.EmptyIterator;
 public abstract class AbstractNode<Nc extends AbstractNode<Nc,T>,T>
   implements Tree<Nc,T>
 {
+  /**
+   * The class of the children, Nc, for each node class, as the class
+   *   declares it; null where it leaves Nc a type variable
+   */
+  private static final ClassValue<Class<?>> CHILD_CLASS
+    =new ClassValue<Class<?>>()
+    {
+      @Override
+      protected Class<?> computeValue(Class<?> type)
+      {
+        return ClassUtil.getClass
+          (ClassUtil.resolveTypeArgument(type,AbstractNode.class,0));
+      }
+    };
+
   private LinkedList<Nc> _children;
   private Nc _parent;
   private T _peer;
@@ -113,18 +130,30 @@ public abstract class AbstractNode<Nc extends AbstractNode<Nc,T>,T>
   }
   
   /**
-   * Returns a new copy of the list of child nodes
+   * Returns a new copy of the list of child nodes, as an array of the class
+   *   the node class binds Nc to
+   *
+   * @throws IllegalStateException if the node class leaves Nc a type
+   *   variable, so the class of the array is not known; such a class
+   *   overrides this method
    */
-  @SuppressWarnings({"unchecked","rawtypes"})
+  @SuppressWarnings("unchecked")
   @Override
   public Nc[] getChildren()
-  { 
-    if (_children!=null)
-    { return (Nc[]) _children.toArray(new AbstractNode[_children.size()]);
-    }
-    else
+  {
+    if (_children==null)
     { return null;
     }
+    Class<?> childClass=CHILD_CLASS.get(getClass());
+    if (childClass==null)
+    {
+      throw new IllegalStateException
+        (getClass().getName()+" does not bind the class of its children"
+        +" (Nc), so getChildren() cannot make their array; override it"
+        );
+    }
+    return _children.toArray
+      ((Nc[]) Array.newInstance(childClass,_children.size()));
   }
 
   @SuppressWarnings("unchecked") // Runtime type check

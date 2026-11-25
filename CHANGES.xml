@@ -11,6 +11,25 @@
     
      
     <detail>
+      <scm:Change>
+        <revision>-dev191
+        </revision>
+
+        <notes>
+          <scm:Note>Enhance runtime resolution of generics in abstract constructs
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util
+        </path>
+        
+        <resources>
+          <URI>lang/ClassUtil.java
+          </URI>
+          <URI>tree/AbstractNode.java
+          </URI>
+        </resources>
+      </scm:Change>    
 
       <scm:Change>
         <revision>-dev191

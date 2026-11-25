@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -27,6 +29,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
 
 /**
  * Utilities for dealing with Classes and types
@@ -288,6 +291,92 @@ public abstract class ClassUtil
     }
   }   
   
+  /**
+   * <p>The type that a class binds a type parameter of one of its generic
+   *   supertypes to, found through its superclasses and interfaces, with
+   *   each level's arguments substituted for the type variables of the
+   *   level above.
+   * </p>
+   *
+   * <p>Null when the parameter is not bound to a type the class declares
+   *   (it stays a type variable), or when generic is not a supertype of
+   *   type. A parameterized argument is given as declared: type variables
+   *   nested in it are not substituted, and its raw class (getClass(Type))
+   *   is right.
+   * </p>
+   *
+   * @param type the class, such as spiralcraft.json.ObjectNode
+   * @param generic the generic supertype, such as AbstractNode
+   * @param index the position of the type parameter in generic
+   * @throws IllegalArgumentException for an index generic does not have
+   */
+  public static Type resolveTypeArgument
+    (Class<?> type,Class<?> generic,int index)
+  {
+    TypeVariable<?>[] parameters=generic.getTypeParameters();
+    if (index<0 || index>=parameters.length)
+    {
+      throw new IllegalArgumentException
+        (generic.getName()+" has no type parameter at "+index);
+    }
+    Map<TypeVariable<?>,Type> bindings
+      =bindingsTo(type,generic,new HashMap<TypeVariable<?>,Type>());
+    if (bindings==null)
+    { return null;
+    }
+    Type argument=bindings.get(parameters[index]);
+    return argument instanceof TypeVariable?null:argument;
+  }
+
+  /**
+   * The type variables bound on the way from type up to generic, or null
+   *   if generic is not reached
+   */
+  private static Map<TypeVariable<?>,Type> bindingsTo
+    (Class<?> type,Class<?> generic,Map<TypeVariable<?>,Type> bindings)
+  {
+    if (type==generic)
+    { return bindings;
+    }
+    List<Type> supertypes=new ArrayList<Type>();
+    if (type.getGenericSuperclass()!=null)
+    { supertypes.add(type.getGenericSuperclass());
+    }
+    for (Type supertype:type.getGenericInterfaces())
+    { supertypes.add(supertype);
+    }
+    for (Type supertype:supertypes)
+    {
+      Class<?> raw=getClass(supertype);
+      if (raw==null || !generic.isAssignableFrom(raw))
+      { continue;
+      }
+      Map<TypeVariable<?>,Type> next
+        =new HashMap<TypeVariable<?>,Type>(bindings);
+      if (supertype instanceof ParameterizedType)
+      {
+        TypeVariable<?>[] variables=raw.getTypeParameters();
+        Type[] arguments
+          =((ParameterizedType) supertype).getActualTypeArguments();
+        for (int i=0;i<variables.length;i++)
+        {
+          Type argument=arguments[i];
+          if (argument instanceof TypeVariable
+              && bindings.containsKey(argument)
+             )
+          { argument=bindings.get(argument);
+          }
+          next.put(variables[i],argument);
+        }
+      }
+      Map<TypeVariable<?>,Type> found=bindingsTo(raw,generic,next);
+      if (found!=null)
+      { return found;
+      }
+    }
+    return null;
+  }
+
   public static Class<?> getTypeArgumentAsClass(Type type)
   {
     if (type instanceof ParameterizedType)

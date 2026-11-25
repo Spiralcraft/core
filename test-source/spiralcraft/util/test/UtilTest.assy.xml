@@ -8,6 +8,7 @@
   xmlns:sutil="class:/spiralcraft/util/string/"
   xmlns:util="class:/spiralcraft/util/"
   xmlns:ct="class:/spiralcraft/codec/text/"
+  xmlns:ut="class:/spiralcraft/util/test/"
   >
   <name>spiralcraft.util.test
   </name>
@@ -1003,6 +1004,108 @@
       <testX>.=="toolCallId"
       </testX>
     </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument through superclasses
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("Leaf","Base",0)+" "+[@ut:TypeFixtures].@resolved("Leaf","Base",1)
+      </subjectX>
+      <testX>.=="java.lang.String java.lang.Integer"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument gives a parameterized argument as declared
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("ListedLeaf","Base",1)
+      </subjectX>
+      <testX>.=="java.util.List&lt;T&gt;"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument through an interface extending another
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("Implementation","Source",0)
+      </subjectX>
+      <testX>.=="java.lang.String"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument through a superclass and its interfaces
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("SubImplementation","Source",0)
+      </subjectX>
+      <testX>.=="java.lang.String"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument through a generic class bound by its subclass
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("Closed","Source",0)
+      </subjectX>
+      <testX>.=="java.lang.Double"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument gives null for a parameter left a variable
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("Open","Source",0)+" "+[@ut:TypeFixtures].@resolved("Raw","Base",0)
+      </subjectX>
+      <testX>.=="null null"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>resolveTypeArgument gives null when generic is not a supertype
+      </name>
+      <subjectX>[@ut:TypeFixtures].@resolved("Leaf","Source",0)
+      </subjectX>
+      <testX>.=="null"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>getChildren() makes an array of the node class's children
+      </name>
+      <subjectX>[@ut:TypeFixtures].@childArray("Plain")+" "+[@ut:TypeFixtures].@childArray("PlainSub")+" "+[@ut:TypeFixtures].@childArray("Bound")
+      </subjectX>
+      <testX>.=="Plain Plain Bound"
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>getChildren() refuses a node class that leaves its children a variable
+      </name>
+      <subjectX>[@ut:TypeFixtures].@childArray("Unbound")
+      </subjectX>
+      <testX>.startsWith("spiralcraft.util.test.TypeFixtures$Unbound does not bind")
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>getChildren() of a node with no children is null
+      </name>
+      <subjectX>[@ut:TypeFixtures].@noChildren()
+      </subjectX>
+      <testX>.==null
+      </testX>
+    </test:Assertion>
+
+    <test:AssertFailure>
+      <name>resolveTypeArgument refuses an index the generic does not have
+      </name>
+      <chain>
+        <task:Eval>
+          <x>[@ut:TypeFixtures].@resolved("Leaf","Base",2)
+          </x>
+        </task:Eval>
+      </chain>
+    </test:AssertFailure>
+
   </sequence>
         
 </test:TestGroup>
