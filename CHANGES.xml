@@ -12,6 +12,26 @@
      
     <detail>
       <scm:Change>
+        <revision>-dev192
+        </revision>
+
+        <notes>
+          <scm:Note>Walk a tree, graph, or other linked data structure
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/fn
+        </path>
+        
+        <resources>
+          <URI>Walk.java
+          </URI>
+          <URI>WalkCursor.java
+          </URI>
+        </resources>
+      </scm:Change>    
+    
+      <scm:Change>
         <revision>-dev191
         </revision>
 
